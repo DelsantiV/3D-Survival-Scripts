@@ -48,7 +48,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
             //if there is not item already then set our item.
             if (currentItem == null)
             {
-                Debug.Log("Trying to add item " + item.Name + " to slot " + name + ", which is empty");
+                Debug.Log("Trying to add item " + item.Name + " to slot " + name + ", which is empty ");
                 item.transform.SetParent(transform);
                 item.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
                 currentItem = item;
