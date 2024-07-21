@@ -155,5 +155,11 @@ namespace Invector.vCharacterController
             animator.SetTrigger("ActionStop");
             isRightHandAction = false;
         }
+
+        public virtual void StopMoving()
+        {
+            stopMove = true;
+            lockMovement = true;
+        }
     }
 }

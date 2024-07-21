@@ -102,6 +102,11 @@ namespace Invector.vCharacterController
                 cc.GetGridCellAfterMovement();
                 Debug.Log("Current cell : " + cc.currentGridCell.index.ToString() + ", at position " + cc.currentGridCell.worldPostion.ToString());
             }
+            else
+            {
+                cc.input.x = 0;
+                cc.input.z = 0;
+            }
         }
 
         protected virtual void CameraInput()
@@ -203,6 +208,7 @@ namespace Invector.vCharacterController
         {
             if (cc.isLeftHandAction) { cc.LeftHandActionStop(); }
             if (cc.isRightHandAction) { cc.RightHandActionStop(); }
+            cc.StopMoving();
         }
         #endregion
     }
