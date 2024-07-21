@@ -150,4 +150,5 @@ public class ItemInInventory : Dragable, IPointerDownHandler
     }
 
     public GameObject ItemGO() { return itemSO.itemPrefab; }
+    public string Name { get { return itemSO.name; } }  
 }

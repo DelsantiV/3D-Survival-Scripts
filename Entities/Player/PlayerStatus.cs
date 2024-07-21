@@ -25,7 +25,6 @@ public class PlayerStatus
         this.maxFatigue = maxFatigue;
         this.maxCalories = maxCalories;
 
-
         CustomTickSystem.OnLargeTick += UpdatePlayerStatus;
 
         // Initialize to some low values for testing

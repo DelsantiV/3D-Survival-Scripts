@@ -51,6 +51,7 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
     {
         if (transform.parent == startParent || transform.parent == transform.root)
         {
+            Debug.Log("Replacing item to start slot");
             
             transform.position = startPosition;
             transform.SetParent(startParent);

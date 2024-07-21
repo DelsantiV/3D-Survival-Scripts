@@ -30,47 +30,55 @@ public class ItemSlot : MonoBehaviour, IDropHandler
     public virtual void OnDrop(PointerEventData eventData)
     {
         GameObject itemBeingDragGO = eventData.pointerDrag;
-        //GetComponent<Image>().color = Color.red;
         if (itemBeingDragGO != null)
         {
             ItemInInventory itemBeingDrag = itemBeingDragGO.GetComponent<ItemInInventory>();
-            AddItem(itemBeingDrag);
+            if (itemBeingDrag.slot != this) 
+            {
+                AddItem(itemBeingDrag);
+            }
         }
 
     }
 
     public virtual void AddItem(ItemInInventory item)
     {
-        //if there is not item already then set our item.
-        if (currentItem == null)
+        if (item != null)
         {
-            item.transform.SetParent(transform);
-            item.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-            currentItem = item;
-        }
-
-        //if there is an item already, check for stackability
-        else
-        {
-            if (currentItem.itemSO == item.itemSO)
+            //if there is not item already then set our item.
+            if (currentItem == null)
             {
-                if (currentItem.itemSO.maxStackSize >= currentItem.amountOfItem + item.amountOfItem)
+                Debug.Log("Trying to add item " + item.Name + " to slot " + name + ", which is empty");
+                item.transform.SetParent(transform);
+                item.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+                currentItem = item;
+            }
+
+            //if there is an item already, check for stackability
+            else
+            {
+                Debug.Log("Trying to add item " + item.Name + " to slot " + name + ", containing " + currentItem.Name);
+                if (currentItem.itemSO == item.itemSO)
                 {
-                    currentItem.AddAmountOfItem(item.amountOfItem);
-                    Destroy(item.gameObject);
+                    if (currentItem.itemSO.maxStackSize >= currentItem.amountOfItem + item.amountOfItem)
+                    {
+                        currentItem.AddAmountOfItem(item.amountOfItem);
+                        Destroy(item.gameObject);
+                    }
+                    else
+                    {
+                        int amountToTransfer = currentItem.itemSO.maxStackSize - currentItem.amountOfItem;
+                        currentItem.AddAmountOfItem(amountToTransfer);
+                        item.RemoveAmountOfItem(amountToTransfer);
+                    }
                 }
                 else
                 {
-                    int amountToTransfer = currentItem.itemSO.maxStackSize - currentItem.amountOfItem;
-                    currentItem.AddAmountOfItem(amountToTransfer);
-                    item.RemoveAmountOfItem(amountToTransfer);
+                    Debug.Log("Could not add item to slot, as different item was already in slot");
                 }
             }
-            else
-            {
-                Debug.Log("Could not add item to slot, as different item was already in slot");
-            }
         }
+        else { Debug.Log("Trying to add null item"); }
     }
 
     public void AddItemToNewSlot(GameObject iconInInventory, Item_General_SO itemSO, int amount)
@@ -118,6 +126,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
 
     public virtual void DestroyItem()
     {
+        Debug.Log("Destroying item " + currentItem.Name + " from slot " + name);
         currentItem.CloseItemInfo();
         Destroy(currentItem.gameObject);
         currentItem = null;
@@ -126,8 +135,13 @@ public class ItemSlot : MonoBehaviour, IDropHandler
     {
         if (currentItem != null)
         {
+            Debug.Log("Removing item " + currentItem.Name + " from slot" + name);
             currentItem.CloseItemInfo();
             currentItem = null;
+        }
+        else
+        {
+            Debug.Log("Tried removing item from slot " + name + ", but this slot was empty !");
         }
     }
 }
