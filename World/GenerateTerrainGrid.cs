@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.TerrainTools;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GenerateTerrainGrid : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class GenerateTerrainGrid : MonoBehaviour
     private int width;
     private float conversionFactorX;
     private float conversionFactorZ;
+
+    public UnityEvent TerrainReady;
 
     public void InitializeConstructor()
     {
@@ -56,11 +59,13 @@ public class GenerateTerrainGrid : MonoBehaviour
         return grid;
     }
 
-    public void CreateGrids()
+    public IEnumerator CreateGrids()
     {
         InitializeConstructor();
         smallGrid = ConstructGrid(smallGridSize, Color.blue);
         //largeGrid = ConstructGrid(largeGridSize, Color.red);
+        yield return smallGrid;
+        TerrainReady.Invoke();
     }
 
     private Vector3 GetWorldPosition(int x, int z, int gridSize)
