@@ -4,14 +4,28 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "ScriptableObjects/Items")]
-public class Item_General_SO : ScriptableObject {
+[CreateAssetMenu(menuName = "ScriptableObjects/ItemBaseData")]
+public class Item_General_SO : ScriptableObject
+{
 
-    public string itemName;
+    new public string name;
+    public string icon_path;
+    public string prefab_path;
+    public int max_stacksize;
+    public string item_info;
+    public string item_class;
+
     public Sprite iconInInventory;
     public GameObject itemPrefab;
-    public int maxStackSize;
-    public bool isUsable;
-    public string itemInfo;
-    public ItemTypesEnum itemType;
+    public int maxStackSize
+    {
+        get { return max_stacksize; }
+    }
+
+
+    public void OnInitialize()
+    {
+        RunTimeLoader.LoadIcon(this);
+    }
+
 }

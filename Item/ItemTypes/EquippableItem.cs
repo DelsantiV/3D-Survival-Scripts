@@ -42,7 +42,7 @@ public class EquippableItem : ItemInInventory
         ItemSlot previousSlot = slot;
         if (player.GetHandsManager().TryEquipItemToNextEmptyHand(this))
         {
-            Debug.Log("Equiped " + itemSO.itemName);
+            Debug.Log("Equiped " + itemSO.name);
             previousSlot.RemoveItem();
             RefreshSlot();
         }
@@ -56,7 +56,7 @@ public class EquippableItem : ItemInInventory
     {
         if (player.GetHandsManager().TryEquipItemToHand(this, hand))
         {
-            Debug.Log("Equiped " + itemSO.itemName);
+            Debug.Log("Equiped " + itemSO.name);
         }
         else
         {

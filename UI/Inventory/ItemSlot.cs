@@ -79,7 +79,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
         {
             GameObject itemInInventoryGO = Instantiate(iconInInventory, transform.position, transform.rotation);
             itemInInventoryGO.transform.SetParent(transform);
-            itemInInventoryGO.AddComponent(Type.GetType(itemSO.itemType.ToString()));
+            itemInInventoryGO.AddComponent(Type.GetType(itemSO.item_class));
             ItemInInventory itemInInventory = itemInInventoryGO.GetComponent<ItemInInventory>();
             itemInInventory.CreateItemInInventory(itemSO, amount);
             currentItem = itemInInventory;

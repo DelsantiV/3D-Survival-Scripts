@@ -31,7 +31,7 @@ public class CraftingButton : MonoBehaviour
         totalCraftingCost = craftingRecipe.craftRequirements;
         ingredientText = transform.Find("IngredientText").gameObject;
         titleText = transform.Find("Title").GetComponent<TextMeshProUGUI>();
-        titleText.SetText(craftingRecipe.resultItem.itemName);
+        titleText.SetText(craftingRecipe.resultItem.name);
 
         SetIngredients();
         CustomTickSystem.OnTick += UpdateButton;
@@ -45,12 +45,12 @@ public class CraftingButton : MonoBehaviour
             int amount = craftRequirement.itemAmount;
             if (ingredientText.GetComponent<TextMeshProUGUI>().text == "")
             {
-                ingredientText.GetComponent<TextMeshProUGUI>().SetText(ingredient.itemName + " : " + amount.ToString());
+                ingredientText.GetComponent<TextMeshProUGUI>().SetText(ingredient.name + " : " + amount.ToString());
             }
             else
             {
                 
-                ingredientText.GetComponent<TextMeshProUGUI>().SetText(ingredientText.GetComponent<TextMeshProUGUI>().text + "\n" + ingredient.itemName + " : " + amount.ToString());
+                ingredientText.GetComponent<TextMeshProUGUI>().SetText(ingredientText.GetComponent<TextMeshProUGUI>().text + "\n" + ingredient.name + " : " + amount.ToString());
                 
             }
             if (craftRequirement.isTool)

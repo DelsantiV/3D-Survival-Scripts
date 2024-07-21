@@ -13,7 +13,7 @@ public class Item : MonoBehaviour
     void Start()
     {
         
-        displayName = itemSO.itemName + " [E to pick up]";
+        displayName = itemSO.name + " [E to pick up]";
     }
 
 
