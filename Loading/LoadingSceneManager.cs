@@ -28,12 +28,20 @@ public class LoadingSceneManager : MonoBehaviour
         }
 
         WorldHandler newSceneWorldHandler = FindAnyObjectByType<WorldHandler>();
-        StartCoroutine(newSceneWorldHandler.CreateTerrainGrids());
+        Task terrainHandling = new Task(newSceneWorldHandler.CreateTerrainGrids());
+        terrainHandling.Finished += delegate { OnTerrainReady(); };
+        yield return null;
         Debug.Log($"Loaded Level {level}");
     }
 
     private void OnAssetsReady()
     {
         StartCoroutine(loadNextLevel("MainScene"));
+    }
+
+
+    private void OnTerrainReady()
+    {
+        Debug.Log("Terrain ready !");
     }
 }
