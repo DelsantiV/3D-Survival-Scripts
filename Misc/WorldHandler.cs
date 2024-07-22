@@ -2,16 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class WorldHandler : MonoBehaviour
 {
+    public static UnityEvent worldReady;
     private void Awake()
     {
+        worldReady = new UnityEvent();
+
         CustomTickSystem.InitializeTickSystem();
-
-        CreateTerrainGrids();
-
-        LoadItemsFromMemory();
     }
 
     private void Start()
@@ -24,7 +24,7 @@ public class WorldHandler : MonoBehaviour
         Debug.Log("Successfully generated Terrain grids !");
     }
 
-    private void CreateTerrainGrids()
+    public IEnumerator CreateTerrainGrids()
     {
         Terrain[] terrainArray = Terrain.activeTerrains;
 
@@ -36,11 +36,8 @@ public class WorldHandler : MonoBehaviour
             terrainGridConstructor.TerrainReady.AddListener(FireTerrainReady);
             StartCoroutine(terrainGridConstructor.CreateGrids());
         }
+        yield return null;
+        worldReady.Invoke();
     }
 
-    private void LoadItemsFromMemory()
-    {
-        ItemLoader itemLoader = new ItemLoader();
-        StartCoroutine(itemLoader.LoadItemsJSONFromMemory());
-    }
 }

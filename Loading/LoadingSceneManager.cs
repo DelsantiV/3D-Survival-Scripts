@@ -14,12 +14,12 @@ public class LoadingSceneManager : MonoBehaviour
     private void Awake()
     {
         m_LoadingSlider = FindAnyObjectByType<Slider>();
-        StartCoroutine(loadNextLevel("MainScene"));
+        GameManager.assetsReady.AddListener(OnAssetsReady);
     }
 
     private IEnumerator loadNextLevel(string level)
     {
-        m_SceneLoadOpHandle = Addressables.LoadSceneAsync(level, activateOnLoad: true);
+        m_SceneLoadOpHandle = Addressables.LoadSceneAsync(level, activateOnLoad: false);
 
         while (!m_SceneLoadOpHandle.IsDone)
         {
@@ -27,6 +27,13 @@ public class LoadingSceneManager : MonoBehaviour
             yield return null;
         }
 
+        WorldHandler newSceneWorldHandler = FindAnyObjectByType<WorldHandler>();
+        StartCoroutine(newSceneWorldHandler.CreateTerrainGrids());
         Debug.Log($"Loaded Level {level}");
+    }
+
+    private void OnAssetsReady()
+    {
+        StartCoroutine(loadNextLevel("MainScene"));
     }
 }
