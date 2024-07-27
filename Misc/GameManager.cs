@@ -9,17 +9,14 @@ using UnityEngine.ResourceManagement.ResourceProviders;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    [SerializeField] private string mainSceneToLoad;
+    [SerializeField] private static string mainSceneToLoad;
 
-    [SerializeField] private string loadingScene;
-
-    public static UnityEvent assetsReady;
+    [SerializeField] private static string loadingScene;
 
     private static AsyncOperationHandle<SceneInstance> m_SceneLoadOpHandle;
 
     public void Awake()
     {
-        assetsReady = new UnityEvent();
         DontDestroyOnLoad(this);
         if (Instance == null)
         {
@@ -29,21 +26,23 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        LoadSceneFromAddressables(loadingScene);
-        LoadItemsFromMemory(); 
     }
 
-    private void LoadSceneFromAddressables(string sceneName)
+    public static void LoadMainScene()
     {
-        m_SceneLoadOpHandle = Addressables.LoadSceneAsync(sceneName, activateOnLoad: true);
+        Debug.Log("Loading scene Main Scene...");
+        m_SceneLoadOpHandle = Addressables.LoadSceneAsync(mainSceneToLoad, activateOnLoad: true);
+        m_SceneLoadOpHandle.Completed += OnSceneLoaded;
     }
 
-
-    public IEnumerator LoadItemsFromMemory()
+    private static void OnSceneLoaded(AsyncOperationHandle<SceneInstance> m_SceneLoadOpHandle)
     {
-        ItemLoader itemLoader = new ItemLoader();
-        StartCoroutine(itemLoader.LoadItemsJSONFromMemory());
-        yield return null;
-        assetsReady.Invoke();
+
+    }
+
+    public static void SpawnPlayer()
+    {
+        PlayerLoader playerLoader = new PlayerLoader(new Vector3(10,3,10));
+        playerLoader.LoadPlayer();
     }
 }

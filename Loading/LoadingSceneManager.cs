@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Events;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.UI;
@@ -14,31 +15,38 @@ public class LoadingSceneManager : MonoBehaviour
     private void Awake()
     {
         m_LoadingSlider = FindAnyObjectByType<Slider>();
-        GameManager.assetsReady.AddListener(OnAssetsReady);
+        StartCoroutine(LoadMainScene());
     }
 
-    private IEnumerator loadNextLevel(string level)
-    {
-        m_SceneLoadOpHandle = Addressables.LoadSceneAsync(level, activateOnLoad: false);
-
-        while (!m_SceneLoadOpHandle.IsDone)
-        {
-            m_LoadingSlider.value = m_SceneLoadOpHandle.PercentComplete;
-            yield return null;
-        }
-
-        WorldHandler newSceneWorldHandler = FindAnyObjectByType<WorldHandler>();
-        Task terrainHandling = new Task(newSceneWorldHandler.CreateTerrainGrids());
-        terrainHandling.Finished += delegate { OnTerrainReady(); };
-        yield return null;
-        Debug.Log($"Loaded Level {level}");
-    }
 
     private void OnAssetsReady()
     {
-        StartCoroutine(loadNextLevel("MainScene"));
+        Debug.Log("Assests ready !");
+        GameManager.LoadMainScene();
     }
 
+
+    public IEnumerator LoadMainScene()
+    {
+        Debug.Log("Loading Main Scene !"); 
+        StartCoroutine(LoadItemsFromMemory());
+        yield return null;
+        /*
+        WorldHandler newSceneWorldHandler = FindAnyObjectByType<WorldHandler>(); // Replace be something that can find WorldHandler in inactive scene. Or make scene actove but handle world loading apart.
+        Task terrainHandling = new Task(newSceneWorldHandler.CreateTerrainGrids());
+        terrainHandling.Finished += delegate { OnTerrainReady(); };
+        */
+    }
+
+
+    public IEnumerator LoadItemsFromMemory()
+    {
+        Debug.Log("Loading items !");
+        ItemLoader itemLoader = new ItemLoader();
+        ItemLoader.Ready.AddListener(OnAssetsReady);
+        Task itemLoading = new Task(itemLoader.LoadItemsJSONFromMemory());
+        yield return itemLoading;
+    }
 
     private void OnTerrainReady()
     {

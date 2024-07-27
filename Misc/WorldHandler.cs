@@ -10,8 +10,9 @@ public class WorldHandler : MonoBehaviour
     private void Awake()
     {
         worldReady = new UnityEvent();
-
+        worldReady.AddListener(FireTerrainReady);
         CustomTickSystem.InitializeTickSystem();
+        StartCoroutine(CreateTerrainGrids());
     }
 
     private void Start()
@@ -22,6 +23,7 @@ public class WorldHandler : MonoBehaviour
     private void FireTerrainReady()
     {
         Debug.Log("Successfully generated Terrain grids !");
+        GameManager.SpawnPlayer();
     }
 
     public IEnumerator CreateTerrainGrids()

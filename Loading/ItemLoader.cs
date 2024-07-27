@@ -6,7 +6,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
-using Newtonsoft;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Reflection;
@@ -41,10 +41,7 @@ public class ItemLoader
         }
         yield return Addressables.ResourceManager.CreateGenericGroupOperation(loadOpsBasic, true);
         allItemNames = allItems.Keys.ToArray();
-        foreach (string key in allItemNames)
-        {
-            Debug.Log(key + allItems[key].itemSO.item_info);
-        }
+        Ready.Invoke();
     }
 
     private void OnItemJsonDataLoaded(AsyncOperationHandle<TextAsset> jsonFileHandle)
@@ -68,9 +65,10 @@ public class ItemLoader
     private void LoadItemFromJObject(JObject jsonParsedFile)
     {
         Item_General_SO itemBaseData = (Item_General_SO) ScriptableObject.CreateInstance(typeof(Item_General_SO));
-        itemBaseData = jsonParsedFile["baseinfos"].ToObject<Item_General_SO>();
-        Debug.Log("Loaded " + itemBaseData.name + " with max stack size " + itemBaseData.max_stacksize);
-        var item = Activator.CreateInstance(asm.GetType(itemBaseData.name));
+        Debug.Log(jsonParsedFile["baseinfos"].ToString());
+        JsonConvert.PopulateObject(jsonParsedFile["baseinfos"].ToString(), itemBaseData);
+        Debug.Log("Loaded " + itemBaseData.name + " from class " + itemBaseData.item_class);
+        var item = Activator.CreateInstance(asm.GetType(itemBaseData.item_class));
         RegisterItem(item as ItemInInventory, itemBaseData.name);
     }
 
