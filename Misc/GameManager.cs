@@ -9,9 +9,9 @@ using UnityEngine.ResourceManagement.ResourceProviders;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    [SerializeField] private static string mainSceneToLoad;
+    [SerializeField] private string mainSceneToLoad;
 
-    [SerializeField] private static string loadingScene;
+    [SerializeField] private string loadingScene;
 
     private static AsyncOperationHandle<SceneInstance> m_SceneLoadOpHandle;
 
@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public static void LoadMainScene()
+    public void LoadMainScene()
     {
         Debug.Log("Loading scene Main Scene...");
         m_SceneLoadOpHandle = Addressables.LoadSceneAsync(mainSceneToLoad, activateOnLoad: true);

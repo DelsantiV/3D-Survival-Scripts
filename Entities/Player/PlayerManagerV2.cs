@@ -56,25 +56,25 @@ public class PlayerManagerV2 : MonoBehaviour, IDamageable
     private void Awake()
     {
         Player = this;
-        inventory = new InventoryManager(numberOfInventorySlots, inventoryUI);
-        craftingManager = new CraftingManager(craftingUI, inventory);
+        //inventory = new InventoryManager(numberOfInventorySlots, inventoryUI);
+        //craftingManager = new CraftingManager(craftingUI, inventory);
         itemDropper = transform.Find("Item Dropper");
         playerStatus = new PlayerStatus(maxHealth, maxFatigue, maxCalories);
         digestiveSystem = new DigestiveSystem(playerStatus);
         playerLayer = LayerMask.GetMask("Player");
         playerHead = transform.Find("PlayerHead");
         InputManager = GetComponent<UpgradedThirdPersonInput>();
-        handsManager = new HandsManager(leftHand, rightHand, leftHandQuickSlot, rightHandQuickSlot, prefHand);
+        //handsManager = new HandsManager(leftHand, rightHand, leftHandQuickSlot, rightHandQuickSlot, prefHand);
         AnimatorController = GetComponent<AnimatorController>();
     }
 
     void Start()
     {
-        interactionText = interaction_Info_UI.GetComponent<TextMeshProUGUI>();
+        //interactionText = interaction_Info_UI.GetComponent<TextMeshProUGUI>();
         inventoryUI.CloseUI();
         craftingUI.CloseUI();
 
-        foreach (InventoryItemInfos item in startingItems) { inventory.AddItemToInventory(item.itemSO, item.itemAmount); }
+        //foreach (InventoryItemInfos item in startingItems) { inventory.AddItemToInventory(item.itemSO, item.itemAmount); }
     }
 
 

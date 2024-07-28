@@ -11,18 +11,21 @@ public class LoadingSceneManager : MonoBehaviour
 {
     private static AsyncOperationHandle<SceneInstance> m_SceneLoadOpHandle;
     private Slider m_LoadingSlider;
+    private GameManager gameManager;
 
     private void Awake()
     {
         m_LoadingSlider = FindAnyObjectByType<Slider>();
         StartCoroutine(LoadMainScene());
+        gameManager = GameManager.Instance;
+        
     }
 
 
     private void OnAssetsReady()
     {
         Debug.Log("Assests ready !");
-        GameManager.LoadMainScene();
+        gameManager.LoadMainScene();
     }
 
 
