@@ -35,14 +35,14 @@ public class ItemLoader
         Debug.Log(itemsJsonLocations.Result.Count + " items found in assets");
 
         Debug.Log("Start retrieving items prefabs locations...");
-        AsyncOperationHandle<IList<IResourceLocation>> allPrefabsLocationsLoading = Addressables.LoadResourceLocationsAsync("Prefabs", typeof(GameObject));
+        AsyncOperationHandle<IList<IResourceLocation>> allPrefabsLocationsLoading = Addressables.LoadResourceLocationsAsync("Prefabs/Items", typeof(GameObject));
         yield return allPrefabsLocationsLoading;
         Debug.Log(allPrefabsLocationsLoading.Status.ToString());
         allPrefabsLocations = allPrefabsLocationsLoading.Result.ToList().ConvertAll(address => address.ToString());
         Debug.Log(allPrefabsLocationsLoading.Result.Count + " prefabs found in assets");
 
         Debug.Log("Start retrieving items icons locations...");
-        AsyncOperationHandle<IList<IResourceLocation>> allIconsLocationsLoading = Addressables.LoadResourceLocationsAsync("Icons", typeof(Sprite));
+        AsyncOperationHandle<IList<IResourceLocation>> allIconsLocationsLoading = Addressables.LoadResourceLocationsAsync("Icons/Items", typeof(Sprite));
         yield return allIconsLocationsLoading;
         Debug.Log(allIconsLocationsLoading.Status.ToString());
         allIconsLocations = allIconsLocationsLoading.Result.ToList().ConvertAll(address => address.ToString());
