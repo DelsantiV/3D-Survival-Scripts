@@ -16,6 +16,8 @@ public class ItemLoader
     private Dictionary<string, ItemInInventory> allItems;
     private string[] allItemNames;
     public static UnityEvent Ready;
+    public static List<string> allPrefabsLocations;
+    public static List<string> allIconsLocations;
     Assembly asm = typeof(ItemInInventory).Assembly;
 
     public ItemLoader()
@@ -26,11 +28,25 @@ public class ItemLoader
 
     public IEnumerator LoadItemsJSONFromMemory()
     {
-        Debug.Log("Start retrieving items json...");
+        Debug.Log("Start retrieving items json locations...");
         AsyncOperationHandle<IList<IResourceLocation>> itemsJsonLocations = Addressables.LoadResourceLocationsAsync("Items", typeof(TextAsset));
         yield return itemsJsonLocations;
         Debug.Log(itemsJsonLocations.Status.ToString());
         Debug.Log(itemsJsonLocations.Result.Count + " items found in assets");
+
+        Debug.Log("Start retrieving items prefabs locations...");
+        AsyncOperationHandle<IList<IResourceLocation>> allPrefabsLocationsLoading = Addressables.LoadResourceLocationsAsync("Prefabs", typeof(GameObject));
+        yield return allPrefabsLocationsLoading;
+        Debug.Log(allPrefabsLocationsLoading.Status.ToString());
+        allPrefabsLocations = allPrefabsLocationsLoading.Result.ToList().ConvertAll(address => address.ToString());
+        Debug.Log(allPrefabsLocationsLoading.Result.Count + " prefabs found in assets");
+
+        Debug.Log("Start retrieving items icons locations...");
+        AsyncOperationHandle<IList<IResourceLocation>> allIconsLocationsLoading = Addressables.LoadResourceLocationsAsync("Icons", typeof(Sprite));
+        yield return allIconsLocationsLoading;
+        Debug.Log(allIconsLocationsLoading.Status.ToString());
+        allIconsLocations = allIconsLocationsLoading.Result.ToList().ConvertAll(address => address.ToString());
+        Debug.Log(allIconsLocations.Count + " icons found in assets");
 
         var loadOpsBasic = new List<AsyncOperationHandle>(itemsJsonLocations.Result.Count);
         foreach (IResourceLocation loc in itemsJsonLocations.Result)

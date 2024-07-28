@@ -31,10 +31,18 @@ public class Item_General_SO : ScriptableObject
         LoadPrefab();
     }
 
+    public override string ToString()
+    {
+        return name + " ("+item_class+")";
+    }
+
     public void LoadIcon()
     {
-        AsyncOperationHandle<Sprite> spriteLoadOpHandle = Addressables.LoadAssetAsync<Sprite>(icon_path);
-        spriteLoadOpHandle.Completed += delegate { OnLoadIconComplete(spriteLoadOpHandle); };
+        if (ItemLoader.allIconsLocations.Contains("Assets/Data/Icons" + icon_path))
+        {
+            AsyncOperationHandle<Sprite> spriteLoadOpHandle = Addressables.LoadAssetAsync<Sprite>("Icons/" + icon_path);
+            spriteLoadOpHandle.Completed += delegate { OnLoadIconComplete(spriteLoadOpHandle); };
+        }
     }
 
     private void OnLoadIconComplete(AsyncOperationHandle<Sprite> spriteLoadOpHandle)
@@ -47,8 +55,11 @@ public class Item_General_SO : ScriptableObject
 
     public void LoadPrefab()
     {
-        AsyncOperationHandle<GameObject> prefabLoadOpHandle = Addressables.LoadAssetAsync<GameObject>(prefab_path);
-        prefabLoadOpHandle.Completed += delegate { OnLoadPrefabComplete(prefabLoadOpHandle); };
+        if (ItemLoader.allIconsLocations.Contains("Assets/Data/Prefabs" + prefab_path))
+        {
+            AsyncOperationHandle<GameObject> prefabLoadOpHandle = Addressables.LoadAssetAsync<GameObject>("Prefabs/" + prefab_path);
+            prefabLoadOpHandle.Completed += delegate { OnLoadPrefabComplete(prefabLoadOpHandle); };
+        }
     }
 
     private void OnLoadPrefabComplete(AsyncOperationHandle<GameObject> prefabLoadOpHandle)
