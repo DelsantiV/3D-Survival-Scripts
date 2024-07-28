@@ -19,4 +19,19 @@ public static class RunTimeLoader
             iconReceiver.iconInInventory = spriteLoadOpHandle.Result;
         }
     }
+
+    public static void LoadPrefab(Item_General_SO prefabReceiver)
+    {
+        AsyncOperationHandle<GameObject> prefabLoadOpHandle = Addressables.LoadAssetAsync<GameObject>(prefabReceiver.prefab_path);
+        prefabLoadOpHandle.Completed += delegate { OnLoadPrefabComplete(prefabLoadOpHandle, prefabReceiver); };
+    }
+
+    private static void OnLoadPrefabComplete(AsyncOperationHandle<GameObject> prefabLoadOpHandle, Item_General_SO iconReceiver)
+    {
+        if (prefabLoadOpHandle.Status == AsyncOperationStatus.Succeeded)
+        {
+            iconReceiver.itemPrefab = prefabLoadOpHandle.Result;
+        }
+    }
+
 }

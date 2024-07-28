@@ -19,7 +19,17 @@ public class Item : MonoBehaviour
 
     public void PickUpItem(PlayerManager player)
     {
-        if ( itemSO != null && player.inventory != null)
+        if (itemSO != null && player.inventory != null)
+        {
+            player.inventory.AddItemToInventory(itemSO, 3);
+            Destroy(gameObject);
+            Debug.Log("Picked up " + displayName + "!");
+        }
+        else { Debug.Log("Problemos"); }
+    }
+    public void PickUpItem(PlayerManagerV2 player)
+    {
+        if (itemSO != null && player.inventory != null)
         {
             player.inventory.AddItemToInventory(itemSO, 3);
             Destroy(gameObject);

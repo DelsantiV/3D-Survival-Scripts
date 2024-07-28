@@ -41,6 +41,7 @@ public class ItemLoader
         }
         yield return Addressables.ResourceManager.CreateGenericGroupOperation(loadOpsBasic, true);
         allItemNames = allItems.Keys.ToArray();
+        ItemManager.InitializeItemManager(allItems);
         Ready.Invoke();
     }
 

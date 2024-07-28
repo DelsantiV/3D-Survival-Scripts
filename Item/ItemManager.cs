@@ -24,4 +24,14 @@ public class ItemManager
             return null; 
         }
     }
+
+    public static ItemInInventory GetItemByID(int id)
+    {
+        if (id > 0 && id < _items.Count) { return _items[id];}
+        else 
+        {
+            Debug.Log("Item ID " + id + " is not valid");
+            return null; 
+        }
+    }
 }
