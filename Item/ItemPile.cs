@@ -2,17 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemPile : MonoBehaviour
+public class ItemPile
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public List<InventoryItemInfos> itemsInPile;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
+    // Reprendre ce qu'on peut de InventoryManager : l'inventory tel que codé pour le moment va plutôt être appliqué au fonctionnement des ItemPiles.
 }

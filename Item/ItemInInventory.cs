@@ -18,7 +18,7 @@ public class ItemInInventory : Dragable, IPointerDownHandler
 
     public Item_General_SO itemSO;
 
-    public PlayerManager player = PlayerManager.Player;
+    public PlayerManager player;
     public InventoryManager inventory;
     public ItemSlot slot;
     public static ItemInInventory activeItem;
@@ -26,6 +26,7 @@ public class ItemInInventory : Dragable, IPointerDownHandler
     public void CreateItemInInventory(Item_General_SO itemSO, int amount)
     {
         Initialize();
+        player = PlayerManager.Player;
         inventory = player.GetInventory();
         this.itemSO = itemSO; 
         amountOfItem = amount;
@@ -126,9 +127,9 @@ public class ItemInInventory : Dragable, IPointerDownHandler
         if (itemInfoGO == null)
         {
             itemInfoGO = Instantiate(itemInfoTemplate, transform.parent.parent);
-            itemInfoGO.transform.Find("ItemNameText").GetComponent<TextMeshProUGUI>().SetText(itemSO.itemName);
+            itemInfoGO.transform.Find("ItemNameText").GetComponent<TextMeshProUGUI>().SetText(itemSO.name);
 
-            itemInfoGO.transform.Find("ItemInfoText").GetComponent<TextMeshProUGUI>().SetText(itemSO.itemInfo);
+            itemInfoGO.transform.Find("ItemInfoText").GetComponent<TextMeshProUGUI>().SetText(itemSO.item_info);
             itemInfoGO.transform.Find("DropButton").GetComponent<Button>().onClick.AddListener(DropItem);
         }
     }

@@ -28,7 +28,7 @@ public class UseableItem : ItemInInventory
 
     public virtual void UseItem()
     {
-        Debug.Log("Used "+itemSO.itemName);
+        Debug.Log("Used "+itemSO.name);
         OnItemUsed?.Invoke(player, this);
         // player defined in ItemInInventory script
     }

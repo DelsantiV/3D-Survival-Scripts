@@ -42,13 +42,13 @@ public class GenerateTerrainGrid : MonoBehaviour
             {
                 Vector3 gridCenterWorldPosition = GetGridCellCenterWorldPosition(x, z, gridSize);
 
-                grid[x,z] = new GridCell(
-                    gridCenterWorldPosition, 
-                    new Vector2Int(x,z), GetCellBounds(x, z, gridSize), 
-                    terrain.terrainData.GetSteepness(gridCenterWorldPosition.x, 
+                grid[x, z] = new GridCell(
+                    gridCenterWorldPosition,
+                    new Vector2Int(x, z), GetCellBounds(x, z, gridSize),
+                    terrain.terrainData.GetSteepness(gridCenterWorldPosition.x,
                     gridCenterWorldPosition.z)
                     );
-                
+
                 //Debug.DrawLine(GetWorldPosition(x, z, gridSize), GetWorldPosition(x, z + 1, gridSize), debugLinesColor, 100f);
                 //Debug.DrawLine(GetWorldPosition(x, z, gridSize), GetWorldPosition(x + 1, z, gridSize), debugLinesColor, 100f);
             }
@@ -79,24 +79,24 @@ public class GenerateTerrainGrid : MonoBehaviour
     {
         int x = Mathf.FloorToInt((worldPosition.x - terrain.GetPosition().x) * conversionFactorX / smallGridSize);
         int z = Mathf.FloorToInt((worldPosition.z - terrain.GetPosition().z) * conversionFactorZ / smallGridSize);
-        return smallGrid[x,z];
+        return smallGrid[x, z];
     }
 
     public GridCell GetGridCell(int x, int z)
     {
-        return smallGrid[x,z];
+        return smallGrid[x, z];
     }
 
     private Vector3 GetGridCellCenterWorldPosition(int x, int z, int gridSize)
     {
-        Vector3 worldPosition = new Vector3((x+0.5f) / conversionFactorX, 0, (z+0.5f) / conversionFactorZ) * gridSize;
+        Vector3 worldPosition = new Vector3((x + 0.5f) / conversionFactorX, 0, (z + 0.5f) / conversionFactorZ) * gridSize;
         worldPosition.y = terrain.SampleHeight(worldPosition);
         return worldPosition;
     }
 
     private Vector3[,] GetEdgesPositions(int x, int z, int gridSize)
     {
-        Vector3[,] edges = new Vector3[2,2];
+        Vector3[,] edges = new Vector3[2, 2];
         edges[0, 0] = GetWorldPosition(x, z, gridSize);
         edges[0, 1] = GetWorldPosition(x, z + 1, gridSize);
         edges[1, 0] = GetWorldPosition(x + 1, z, gridSize);

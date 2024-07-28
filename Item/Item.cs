@@ -13,13 +13,23 @@ public class Item : MonoBehaviour
     void Start()
     {
         
-        displayName = itemSO.itemName + " [E to pick up]";
+        displayName = itemSO.name + " [E to pick up]";
     }
 
 
     public void PickUpItem(PlayerManager player)
     {
-        if ( itemSO != null && player.inventory != null)
+        if (itemSO != null && player.inventory != null)
+        {
+            player.inventory.AddItemToInventory(itemSO, 3);
+            Destroy(gameObject);
+            Debug.Log("Picked up " + displayName + "!");
+        }
+        else { Debug.Log("Problemos"); }
+    }
+    public void PickUpItem(PlayerManagerV2 player)
+    {
+        if (itemSO != null && player.inventory != null)
         {
             player.inventory.AddItemToInventory(itemSO, 3);
             Destroy(gameObject);

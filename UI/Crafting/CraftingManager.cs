@@ -34,7 +34,7 @@ public class CraftingManager
         foreach (CraftingCost ingredient in recipe.craftRequirements)
         {
             if (!ingredient.isTool) { inventory.RemoveItemFromInventory(ingredient.item, ingredient.itemAmount); } 
-            else { Debug.Log("Tool "+ingredient.item.itemName); }
+            else { Debug.Log("Tool "+ingredient.item.name); }
         }
         inventory.AddItemToInventory(recipe.resultItem, recipe.amountCrafted);
     }
