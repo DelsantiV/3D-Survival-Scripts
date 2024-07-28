@@ -23,7 +23,7 @@ public class PlayerManagerV2 : MonoBehaviour, IDamageable
     private PlayerStatus playerStatus;
     private Transform playerHead;
     private HandsManager handsManager;
-
+    private Canvas mainCanvas;
 
     [SerializeField] private float maxHealth;
     [SerializeField] private float maxFatigue;
