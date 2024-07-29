@@ -32,8 +32,7 @@ public class PlayerManagerV2 : MonoBehaviour, IDamageable
     [SerializeField] private int numberOfInventorySlots;
     [SerializeField] private CraftingUI craftingUI;
     [SerializeField] private GameObject interaction_Info_UI;
-    [SerializeField] private InventoryItemInfos[] startingItems;
-    [SerializeField] private Image pickUpImage;
+    [SerializeField] private string[] startingItems;
     [SerializeField] private GameObject rightHand;
     [SerializeField] private GameObject leftHand;
     [SerializeField] private QuickSlot leftHandQuickSlot;
@@ -63,6 +62,8 @@ public class PlayerManagerV2 : MonoBehaviour, IDamageable
         digestiveSystem = new DigestiveSystem(playerStatus);
         playerLayer = LayerMask.GetMask("Player");
         playerHead = transform.Find("PlayerHead");
+        rightHand = transform.Find("B-hand.L").gameObject;
+        Debug.Log(rightHand);
         InputManager = GetComponent<UpgradedThirdPersonInput>();
         //handsManager = new HandsManager(leftHand, rightHand, leftHandQuickSlot, rightHandQuickSlot, prefHand);
         AnimatorController = GetComponent<AnimatorController>();

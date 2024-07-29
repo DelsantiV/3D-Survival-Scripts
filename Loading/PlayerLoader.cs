@@ -7,7 +7,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 public class PlayerLoader
 {
     private string playerPrefabAddress = "Prefabs/Player/Player.Prefab";
-    private string canvasPrefabAddress = "Prefabs/UI/Canvas.Prefab";
+    private string canvasPrefabAddress = "Prefabs/Player/Canvas.Prefab";
     private Vector3 spawnPoint = Vector3.zero;
     private AsyncOperationHandle<GameObject> m_PlayerLoadOpHandle;
     private AsyncOperationHandle<GameObject> m_CanvasLoadOpHandle;

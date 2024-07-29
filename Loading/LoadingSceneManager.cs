@@ -16,7 +16,7 @@ public class LoadingSceneManager : MonoBehaviour
     private void Awake()
     {
         m_LoadingSlider = FindAnyObjectByType<Slider>();
-        StartCoroutine(LoadMainScene());
+        StartCoroutine(LoadItemsFromMemory());
         gameManager = GameManager.Instance;
         
     }
@@ -29,19 +29,6 @@ public class LoadingSceneManager : MonoBehaviour
     }
 
 
-    public IEnumerator LoadMainScene()
-    {
-        Debug.Log("Loading Main Scene !"); 
-        StartCoroutine(LoadItemsFromMemory());
-        yield return null;
-        /*
-        WorldHandler newSceneWorldHandler = FindAnyObjectByType<WorldHandler>(); // Replace be something that can find WorldHandler in inactive scene. Or make scene actove but handle world loading apart.
-        Task terrainHandling = new Task(newSceneWorldHandler.CreateTerrainGrids());
-        terrainHandling.Finished += delegate { OnTerrainReady(); };
-        */
-    }
-
-
     public IEnumerator LoadItemsFromMemory()
     {
         Debug.Log("Loading items !");
@@ -49,10 +36,5 @@ public class LoadingSceneManager : MonoBehaviour
         ItemLoader.Ready.AddListener(OnAssetsReady);
         Task itemLoading = new Task(itemLoader.LoadItemsJSONFromMemory());
         yield return itemLoading;
-    }
-
-    private void OnTerrainReady()
-    {
-        Debug.Log("Terrain ready !");
     }
 }

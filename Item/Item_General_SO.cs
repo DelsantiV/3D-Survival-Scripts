@@ -25,7 +25,7 @@ public class Item_General_SO : ScriptableObject
     }
 
 
-    public void Awake()
+    public void Initialize()
     {
         LoadIcon();
         LoadPrefab();
