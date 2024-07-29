@@ -6,6 +6,9 @@ using UnityEngine.Events;
 
 public class GenerateTerrainGrid : MonoBehaviour
 {
+    public class TerrainReady : UnityEvent<string> { }
+    public new string name {get; private set;}
+
     private Terrain terrain;
 
     [SerializeField] private int smallGridSize = 2;
@@ -20,7 +23,7 @@ public class GenerateTerrainGrid : MonoBehaviour
     private float conversionFactorX;
     private float conversionFactorZ;
 
-    public UnityEvent TerrainReady;
+    public TerrainReady OnTerrainReady;
 
     public void InitializeConstructor()
     {
@@ -32,6 +35,7 @@ public class GenerateTerrainGrid : MonoBehaviour
     public GridCell[,] ConstructGrid(int gridSize, Color debugLinesColor)
     {
         gridOrigin = terrain.GetPosition();
+        name = "center : " + gridOrigin.ToString();
         length = Mathf.FloorToInt(terrain.terrainData.detailWidth / gridSize);
         width = Mathf.FloorToInt(terrain.terrainData.detailHeight / gridSize);
         GridCell[,] grid = new GridCell[length, width];
@@ -65,7 +69,7 @@ public class GenerateTerrainGrid : MonoBehaviour
         smallGrid = ConstructGrid(smallGridSize, Color.blue);
         //largeGrid = ConstructGrid(largeGridSize, Color.red);
         yield return smallGrid;
-        TerrainReady.Invoke();
+        OnTerrainReady.Invoke(name);
     }
 
     private Vector3 GetWorldPosition(int x, int z, int gridSize)

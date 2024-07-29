@@ -10,7 +10,7 @@ public class WorldHandler : MonoBehaviour
     private void Awake()
     {
         worldReady = new UnityEvent();
-        worldReady.AddListener(FireTerrainReady);
+        worldReady.AddListener(OnWorldReady);
         CustomTickSystem.InitializeTickSystem();
         StartCoroutine(CreateTerrainGrids());
     }
@@ -20,9 +20,13 @@ public class WorldHandler : MonoBehaviour
 
     }
 
-    private void FireTerrainReady()
+    private void FireTerrainReady(string terrainName)
     {
-        Debug.Log("Successfully generated Terrain grids !");
+        Debug.Log("Successfully generated Terrain grids for terrain" + terrainName + "!");
+    }
+
+    private void OnWorldReady()
+    {
         GameManager.SpawnPlayer();
     }
 
@@ -35,7 +39,7 @@ public class WorldHandler : MonoBehaviour
         foreach (var terrain in terrainArray)
         {
             GenerateTerrainGrid terrainGridConstructor = terrain.gameObject.GetComponent<GenerateTerrainGrid>();
-            terrainGridConstructor.TerrainReady.AddListener(FireTerrainReady);
+            terrainGridConstructor.OnTerrainReady.AddListener(FireTerrainReady);
             StartCoroutine(terrainGridConstructor.CreateGrids());
         }
         yield return null;
