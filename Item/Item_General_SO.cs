@@ -38,7 +38,7 @@ public class Item_General_SO : ScriptableObject
 
     public void LoadIcon()
     {
-        if (ItemLoader.allIconsLocations.Contains("Assets/Data/Icons" + icon_path))
+        if (ItemLoader.allIconsLocations.Contains("Assets/Data/Icons/" + icon_path))
         {
             AsyncOperationHandle<Sprite> spriteLoadOpHandle = Addressables.LoadAssetAsync<Sprite>("Icons/" + icon_path);
             spriteLoadOpHandle.Completed += delegate { OnLoadIconComplete(spriteLoadOpHandle); };
@@ -55,10 +55,14 @@ public class Item_General_SO : ScriptableObject
 
     public void LoadPrefab()
     {
-        if (ItemLoader.allIconsLocations.Contains("Assets/Data/Prefabs" + prefab_path))
+        if (ItemLoader.allPrefabsLocations.Contains("Assets/Data/Prefabs/" + prefab_path))
         {
             AsyncOperationHandle<GameObject> prefabLoadOpHandle = Addressables.LoadAssetAsync<GameObject>("Prefabs/" + prefab_path);
             prefabLoadOpHandle.Completed += delegate { OnLoadPrefabComplete(prefabLoadOpHandle); };
+        }
+        else
+        {
+            Debug.Log("No prefab found for " + name);
         }
     }
 
