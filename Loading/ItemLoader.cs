@@ -29,7 +29,7 @@ public class ItemLoader
     public IEnumerator LoadItemsJSONFromMemory()
     {
         Debug.Log("Start retrieving items json locations...");
-        AsyncOperationHandle<IList<IResourceLocation>> itemsJsonLocations = Addressables.LoadResourceLocationsAsync("Items", typeof(TextAsset));
+        AsyncOperationHandle<IList<IResourceLocation>> itemsJsonLocations = Addressables.LoadResourceLocationsAsync("JSON/Items", typeof(TextAsset));
         yield return itemsJsonLocations;
         Debug.Log(itemsJsonLocations.Status.ToString());
         Debug.Log(itemsJsonLocations.Result.Count + " items found in assets");
