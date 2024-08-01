@@ -73,9 +73,9 @@ public class HandsManager
         return Hand.left;
     }
 
-    public EquippableItem ItemInHand(Hand hand)
+    public ItemInInventory ItemInHand(Hand hand)
     {
-        return (EquippableItem) HandQuickSlot(hand).currentItem;
+        return HandQuickSlot(hand).currentItem;
     }
 
     public EquippedItem EquippedItemInHand(Hand hand)

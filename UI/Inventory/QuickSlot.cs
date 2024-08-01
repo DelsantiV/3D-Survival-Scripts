@@ -43,7 +43,7 @@ public class QuickSlot : ItemSlot
     public override void OnDrop(PointerEventData eventData)
     {
         GameObject itemBeingDragGO = eventData.pointerDrag;
-        EquippableItem item;
+        ItemInInventory item;
         if (itemBeingDragGO != null && itemBeingDragGO.TryGetComponent(out item)) 
         { 
             AddItem(item);

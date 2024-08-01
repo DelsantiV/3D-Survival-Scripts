@@ -16,21 +16,23 @@ public class ItemInInventory : Dragable, IPointerDownHandler
     protected GameObject inventoryGO;
     protected bool isOutsideBounds;
 
-    public Item_General_SO itemSO;
+    public Item_General_SO ItemSO {get; private set;}
+    public IItem Item { get; private set; }
 
-    public PlayerManager player;
+    public PlayerManagerV2 player;
     public InventoryManager inventory;
     public ItemSlot slot;
     public static ItemInInventory activeItem;
 
-    public void CreateItemInInventory(Item_General_SO itemSO, int amount)
+    public void CreateItemInInventory(IItem item, int amount)
     {
+        this.Item = item;
+        ItemSO = item.itemSO;
         Initialize();
-        player = PlayerManager.Player;
+        player = PlayerManagerV2.Player;
         inventory = player.GetInventory();
-        this.itemSO = itemSO; 
         amountOfItem = amount;
-        gameObject.GetComponent<Image>().sprite = itemSO.iconInInventory;
+        gameObject.GetComponent<Image>().sprite = ItemSO.iconInInventory;
         amountText = transform.Find("AmountText").GetComponent<TextMeshProUGUI>();
         canvas = FindFirstObjectByType<Canvas>();
         itemInfoTemplate = Resources.Load<GameObject>("UI/ItemInfoTemplate");
@@ -106,6 +108,11 @@ public class ItemInInventory : Dragable, IPointerDownHandler
 
     public virtual void RemoveItemFromSlot()
     {
+        if (slot is QuickSlot)
+        {
+            QuickSlot quickslot = (QuickSlot) slot;
+            quickslot.RemoveItemFromHands();
+        }
         slot.RemoveItem();
     }
 
@@ -120,6 +127,10 @@ public class ItemInInventory : Dragable, IPointerDownHandler
         {
             OpenItemInfo();
         }
+        else if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            EquipItemInNextEmptyHand();
+        }
     }
 
     protected virtual void OpenItemInfo()
@@ -127,10 +138,16 @@ public class ItemInInventory : Dragable, IPointerDownHandler
         if (itemInfoGO == null)
         {
             itemInfoGO = Instantiate(itemInfoTemplate, transform.parent.parent);
-            itemInfoGO.transform.Find("ItemNameText").GetComponent<TextMeshProUGUI>().SetText(itemSO.name);
+            itemInfoGO.transform.Find("ItemNameText").GetComponent<TextMeshProUGUI>().SetText(ItemSO.name);
 
-            itemInfoGO.transform.Find("ItemInfoText").GetComponent<TextMeshProUGUI>().SetText(itemSO.item_info);
+            itemInfoGO.transform.Find("ItemInfoText").GetComponent<TextMeshProUGUI>().SetText(ItemSO.item_info);
             itemInfoGO.transform.Find("DropButton").GetComponent<Button>().onClick.AddListener(DropItem);
+
+            GameObject useButtonGO = itemInfoGO.transform.Find("UseButton").gameObject;
+            useButtonGO.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Equip";
+            useButtonGO.SetActive(true);
+            Button useButton = useButtonGO.GetComponent<Button>();
+            useButton.onClick.AddListener(EquipItemInNextEmptyHand);
         }
     }
 
@@ -144,12 +161,45 @@ public class ItemInInventory : Dragable, IPointerDownHandler
 
     private void DropItem()
     {
-        player.SpawnItemFromPlayer(itemSO, amountOfItem);
+        player.SpawnItemFromPlayer(ItemSO, amountOfItem);
         Destroy(gameObject);
         Debug.Log("Dropped item");
         CloseItemInfo();
     }
 
-    public GameObject ItemGO() { return itemSO.itemPrefab; }
-    public string Name { get { return itemSO.name; } }  
+    private void UseItem()
+    {
+        if (Item != null) { Item.UseItem(player); }
+        else { }
+    }
+
+    public void EquipItemInNextEmptyHand()
+    {
+        ItemSlot previousSlot = slot;
+        if (player.GetHandsManager().TryEquipItemToNextEmptyHand(this))
+        {
+            Debug.Log("Equiped " + ItemSO.name);
+            previousSlot.RemoveItem();
+            RefreshSlot();
+        }
+        else
+        {
+            Debug.Log("Could not equip item, no empty hand found !");
+        }
+    }
+
+    public void EquipItemInHand(HandsManager.Hand hand)
+    {
+        if (player.GetHandsManager().TryEquipItemToHand(this, hand))
+        {
+            Debug.Log("Equiped " + ItemSO.name);
+        }
+        else
+        {
+            Debug.Log("Could not equip item, hand was not empty !");
+        }
+    }
+
+    public GameObject ItemGO() { return ItemSO.itemPrefab; }
+    public string Name { get { return ItemSO.name; } }  
 }

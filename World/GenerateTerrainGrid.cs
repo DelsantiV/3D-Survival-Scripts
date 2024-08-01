@@ -69,7 +69,7 @@ public class GenerateTerrainGrid : MonoBehaviour
         smallGrid = ConstructGrid(smallGridSize, Color.blue);
         //largeGrid = ConstructGrid(largeGridSize, Color.red);
         yield return smallGrid;
-        OnTerrainReady.Invoke(name);
+        //OnTerrainReady.Invoke(name);
     }
 
     private Vector3 GetWorldPosition(int x, int z, int gridSize)

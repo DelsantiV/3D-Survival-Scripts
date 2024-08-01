@@ -39,7 +39,7 @@ public class WorldHandler : MonoBehaviour
         foreach (var terrain in terrainArray)
         {
             GenerateTerrainGrid terrainGridConstructor = terrain.gameObject.GetComponent<GenerateTerrainGrid>();
-            terrainGridConstructor.OnTerrainReady.AddListener(FireTerrainReady);
+            //terrainGridConstructor.OnTerrainReady.AddListener(FireTerrainReady);
             StartCoroutine(terrainGridConstructor.CreateGrids());
         }
         yield return null;
