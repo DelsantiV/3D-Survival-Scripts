@@ -5,31 +5,40 @@ using UnityEngine;
 
 public class CanvasManager : MonoBehaviour
 {
-    private HealthBar healthBar;
-    private CaloriesBar caloriesBar;
-    private PlayerInventoryUI playerInventoryUI;
-    private CraftingUI craftingUI;
-    private QuickSlot leftHandquickslot;
-    private QuickSlot rightHandquickslot;
-    private QuickSlot bothHandquickslot;
-    private GameObject interactionInfoUI;
+    [SerializeField] private HealthBar healthBar;
+    [SerializeField] private CaloriesBar caloriesBar;
+
+    private StatusBar[] allStatusBar;
+
+    [SerializeField] private PlayerInventoryUI playerInventoryUI;
+    [SerializeField] private CraftingUI craftingUI;
+    [SerializeField] private QuickSlot leftHandQuickSlot;
+    [SerializeField] private QuickSlot rightHandQuickSlot;
+    [SerializeField] private QuickSlot bothHandQuickSlot;
+    [SerializeField] private GameObject interactionInfoUI;
+
+    [SerializeField] private BasicUI leftHandQuickSlotHolder;
+    [SerializeField] private BasicUI rightHandQuickSlotHolder;
+    [SerializeField] private BasicUI bothHandQuickSlotHolder;
+    [SerializeField] private BasicUI StatusBarArea;
     public PlayerManager player { get; private set; }
 
     public void InitializeCanvasManager(PlayerManager player)
     {
-        GetSubComponents();
         this.player = player;
         player.OnPlayerReady.AddListener(InitializeComponents);
+        bothHandQuickSlotHolder.CloseUI();
     }
 
-    private void GetSubComponents()
+    public void GetSubComponents()
     {
-
+        allStatusBar = new StatusBar[] { healthBar, caloriesBar};
     }
+
 
     public void InitializeComponents()
     {
-
+        foreach (StatusBar statusBar in allStatusBar) { statusBar.InitializeStatusBar(player); }
     }
 
     public void OpenBasicUi(BasicUI uiPanel)
@@ -49,9 +58,9 @@ public class CanvasManager : MonoBehaviour
         switch (hand)
         {
             default: return null;
-            case (HandsManager.Hand.left): return leftHandquickslot;
-            case (HandsManager.Hand.right): return rightHandquickslot;
-            case (HandsManager.Hand.both): return bothHandquickslot;
+            case (HandsManager.Hand.left): return leftHandQuickSlot;
+            case (HandsManager.Hand.right): return rightHandQuickSlot;
+            case (HandsManager.Hand.both): return bothHandQuickSlot;
         }
     }
 }

@@ -18,17 +18,17 @@ public class StatusBar : MonoBehaviour
 
     public virtual void Awake()
     {
+        
+    }
+
+    public virtual void InitializeStatusBar(PlayerManager player)
+    {
         maxAmount = 0;
         currentAmount = 0;
         amountText = transform.Find("FillArea").transform.Find("AmountText").GetComponent<TextMeshProUGUI>();
         slider = GetComponent<Slider>();
         canvasManager = transform.root.GetComponent<CanvasManager>();
-        player = PlayerManager.Player; // replace with a proper player affectation
-        player.OnPlayerReady.AddListener(InitializeStatusBar);
-    }
 
-    public virtual void InitializeStatusBar()
-    {
         status = player.GetPlayerStatus();
         UpdateStatusBar();
         CustomTickSystem.OnLargeTick += UpdateStatusBar;
