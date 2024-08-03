@@ -4,22 +4,21 @@ using UnityEngine;
 
 public class AIMovement : MonoBehaviour
 {
-    Animator animator;
+    private Animator animator;
 
     public float moveSpeed = 1.0f;
 
-    Vector3 stopPosition;
+    private Vector3 stopPosition;
 
-    float walkTime;
+    private float walkTime;
     public float walkCounter;
-    float waitTime;
+    private float waitTime;
     public float waitCounter;
 
-    int WalkDirection;
+    private int WalkDirection;
 
     public bool isWalking;
 
-    // Start is called before the first frame update
     void Start()
     {
         animator = GetComponent<Animator>();
