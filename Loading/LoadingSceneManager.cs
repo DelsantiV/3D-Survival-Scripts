@@ -34,7 +34,7 @@ public class LoadingSceneManager : MonoBehaviour
         Debug.Log("Loading items !");
         ItemLoader itemLoader = new ItemLoader();
         ItemLoader.Ready.AddListener(OnAssetsReady);
-        Task itemLoading = new Task(itemLoader.LoadItemsJSONFromMemory());
+        Task itemLoading = new Task(itemLoader.LoadItems());
         yield return itemLoading;
     }
 }

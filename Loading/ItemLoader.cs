@@ -20,9 +20,10 @@ public class ItemLoader
     public static List<string> allPrefabsLocations;
     public static List<string> allIconsLocations;
     Assembly asm = typeof(GeneralItem).Assembly;
-    private string[] itemsJsonKey = new string[] { "JSON", "Items" };
-    private string[] itemsPrefabsKey = new string[] { "Icons", "Items" };
-    private string[] itemsIconsKey = new string[] { "Prefabs", "Items" };
+    private List<string> itemsJsonKeys = new List<string>() { "JSON", "Items" };
+    private List<string> itemsPrefabsKeys = new List<string>() { "Prefabs", "Items" };
+    private List<string> itemsIconsKeys = new List<string>() { "Icons", "Items" };
+    private AsyncOperationHandle<IList<TextAsset>> itemsLoading;
 
     public ItemLoader()
     {
@@ -31,10 +32,40 @@ public class ItemLoader
         allItemsSO = new List<Item_General_SO>();
     }
 
+    public IEnumerator LoadItems()
+    {
+        
+        Debug.Log("Start retrieving items prefabs locations...");
+        AsyncOperationHandle<IList<IResourceLocation>> allPrefabsLocationsLoading = Addressables.LoadResourceLocationsAsync(itemsPrefabsKeys, Addressables.MergeMode.Intersection, typeof(GameObject));
+        yield return allPrefabsLocationsLoading;
+        Debug.Log(allPrefabsLocationsLoading.Status.ToString());
+        allPrefabsLocations = allPrefabsLocationsLoading.Result.ToList().ConvertAll(address => address.ToString());
+        Debug.Log(allPrefabsLocationsLoading.Result.Count + " prefabs found in assets");
+
+        Debug.Log("Start retrieving items icons locations...");
+        AsyncOperationHandle<IList<IResourceLocation>> allIconsLocationsLoading = Addressables.LoadResourceLocationsAsync(itemsIconsKeys, Addressables.MergeMode.Intersection, typeof(Sprite));
+        yield return allIconsLocationsLoading;
+        Debug.Log(allIconsLocationsLoading.Status.ToString());
+        allIconsLocations = allIconsLocationsLoading.Result.ToList().ConvertAll(address => address.ToString());
+        Debug.Log(allIconsLocations.Count + " icons found in assets");
+
+        itemsLoading = Addressables.LoadAssetsAsync<TextAsset>(itemsJsonKeys,
+            itemJSON => { CreateItem(itemJSON); },
+            Addressables.MergeMode.Intersection) ;
+        yield return itemsLoading;
+        allItemNames = allItems.Keys.ToArray();
+        ItemManager.InitializeItemManager(allItems, allItemsSO);
+        foreach (string prefabLoc in allPrefabsLocations)
+        {
+            Debug.Log(prefabLoc);
+        }
+        Ready.Invoke();
+    }
+
     public IEnumerator LoadItemsJSONFromMemory()
     {
         Debug.Log("Start retrieving items json locations...");
-        AsyncOperationHandle<IList<IResourceLocation>> itemsJsonLocations = Addressables.LoadResourceLocationsAsync("JSON", typeof(TextAsset));
+        AsyncOperationHandle<IList<IResourceLocation>> itemsJsonLocations = Addressables.LoadResourceLocationsAsync(itemsJsonKeys, Addressables.MergeMode.Intersection, typeof(TextAsset)) ;
         yield return itemsJsonLocations;
         Debug.Log(itemsJsonLocations.Status.ToString());
         Debug.Log(itemsJsonLocations.Result.Count + " items found in assets");
@@ -96,7 +127,8 @@ public class ItemLoader
         itemBaseData.Initialize();
         Debug.Log("Loaded " + itemBaseData.name + " from class " + itemBaseData.item_class);
         allItemsSO.Add(itemBaseData);
-        var item = Activator.CreateInstance(asm.GetType(itemBaseData.item_class));
+        GeneralItem item = new GeneralItem(itemBaseData);
+        //var item = Activator.CreateInstance(asm.GetType(itemBaseData.item_class));
         RegisterItem(item as GeneralItem, itemBaseData.name);
     }
 

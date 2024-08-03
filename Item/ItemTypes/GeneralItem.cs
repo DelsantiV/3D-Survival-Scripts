@@ -6,7 +6,7 @@ using static UnityEditor.Progress;
 
 public class GeneralItem
 {
-    public Item_General_SO ItemSO { get; }
+    public Item_General_SO ItemSO { get; protected set; }
 
     public event Action<PlayerManager, GeneralItem> OnItemUsed;
 
@@ -15,7 +15,12 @@ public class GeneralItem
     public int StackSize { get { return ItemSO.maxStackSize; } }
     public string ItemName { get { return ItemSO.name; } }
 
-    public virtual void InitializeItem(ItemInInventory itemUI)
+    public GeneralItem(Item_General_SO itemSO)
+    {
+        ItemSO = itemSO;
+    }
+
+    public virtual void InitializeItemInInventory(ItemInInventory itemUI)
     {
         
     }

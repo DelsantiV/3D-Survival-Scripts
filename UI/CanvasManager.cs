@@ -11,11 +11,13 @@ public class CanvasManager : MonoBehaviour
     private QuickSlot leftHandquickslot;
     private QuickSlot rightHandquickslot;
     private GameObject interactionInfoUI;
+    public PlayerManagerV2 player { get; private set; }
 
-    private void InitializeCanvasManager(PlayerManagerV2 player)
+    public void InitializeCanvasManager(PlayerManagerV2 player)
     {
         GetSubComponents();
-        InitializeComponents(player);
+        this.player = player;
+        player.OnPlayerReady.AddListener(InitializeComponents);
     }
 
     private void GetSubComponents()
@@ -23,7 +25,7 @@ public class CanvasManager : MonoBehaviour
 
     }
 
-    private void InitializeComponents(PlayerManagerV2 player)
+    public void InitializeComponents()
     {
 
     }

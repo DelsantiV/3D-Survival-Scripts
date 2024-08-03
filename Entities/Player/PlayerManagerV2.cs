@@ -8,6 +8,7 @@ using System;
 using Invector.vCharacterController;
 using static UnityEditor.Progress;
 using UnityEditor.Animations;
+using UnityEngine.Events;
 
 
 public class PlayerManagerV2 : MonoBehaviour, IDamageable
@@ -45,6 +46,8 @@ public class PlayerManagerV2 : MonoBehaviour, IDamageable
     public UpgradedThirdPersonController PlayerController { get; private set; }
     public AnimatorController AnimatorController { get; private set; }
 
+    public UnityEvent OnPlayerReady = new();
+
     //public event Action OnUIChange; // not implemented yet
 
     [HideInInspector] public bool isInteracting;
@@ -62,8 +65,6 @@ public class PlayerManagerV2 : MonoBehaviour, IDamageable
         digestiveSystem = new DigestiveSystem(playerStatus);
         playerLayer = LayerMask.GetMask("Player");
         playerHead = transform.Find("PlayerHead");
-        rightHand = transform.Find("B-hand.L").gameObject;
-        Debug.Log(rightHand);
         InputManager = GetComponent<UpgradedThirdPersonInput>();
         //handsManager = new HandsManager(leftHand, rightHand, leftHandQuickSlot, rightHandQuickSlot, prefHand);
         AnimatorController = GetComponent<AnimatorController>();
@@ -72,10 +73,11 @@ public class PlayerManagerV2 : MonoBehaviour, IDamageable
     void Start()
     {
         //interactionText = interaction_Info_UI.GetComponent<TextMeshProUGUI>();
-        inventoryUI.CloseUI();
-        craftingUI.CloseUI();
+        //inventoryUI.CloseUI();
+        //craftingUI.CloseUI();
 
         //foreach (InventoryItemInfos item in startingItems) { inventory.AddItemToInventory(item.itemSO, item.itemAmount); }
+        OnPlayerReady.Invoke();
     }
 
 
@@ -87,7 +89,8 @@ public class PlayerManagerV2 : MonoBehaviour, IDamageable
 
     public bool hasSomeUIOpen()
     {
-        return (inventoryUI.IsOpen() || craftingUI.IsOpen());
+        //return (inventoryUI.IsOpen() || craftingUI.IsOpen());
+        return false;
     }
 
     private void HandleInteractions()
@@ -101,8 +104,8 @@ public class PlayerManagerV2 : MonoBehaviour, IDamageable
             if (selectionTransform.GetComponent<Item>())
             {
                 Item currentInteraction = selectionTransform.GetComponent<Item>();
-                interactionText.text = currentInteraction.DisplayObjectName();
-                interaction_Info_UI.SetActive(true);
+                //interactionText.text = currentInteraction.ObjectName;
+                //interaction_Info_UI.SetActive(true);
                 isInteracting = true;
 
                 if (Input.GetKeyDown(KeyCode.E))
@@ -112,13 +115,13 @@ public class PlayerManagerV2 : MonoBehaviour, IDamageable
             }
             else
             {
-                interaction_Info_UI.SetActive(false);
+                //interaction_Info_UI?.SetActive(false);
             }
 
         }
         else
         {
-            interaction_Info_UI.SetActive(false);
+            //interaction_Info_UI?.SetActive(false);
         }
     }
 

@@ -10,11 +10,14 @@ public class ItemSpawner : MonoBehaviour
     void Awake()
     {
         GeneralItem item = ItemManager.GetItemByName(itemName);
-        Debug.Log(item.StackSize);
-        GameObject itemPrefab = Instantiate(item.ItemPrefab, transform.position, transform.rotation);
-        itemPrefab.AddComponent<Item>();
-        itemPrefab.AddComponent<Rigidbody>();
-        itemPrefab.GetComponent<Item>().item = item;
-        Destroy(gameObject);
+        if (item != null)
+        {
+            Debug.Log(item.StackSize);
+            GameObject itemPrefab = Instantiate(item.ItemPrefab, transform.position, transform.rotation);
+            itemPrefab.AddComponent<Item>();
+            itemPrefab.AddComponent<Rigidbody>();
+            itemPrefab.GetComponent<Item>().item = item;
+            Destroy(gameObject);
+        }
     }
 }

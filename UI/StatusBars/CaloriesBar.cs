@@ -6,20 +6,7 @@ using UnityEngine.UI;
 
 public class CaloriesBar : StatusBar
 {
-    public override void Awake()
-    {
-        base.Awake();
-
-        CustomTickSystem.OnLargeTick += UpdateValues;
-    }
-    public override void Start()
-    {
-        base.Start();
-        UpdateValues();
-        UpdateSlider();
-    }
-
-    private void UpdateValues()
+    public override void UpdateValues()
     {
         maxAmount = status.maxCalories;
         currentAmount = status.currentCalories;

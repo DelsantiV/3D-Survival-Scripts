@@ -7,23 +7,13 @@ using UnityEngine;
 public class Item : MonoBehaviour
 {
     public GeneralItem item;
-    private string displayName;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-        displayName = item.ItemSO.name + " [E to pick up]";
-    }
-
-
     public void PickUpItem(PlayerManager player)
     {
         if (item != null && player.inventory != null)
         {
             player.inventory.AddItemToInventory(item, 3);
             Destroy(gameObject);
-            Debug.Log("Picked up " + displayName + "!");
+            Debug.Log("Picked up " + ItemName + "!");
         }
         else { Debug.Log("Problemos"); }
     }
@@ -33,7 +23,7 @@ public class Item : MonoBehaviour
         {
             player.inventory.AddItemToInventory(item, 3);
             Destroy(gameObject);
-            Debug.Log("Picked up " + displayName + "!");
+            Debug.Log("Picked up " + ItemName + "!");
         }
         else { Debug.Log("Problemos"); }
     }
@@ -42,7 +32,7 @@ public class Item : MonoBehaviour
     public Sprite ItemSprite { get { return item.ItemSO.iconInInventory; } }
     public int StackSize { get { return item.ItemSO.maxStackSize; } }
     public string ItemName { get { return item.ItemSO.name; } }
-    public string DisplayObjectName() { return displayName; }
+    public string ObjectName { get { return item.ItemSO.name + " [E to pick up]"; } }
 
 
     private void Update()

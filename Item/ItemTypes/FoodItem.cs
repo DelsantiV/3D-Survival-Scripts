@@ -9,6 +9,11 @@ public class FoodItem : GeneralItem
 
     ItemProperties.NutritionProperties nutritionProperties;
 
+    public FoodItem(Item_General_SO itemSO) : base(itemSO)
+    {
+
+    }
+
     public override void UseItem(PlayerManagerV2 player, ItemInInventory itemUI)
     {
         base.UseItem(player, itemUI);
