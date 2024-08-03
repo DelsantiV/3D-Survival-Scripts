@@ -9,7 +9,7 @@ public class StatusBar : MonoBehaviour
 {
     private Slider slider;
     private CanvasManager canvasManager;
-    private PlayerManagerV2 player;
+    private PlayerManager player;
     protected TextMeshProUGUI amountText;
     protected float maxAmount;
     protected float currentAmount;
@@ -23,7 +23,7 @@ public class StatusBar : MonoBehaviour
         amountText = transform.Find("FillArea").transform.Find("AmountText").GetComponent<TextMeshProUGUI>();
         slider = GetComponent<Slider>();
         canvasManager = transform.root.GetComponent<CanvasManager>();
-        player = PlayerManagerV2.Player;
+        player = PlayerManager.Player; // replace with a proper player affectation
         player.OnPlayerReady.AddListener(InitializeStatusBar);
     }
 

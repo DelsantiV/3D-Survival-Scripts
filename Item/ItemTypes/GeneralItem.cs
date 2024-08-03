@@ -25,7 +25,7 @@ public class GeneralItem
         
     }
 
-    public virtual void UseItem(PlayerManagerV2 player, ItemInInventory itemUI)
+    public virtual void UseItem(PlayerManager player, ItemInInventory itemUI)
     {
 
     }

@@ -17,16 +17,6 @@ public class ItemInWorld : MonoBehaviour
         }
         else { Debug.Log("Problemos"); }
     }
-    public void PickUpItem(PlayerManagerV2 player)
-    {
-        if (item != null && player.inventory != null)
-        {
-            player.inventory.AddItemToInventory(item, 3);
-            Destroy(gameObject);
-            Debug.Log("Picked up " + ItemName + "!");
-        }
-        else { Debug.Log("Problemos"); }
-    }
 
     public GameObject ItemPrefab { get { return item.ItemSO.itemPrefab; } }
     public Sprite ItemSprite { get { return item.ItemSO.iconInInventory; } }

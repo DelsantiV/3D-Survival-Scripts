@@ -14,7 +14,7 @@ public class FoodItem : GeneralItem
 
     }
 
-    public override void UseItem(PlayerManagerV2 player, ItemInInventory itemUI)
+    public override void UseItem(PlayerManager player, ItemInInventory itemUI)
     {
         base.UseItem(player, itemUI);
         bool isEaten = player.TryEatFood(this);

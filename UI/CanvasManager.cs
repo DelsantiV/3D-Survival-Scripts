@@ -11,9 +11,9 @@ public class CanvasManager : MonoBehaviour
     private QuickSlot leftHandquickslot;
     private QuickSlot rightHandquickslot;
     private GameObject interactionInfoUI;
-    public PlayerManagerV2 player { get; private set; }
+    public PlayerManager player { get; private set; }
 
-    public void InitializeCanvasManager(PlayerManagerV2 player)
+    public void InitializeCanvasManager(PlayerManager player)
     {
         GetSubComponents();
         this.player = player;

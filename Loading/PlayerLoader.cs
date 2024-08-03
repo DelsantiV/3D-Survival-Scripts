@@ -50,7 +50,7 @@ public class PlayerLoader
     {
         GameObject player = Object.Instantiate(playerPrefab, spawnPoint, Quaternion.identity);
         GameObject canvas = Object.Instantiate(canvasPrefab);
-        canvas.GetComponent<CanvasManager>().InitializeCanvasManager(player.GetComponent<PlayerManagerV2>());
+        canvas.GetComponent<CanvasManager>().InitializeCanvasManager(player.GetComponent<PlayerManager>());
         Camera.main.GetComponent<vThirdPersonCameraUpgraded>().target = player.transform;
     }
 

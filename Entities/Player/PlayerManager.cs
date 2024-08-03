@@ -8,6 +8,7 @@ using System;
 using Invector.vCharacterController;
 using static UnityEditor.Progress;
 using UnityEditor.Animations;
+using UnityEngine.Events;
 
 
 public class PlayerManager : MonoBehaviour, IDamageable
@@ -23,7 +24,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private PlayerStatus playerStatus;
     private Transform playerHead;
     private HandsManager handsManager;
-
+    private Canvas mainCanvas;
 
     [SerializeField] private float maxHealth;
     [SerializeField] private float maxFatigue;
@@ -32,8 +33,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
     [SerializeField] private int numberOfInventorySlots;
     [SerializeField] private CraftingUI craftingUI;
     [SerializeField] private GameObject interaction_Info_UI;
-    [SerializeField] private InventoryItemInfos[] startingItems;
-    [SerializeField] private Image pickUpImage;
+    [SerializeField] private string[] startingItems;
     [SerializeField] private GameObject rightHand;
     [SerializeField] private GameObject leftHand;
     [SerializeField] private QuickSlot leftHandQuickSlot;
@@ -46,6 +46,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
     public UpgradedThirdPersonController PlayerController { get; private set; }
     public AnimatorController AnimatorController { get; private set; }
 
+    public UnityEvent OnPlayerReady = new();
+
     //public event Action OnUIChange; // not implemented yet
 
     [HideInInspector] public bool isInteracting;
@@ -56,25 +58,26 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private void Awake()
     {
         Player = this;
-        inventory = new InventoryManager(numberOfInventorySlots, inventoryUI);
-        craftingManager = new CraftingManager(craftingUI, inventory);
+        //inventory = new InventoryManager(numberOfInventorySlots, inventoryUI);
+        //craftingManager = new CraftingManager(craftingUI, inventory);
         itemDropper = transform.Find("Item Dropper");
         playerStatus = new PlayerStatus(maxHealth, maxFatigue, maxCalories);
         digestiveSystem = new DigestiveSystem(playerStatus);
         playerLayer = LayerMask.GetMask("Player");
         playerHead = transform.Find("PlayerHead");
         InputManager = GetComponent<UpgradedThirdPersonInput>();
-        handsManager = new HandsManager(leftHand, rightHand, leftHandQuickSlot, rightHandQuickSlot, prefHand);
+        //handsManager = new HandsManager(leftHand, rightHand, leftHandQuickSlot, rightHandQuickSlot, prefHand);
         AnimatorController = GetComponent<AnimatorController>();
     }
 
     void Start()
     {
-        interactionText = interaction_Info_UI.GetComponent<TextMeshProUGUI>();
-        inventoryUI.CloseUI();
-        craftingUI.CloseUI();
+        //interactionText = interaction_Info_UI.GetComponent<TextMeshProUGUI>();
+        //inventoryUI.CloseUI();
+        //craftingUI.CloseUI();
 
-        foreach (InventoryItemInfos itemInfo in startingItems) { inventory.AddItemToInventory(itemInfo.item, itemInfo.itemAmount); }
+        //foreach (InventoryItemInfos item in startingItems) { inventory.AddItemToInventory(item.itemSO, item.itemAmount); }
+        OnPlayerReady.Invoke();
     }
 
 
@@ -86,7 +89,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     public bool hasSomeUIOpen()
     {
-        return (inventoryUI.IsOpen() || craftingUI.IsOpen());
+        //return (inventoryUI.IsOpen() || craftingUI.IsOpen());
+        return false;
     }
 
     private void HandleInteractions()
@@ -97,27 +101,27 @@ public class PlayerManager : MonoBehaviour, IDamageable
         {
             var selectionTransform = hit.transform;
 
-            if (selectionTransform.GetComponent<Item>())
+            if (selectionTransform.GetComponent<ItemInWorld>())
             {
                 Item currentInteraction = selectionTransform.GetComponent<Item>();
-                interactionText.text = currentInteraction.ObjectName;
-                interaction_Info_UI.SetActive(true);
+                //interactionText.text = currentInteraction.ObjectName;
+                //interaction_Info_UI.SetActive(true);
                 isInteracting = true;
 
                 if (Input.GetKeyDown(KeyCode.E))
                 {
-                    selectionTransform.GetComponent<Item>().PickUpItem(Player);
+                    selectionTransform.GetComponent<ItemInWorld>().PickUpItem(Player);
                 }
             }
             else
             {
-                interaction_Info_UI.SetActive(false);
+                //interaction_Info_UI?.SetActive(false);
             }
 
         }
         else
         {
-            interaction_Info_UI.SetActive(false);
+            //interaction_Info_UI?.SetActive(false);
         }
     }
 
@@ -169,9 +173,9 @@ public class PlayerManager : MonoBehaviour, IDamageable
             for (int i = 0; i < amount; i++)
             {
                 GameObject itemPrefab = Instantiate(item.ItemPrefab, itemDropper.position, itemDropper.rotation);
-                itemPrefab.AddComponent<Item>();
+                itemPrefab.AddComponent<ItemInWorld>();
                 itemPrefab.AddComponent<Rigidbody>();
-                itemPrefab.GetComponent<Item>().item = item;
+                itemPrefab.GetComponent<ItemInWorld>().item = item;
             }
         }
     }

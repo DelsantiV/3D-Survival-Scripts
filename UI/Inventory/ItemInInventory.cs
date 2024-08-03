@@ -20,7 +20,7 @@ public class ItemInInventory : Dragable, IPointerDownHandler
     public Item_General_SO ItemSO {get; private set;}
     public GeneralItem Item { get; private set; }
 
-    public PlayerManagerV2 player;
+    public PlayerManager player;
     public InventoryManager inventory;
     public ItemSlot slot;
     public static ItemInInventory activeItem;
@@ -30,7 +30,7 @@ public class ItemInInventory : Dragable, IPointerDownHandler
         this.Item = item;
         ItemSO = item.ItemSO;
         Initialize();
-        player = PlayerManagerV2.Player;
+        player = PlayerManager.Player;
         inventory = player.GetInventory();
         amountOfItem = amount;
         gameObject.GetComponent<Image>().sprite = ItemSO.iconInInventory;
