@@ -4,7 +4,7 @@ using UnityEditor.TerrainTools;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class GenerateTerrainGrid : MonoBehaviour
+public class TerrainGrid : MonoBehaviour
 {
     public class TerrainReady : UnityEvent<string> { }
     public new string name {get; private set;}
