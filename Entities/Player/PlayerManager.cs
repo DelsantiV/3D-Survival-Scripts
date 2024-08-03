@@ -36,9 +36,31 @@ public class PlayerManager : MonoBehaviour, IDamageable
     [SerializeField] private string[] startingItems;
     [SerializeField] private GameObject rightHand;
     [SerializeField] private GameObject leftHand;
-    [SerializeField] private QuickSlot leftHandQuickSlot;
-    [SerializeField] private QuickSlot rightHandQuickSlot;
     [SerializeField] private HandsManager.Hand prefHand = HandsManager.Hand.right;
+
+    private CanvasManager canvasManager;
+
+    public QuickSlot LeftHandQuickSlot
+    {
+        get
+        {
+            return canvasManager.GetHandQuickSlot(HandsManager.Hand.left);
+        }
+    }
+    public QuickSlot RightHandQuickSlot
+    {
+        get
+        {
+            return canvasManager.GetHandQuickSlot(HandsManager.Hand.right);
+        }
+    }
+    public QuickSlot BothHandQuickSlot
+    {
+        get
+        {
+            return canvasManager.GetHandQuickSlot(HandsManager.Hand.both);
+        }
+    }
 
     private Transform itemDropper;
     private LayerMask playerLayer;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,7 @@ public class CanvasManager : MonoBehaviour
     private CraftingUI craftingUI;
     private QuickSlot leftHandquickslot;
     private QuickSlot rightHandquickslot;
+    private QuickSlot bothHandquickslot;
     private GameObject interactionInfoUI;
     public PlayerManager player { get; private set; }
 
@@ -33,5 +35,23 @@ public class CanvasManager : MonoBehaviour
     public void OpenBasicUi(BasicUI uiPanel)
     {
 
+    }
+
+    public StatusBar GetStatusBar(Type statusBar)
+    {
+        if (statusBar == typeof(HealthBar)) { return healthBar; }
+        else if (statusBar == typeof(CaloriesBar)) { return caloriesBar; }
+        return null;
+    }
+
+    public QuickSlot GetHandQuickSlot(HandsManager.Hand hand)
+    {
+        switch (hand)
+        {
+            default: return null;
+            case (HandsManager.Hand.left): return leftHandquickslot;
+            case (HandsManager.Hand.right): return rightHandquickslot;
+            case (HandsManager.Hand.both): return bothHandquickslot;
+        }
     }
 }
