@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class CanvasManager : MonoBehaviour
@@ -15,7 +16,7 @@ public class CanvasManager : MonoBehaviour
     [SerializeField] private QuickSlot leftHandQuickSlot;
     [SerializeField] private QuickSlot rightHandQuickSlot;
     [SerializeField] private QuickSlot bothHandQuickSlot;
-    [SerializeField] private GameObject interactionInfoUI;
+    [SerializeField] private BasicUI interactionInfoUI;
 
     [SerializeField] private BasicUI leftHandQuickSlotHolder;
     [SerializeField] private BasicUI rightHandQuickSlotHolder;
@@ -23,11 +24,16 @@ public class CanvasManager : MonoBehaviour
     [SerializeField] private BasicUI StatusBarArea;
     public PlayerManager player { get; private set; }
 
+    private TextMeshProUGUI interactionText;
+
     public void InitializeCanvasManager(PlayerManager player)
     {
         this.player = player;
+        player.SetCanvasManager(this);
         player.OnPlayerReady.AddListener(InitializeComponents);
         bothHandQuickSlotHolder.CloseUI();
+
+        interactionText = interactionInfoUI.GetComponent<TextMeshProUGUI>();
     }
 
     public void GetSubComponents()
@@ -62,5 +68,21 @@ public class CanvasManager : MonoBehaviour
             case (HandsManager.Hand.right): return rightHandQuickSlot;
             case (HandsManager.Hand.both): return bothHandQuickSlot;
         }
+    }
+
+    public void SetInteractionUIActive(bool active)
+    {
+        interactionInfoUI.SetActive(active);
+    }
+
+    public void SetInteractionText(string text)
+    {
+        interactionText.text = text;
+    }
+
+    public void SetInteractionTextAndActivate(string text)
+    {
+        SetInteractionText(text);
+        SetInteractionUIActive(true);
     }
 }

@@ -88,7 +88,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
         playerLayer = LayerMask.GetMask("Player");
         playerHead = transform.Find("PlayerHead");
         InputManager = GetComponent<UpgradedThirdPersonInput>();
-        //handsManager = new HandsManager(leftHand, rightHand, leftHandQuickSlot, rightHandQuickSlot, prefHand);
         AnimatorController = GetComponent<AnimatorController>();
     }
 
@@ -100,6 +99,12 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         //foreach (InventoryItemInfos item in startingItems) { inventory.AddItemToInventory(item.itemSO, item.itemAmount); }
         OnPlayerReady.Invoke();
+    }
+
+    public void SetCanvasManager(CanvasManager canvasManager)
+    {
+        this.canvasManager = canvasManager;
+        handsManager = new HandsManager(leftHand, rightHand, LeftHandQuickSlot, RightHandQuickSlot, prefHand);
     }
 
 
@@ -126,8 +131,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
             if (selectionTransform.GetComponent<ItemInWorld>())
             {
                 ItemInWorld currentInteraction = selectionTransform.GetComponent<ItemInWorld>();
-                //interactionText.text = currentInteraction.ObjectName;
-                //interaction_Info_UI.SetActive(true);
+                canvasManager.SetInteractionTextAndActivate(currentInteraction.ObjectName);
                 isInteracting = true;
 
                 if (Input.GetKeyDown(KeyCode.E))
@@ -137,13 +141,13 @@ public class PlayerManager : MonoBehaviour, IDamageable
             }
             else
             {
-                //interaction_Info_UI?.SetActive(false);
+                canvasManager.SetInteractionUIActive(false);
             }
 
         }
         else
         {
-            //interaction_Info_UI?.SetActive(false);
+            canvasManager.SetInteractionUIActive(false);
         }
     }
 
