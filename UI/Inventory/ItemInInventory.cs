@@ -30,7 +30,6 @@ public class ItemInInventory : Dragable, IPointerDownHandler
         this.Item = item;
         ItemSO = item.ItemSO;
         Initialize();
-        player = PlayerManager.Player;
         inventory = player.GetInventory();
         amountOfItem = amount;
         gameObject.GetComponent<Image>().sprite = ItemSO.iconInInventory;
@@ -42,6 +41,21 @@ public class ItemInInventory : Dragable, IPointerDownHandler
         slot = transform.parent.GetComponent<ItemSlot>();
 
         inventoryGO = player.GetInventoryUI().gameObject;
+    }
+
+    public override void Initialize()
+    {
+        base.Initialize();
+        if (Item != null)
+        {
+            ItemSO = Item.ItemSO;
+        }
+        player = PlayerManager.Player;
+        amountText = transform.Find("AmountText").GetComponent<TextMeshProUGUI>();
+        canvas = FindFirstObjectByType<Canvas>();
+        itemInfoTemplate = Resources.Load<GameObject>("UI/ItemInfoTemplate"); // Replace with Addressables ?
+        isOutsideBounds = false;
+        slot = transform.parent.GetComponent<ItemSlot>();
     }
 
     public void SetAmountOfItem(int amount)
@@ -202,5 +216,12 @@ public class ItemInInventory : Dragable, IPointerDownHandler
     }
 
     public GameObject ItemGO() { return ItemSO.itemPrefab; }
-    public string Name { get { return ItemSO.name; } }  
+    public string Name { get { return ItemSO.name; } }
+
+    public void SetItem(GeneralItem item, int amount = 1) 
+    { 
+        Item = item; 
+        amountOfItem = amount;
+        gameObject.GetComponent<Image>().sprite = item.ItemSprite;
+    }
 }

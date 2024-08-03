@@ -24,7 +24,7 @@ public class LoadingSceneManager : MonoBehaviour
 
     private void OnAssetsReady()
     {
-        Debug.Log("Assests ready !");
+        Debug.Log("Assets ready !");
         gameManager.LoadMainScene();
     }
 

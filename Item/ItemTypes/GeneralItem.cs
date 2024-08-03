@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.Progress;
 
@@ -20,9 +22,11 @@ public class GeneralItem
         ItemSO = itemSO;
     }
 
-    public virtual void InitializeItemInInventory(ItemInInventory itemUI)
+    public virtual void InitializeItemInInventory(ItemInInventory itemUI, int amount)
     {
-        
+        itemUI.SetItem(this, amount : amount);
+        itemUI.Initialize();
+        itemUI.amountOfItem = amount;
     }
 
     public virtual void UseItem(PlayerManager player, ItemInInventory itemUI)
