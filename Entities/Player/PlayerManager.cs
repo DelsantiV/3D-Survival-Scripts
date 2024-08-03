@@ -103,7 +103,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
             if (selectionTransform.GetComponent<ItemInWorld>())
             {
-                Item currentInteraction = selectionTransform.GetComponent<Item>();
+                ItemInWorld currentInteraction = selectionTransform.GetComponent<ItemInWorld>();
                 //interactionText.text = currentInteraction.ObjectName;
                 //interaction_Info_UI.SetActive(true);
                 isInteracting = true;

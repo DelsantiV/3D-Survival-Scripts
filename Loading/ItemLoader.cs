@@ -15,15 +15,14 @@ public class ItemLoader
 {
     private Dictionary<string, GeneralItem> allItems;
     private List<Item_General_SO> allItemsSO;
-    private string[] allItemNames;
     public static UnityEvent Ready;
     public static List<string> allPrefabsLocations;
     public static List<string> allIconsLocations;
+    public static string[] allItemNames;
     Assembly asm = typeof(GeneralItem).Assembly;
     private List<string> itemsJsonKeys = new List<string>() { "JSON", "Items" };
     private List<string> itemsPrefabsKeys = new List<string>() { "Prefabs", "Items" };
     private List<string> itemsIconsKeys = new List<string>() { "Icons", "Items" };
-    private AsyncOperationHandle<IList<TextAsset>> itemsLoading;
 
     public ItemLoader()
     {
@@ -49,7 +48,7 @@ public class ItemLoader
         allIconsLocations = allIconsLocationsLoading.Result.ToList().ConvertAll(address => address.ToString());
         Debug.Log(allIconsLocations.Count + " icons found in assets");
 
-        itemsLoading = Addressables.LoadAssetsAsync<TextAsset>(itemsJsonKeys,
+        AsyncOperationHandle<IList<TextAsset>> itemsLoading = Addressables.LoadAssetsAsync<TextAsset>(itemsJsonKeys,
             itemJSON => { CreateItem(itemJSON); },
             Addressables.MergeMode.Intersection) ;
         yield return itemsLoading;
@@ -59,6 +58,9 @@ public class ItemLoader
         {
             Debug.Log(prefabLoc);
         }
+        Addressables.Release(allPrefabsLocationsLoading);
+        Addressables.Release(allIconsLocationsLoading);
+        Addressables.Release(itemsLoading);
         Ready.Invoke();
     }
 
