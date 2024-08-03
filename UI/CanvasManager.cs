@@ -28,10 +28,12 @@ public class CanvasManager : MonoBehaviour
 
     public void InitializeCanvasManager(PlayerManager player)
     {
+        GetSubComponents();
         this.player = player;
         player.SetCanvasManager(this);
         player.OnPlayerReady.AddListener(InitializeComponents);
         bothHandQuickSlotHolder.CloseUI();
+        interactionInfoUI.CloseUI();
 
         interactionText = interactionInfoUI.GetComponent<TextMeshProUGUI>();
     }
