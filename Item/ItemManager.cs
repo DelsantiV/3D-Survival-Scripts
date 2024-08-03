@@ -6,11 +6,11 @@ using UnityEngine;
 
 public class ItemManager
 {
-    private static List<ItemInInventory> _items = new List<ItemInInventory>();
-    private static Dictionary<string, ItemInInventory> _allItemsByName = new Dictionary<string, ItemInInventory>();
+    private static List<GeneralItem> _items = new List<GeneralItem>();
+    private static Dictionary<string, GeneralItem> _allItemsByName = new Dictionary<string, GeneralItem>();
     private static List<Item_General_SO> _allItemsSO = new List<Item_General_SO>();
 
-    public static void InitializeItemManager(Dictionary<string, ItemInInventory> allItemsByName, List<Item_General_SO> allItemsSO)
+    public static void InitializeItemManager(Dictionary<string, GeneralItem> allItemsByName, List<Item_General_SO> allItemsSO)
     {
         _allItemsByName = allItemsByName;
         _items = _allItemsByName.Values.ToList();
@@ -28,7 +28,7 @@ public class ItemManager
         }
   
     }
-    public static ItemInInventory GetItemByName(string itemName)
+    public static GeneralItem GetItemByName(string itemName)
     {
         if (_allItemsByName.ContainsKey(itemName)) { return _allItemsByName[itemName]; }
         else
@@ -38,7 +38,7 @@ public class ItemManager
         }
     }
 
-    public static ItemInInventory GetItemByID(int id)
+    public static GeneralItem GetItemByID(int id)
     {
         if (id > 0 && id < _items.Count) { return _items[id];}
         else 

@@ -163,16 +163,16 @@ public class PlayerManagerV2 : MonoBehaviour, IDamageable
         }
     }
 
-    public void SpawnItemFromPlayer(Item_General_SO itemSO, int amount)
+    public void SpawnItemFromPlayer(GeneralItem item, int amount)
     {
-        if (itemSO.itemPrefab != null)
+        if (item.ItemPrefab != null)
         {
             for (int i = 0; i < amount; i++)
             {
-                GameObject itemPrefab = Instantiate(itemSO.itemPrefab, itemDropper.position, itemDropper.rotation);
+                GameObject itemPrefab = Instantiate(item.ItemPrefab, itemDropper.position, itemDropper.rotation);
                 itemPrefab.AddComponent<Item>();
                 itemPrefab.AddComponent<Rigidbody>();
-                itemPrefab.GetComponent<Item>().itemSO = itemSO;
+                itemPrefab.GetComponent<Item>().item = item;
             }
         }
     }

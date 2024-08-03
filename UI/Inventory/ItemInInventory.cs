@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class ItemInInventory : Dragable, IPointerDownHandler
 {
@@ -17,17 +18,17 @@ public class ItemInInventory : Dragable, IPointerDownHandler
     protected bool isOutsideBounds;
 
     public Item_General_SO ItemSO {get; private set;}
-    public IItem Item { get; private set; }
+    public GeneralItem Item { get; private set; }
 
     public PlayerManagerV2 player;
     public InventoryManager inventory;
     public ItemSlot slot;
     public static ItemInInventory activeItem;
 
-    public void CreateItemInInventory(IItem item, int amount)
+    public void CreateItemInInventory(GeneralItem item, int amount)
     {
         this.Item = item;
-        ItemSO = item.itemSO;
+        ItemSO = item.ItemSO;
         Initialize();
         player = PlayerManagerV2.Player;
         inventory = player.GetInventory();
@@ -161,7 +162,7 @@ public class ItemInInventory : Dragable, IPointerDownHandler
 
     private void DropItem()
     {
-        player.SpawnItemFromPlayer(ItemSO, amountOfItem);
+        player.SpawnItemFromPlayer(Item, amountOfItem);
         Destroy(gameObject);
         Debug.Log("Dropped item");
         CloseItemInfo();
@@ -169,7 +170,7 @@ public class ItemInInventory : Dragable, IPointerDownHandler
 
     private void UseItem()
     {
-        if (Item != null) { Item.UseItem(player); }
+        if (Item != null) { Item.UseItem(player, this); }
         else { }
     }
 

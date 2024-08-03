@@ -85,7 +85,7 @@ public class HandsManager
 
     public void InstantiateItemInHand(ItemInInventory item, Hand hand)
     {
-        GameObject itemInHand = GameObject.Instantiate(item.ItemGO(), HandTransform(hand));
+        GameObject itemInHand = Object.Instantiate(item.ItemGO(), HandTransform(hand));
         itemInHand.GetComponent<BoxCollider>().isTrigger = true;  // à améliorer
         itemInHand.AddComponent<EquippedItem>();
     }
@@ -109,7 +109,7 @@ public class HandsManager
     }
     private void EquipItemToHand(Hand hand, ItemInInventory item, Vector3 itemPosition, Quaternion itemRotation)
     {
-        GameObject itemInHand = GameObject.Instantiate(item.ItemGO(), itemPosition, itemRotation, HandTransform(hand));
+        GameObject itemInHand = Object.Instantiate(item.ItemGO(), itemPosition, itemRotation, HandTransform(hand));
     }
 
     public bool isHandEmpty(Hand hand)

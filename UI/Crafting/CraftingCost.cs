@@ -6,7 +6,7 @@ using UnityEngine;
 [Serializable]
 public class CraftingCost
 {
-    public Item_General_SO item;
+    public GeneralItem item;
     public int itemAmount;
     public bool isTool;
 
@@ -14,7 +14,7 @@ public class CraftingCost
     {
     }
 
-    public CraftingCost(Item_General_SO item, int itemAmount, bool isTool)
+    public CraftingCost(GeneralItem item, int itemAmount, bool isTool)
     {
         this.item = item;
         this.itemAmount = itemAmount;

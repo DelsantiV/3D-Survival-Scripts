@@ -57,17 +57,17 @@ public class ItemSlot : MonoBehaviour, IDropHandler
             //if there is an item already, check for stackability
             else
             {
-                Debug.Log("Trying to add item " + item.itemSO + " to slot " + name + ", containing " + currentItem.itemSO);
-                if (currentItem.itemSO == item.itemSO)
+                Debug.Log("Trying to add item " + item.ItemSO + " to slot " + name + ", containing " + currentItem.ItemSO);
+                if (currentItem.ItemSO == item.ItemSO)
                 {
-                    if (currentItem.itemSO.maxStackSize >= currentItem.amountOfItem + item.amountOfItem)
+                    if (currentItem.ItemSO.maxStackSize >= currentItem.amountOfItem + item.amountOfItem)
                     {
                         currentItem.AddAmountOfItem(item.amountOfItem);
                         Destroy(item.gameObject);
                     }
                     else
                     {
-                        int amountToTransfer = currentItem.itemSO.maxStackSize - currentItem.amountOfItem;
+                        int amountToTransfer = currentItem.ItemSO.maxStackSize - currentItem.amountOfItem;
                         currentItem.AddAmountOfItem(amountToTransfer);
                         item.RemoveAmountOfItem(amountToTransfer);
                     }
@@ -81,15 +81,15 @@ public class ItemSlot : MonoBehaviour, IDropHandler
         else { Debug.Log("Trying to add null item"); }
     }
 
-    public void AddItemToNewSlot(GameObject iconInInventory, Item_General_SO itemSO, int amount)
+    public void AddItemToNewSlot(GameObject iconInInventory, GeneralItem item, int amount)
     {
         if (currentItem == null)
         {
             GameObject itemInInventoryGO = Instantiate(iconInInventory, transform.position, transform.rotation);
             itemInInventoryGO.transform.SetParent(transform);
-            itemInInventoryGO.AddComponent(Type.GetType(itemSO.item_class.ToString()));
+            itemInInventoryGO.AddComponent(Type.GetType(item.ItemSO.item_class.ToString()));
             ItemInInventory itemInInventory = itemInInventoryGO.GetComponent<ItemInInventory>();
-            itemInInventory.CreateItemInInventory(itemSO, amount);
+            itemInInventory.CreateItemInInventory(item, amount); //Needs to be modified
             currentItem = itemInInventory;
         }
         else { Debug.Log("Could not add item cause slot was not empty !"); }
@@ -126,7 +126,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
 
     public virtual void DestroyItem()
     {
-        Debug.Log("Destroying item " + currentItem.itemSO + " from slot " + name);
+        Debug.Log("Destroying item " + currentItem.ItemSO + " from slot " + name);
         currentItem.CloseItemInfo();
         Destroy(currentItem.gameObject);
         currentItem = null;
@@ -135,7 +135,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
     {
         if (currentItem != null)
         {
-            Debug.Log("Removing item " + currentItem.itemSO + " from slot" + name);
+            Debug.Log("Removing item " + currentItem.ItemSO + " from slot" + name);
             currentItem.CloseItemInfo();
             currentItem = null;
         }

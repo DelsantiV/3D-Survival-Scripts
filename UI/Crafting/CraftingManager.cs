@@ -34,7 +34,7 @@ public class CraftingManager
         foreach (CraftingCost ingredient in recipe.craftRequirements)
         {
             if (!ingredient.isTool) { inventory.RemoveItemFromInventory(ingredient.item, ingredient.itemAmount); } 
-            else { Debug.Log("Tool "+ingredient.item.name); }
+            else { Debug.Log("Tool "+ingredient.item.ItemName); }
         }
         inventory.AddItemToInventory(recipe.resultItem, recipe.amountCrafted);
     }
@@ -45,9 +45,9 @@ public class CraftingManager
         List<InventoryItemInfos> aggregatedCraftRequirements = new List<InventoryItemInfos>();
         foreach (CraftingCost ingredient in recipe.craftRequirements)
         { 
-            if (aggregatedCraftRequirements.Exists(ing => ing.itemSO == ingredient.item)) 
+            if (aggregatedCraftRequirements.Exists(ing => ing.item.ItemSO == ingredient.item.ItemSO)) 
             { 
-                aggregatedCraftRequirements.Find(ing => ing.itemSO == ingredient.item).itemAmount += ingredient.itemAmount; 
+                aggregatedCraftRequirements.Find(ing => ing.item.ItemSO == ingredient.item.ItemSO).itemAmount += ingredient.itemAmount; 
             }
             else 
             {
@@ -56,7 +56,7 @@ public class CraftingManager
         }
         foreach (InventoryItemInfos ingredient in aggregatedCraftRequirements)
         {
-            int amountInInventory = inventory.AmountOfItemInInventory(ingredient.itemSO);
+            int amountInInventory = inventory.AmountOfItemInInventory(ingredient.item);
             if (amountInInventory < ingredient.itemAmount) { return false; }
         }
         return true;

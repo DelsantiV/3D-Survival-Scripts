@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class InventoryItemInfos
 {
-    public Item_General_SO itemSO;
+    public GeneralItem item;
     public int itemAmount;
     //public bool canSpoil;
 
@@ -13,9 +13,9 @@ public class InventoryItemInfos
     {
     }
 
-    public InventoryItemInfos(Item_General_SO itemSO, int itemAmount)
+    public InventoryItemInfos(GeneralItem item, int itemAmount)
     {
-        this.itemSO = itemSO;
+        this.item = item;
         this.itemAmount = itemAmount;
     }
 

@@ -13,13 +13,13 @@ using System.Reflection;
 
 public class ItemLoader
 {
-    private Dictionary<string, ItemInInventory> allItems;
+    private Dictionary<string, GeneralItem> allItems;
     private List<Item_General_SO> allItemsSO;
     private string[] allItemNames;
     public static UnityEvent Ready;
     public static List<string> allPrefabsLocations;
     public static List<string> allIconsLocations;
-    Assembly asm = typeof(ItemInInventory).Assembly;
+    Assembly asm = typeof(GeneralItem).Assembly;
     private string[] itemsJsonKey = new string[] { "JSON", "Items" };
     private string[] itemsPrefabsKey = new string[] { "Icons", "Items" };
     private string[] itemsIconsKey = new string[] { "Prefabs", "Items" };
@@ -27,7 +27,7 @@ public class ItemLoader
     public ItemLoader()
     {
         Ready = new UnityEvent();
-        allItems = new Dictionary<string, ItemInInventory>();
+        allItems = new Dictionary<string, GeneralItem>();
         allItemsSO = new List<Item_General_SO>();
     }
 
@@ -96,11 +96,11 @@ public class ItemLoader
         itemBaseData.Initialize();
         Debug.Log("Loaded " + itemBaseData.name + " from class " + itemBaseData.item_class);
         allItemsSO.Add(itemBaseData);
-        //var item = Activator.CreateInstance(asm.GetType(itemBaseData.item_class));
-        //RegisterItem(item as ItemInInventory, itemBaseData.name);
+        var item = Activator.CreateInstance(asm.GetType(itemBaseData.item_class));
+        RegisterItem(item as GeneralItem, itemBaseData.name);
     }
 
-    private void RegisterItem(ItemInInventory item, string itemName)
+    private void RegisterItem(GeneralItem item, string itemName)
     {
         allItems.Add(itemName, item);
     }

@@ -9,12 +9,12 @@ public class ItemSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        Item_General_SO itemSO = ItemManager.GetItemSOByName(itemName);
-        Debug.Log(itemSO.maxStackSize);
-        GameObject itemPrefab = Instantiate(itemSO.itemPrefab, transform.position, transform.rotation);
+        GeneralItem item = ItemManager.GetItemByName(itemName);
+        Debug.Log(item.StackSize);
+        GameObject itemPrefab = Instantiate(item.ItemPrefab, transform.position, transform.rotation);
         itemPrefab.AddComponent<Item>();
         itemPrefab.AddComponent<Rigidbody>();
-        itemPrefab.GetComponent<Item>().itemSO = itemSO;
+        itemPrefab.GetComponent<Item>().item = item;
         Destroy(gameObject);
     }
 }

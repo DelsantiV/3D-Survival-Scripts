@@ -9,9 +9,9 @@ public class FoodItem : GeneralItem
 
     ItemProperties.NutritionProperties nutritionProperties;
 
-    public override void UseItem(PlayerManagerV2 player)
+    public override void UseItem(PlayerManagerV2 player, ItemInInventory itemUI)
     {
-        base.UseItem(player);
+        base.UseItem(player, itemUI);
         bool isEaten = player.TryEatFood(this);
         if (isEaten)
         {
