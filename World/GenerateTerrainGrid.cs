@@ -133,4 +133,14 @@ public class GenerateTerrainGrid : MonoBehaviour
         }
         terrain.terrainData.SetDetailLayer(cell.index.x * smallGridSize, cell.index.y * smallGridSize, layer, detailLayer);
     }
+
+    public bool IsInsideBounds(Vector3 position)
+    {
+        if (position.x > terrain.terrainData.bounds.max.x) { return false; }
+        if (position.x < terrain.terrainData.bounds.min.x) { return false; }
+        if (position.z > terrain.terrainData.bounds.max.z) { return false; }
+        if (position.z < terrain.terrainData.bounds.min.z) { return false; }
+
+        return true;
+    }
 }

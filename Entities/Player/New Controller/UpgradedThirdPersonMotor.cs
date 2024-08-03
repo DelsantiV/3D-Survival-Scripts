@@ -241,7 +241,7 @@ namespace Invector.vCharacterController
 
         public virtual void GetGridCellAfterMovement()
         {
-            if (input.magnitude >= 0.001)
+            if (input.magnitude >= 0.001 && terrainGrid.IsInsideBounds(transform.position))
             {
                 currentGridCell = terrainGrid.GetGridCell(transform.position);
             }
