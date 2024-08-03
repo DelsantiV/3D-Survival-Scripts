@@ -111,7 +111,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
     void Update()
     {
         HandleInteractions();
-        HandleKeyInputs();
+        //HandleKeyInputs();
     }
 
     public bool hasSomeUIOpen()

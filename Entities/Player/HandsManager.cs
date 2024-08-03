@@ -32,6 +32,13 @@ public class HandsManager
         none
     }
 
+    public enum HandMode
+    {
+        both,
+        single,
+        none
+    }
+
     public GameObject HandGO(Hand hand)
     {
         switch (hand)

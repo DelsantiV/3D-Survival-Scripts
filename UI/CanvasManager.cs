@@ -87,4 +87,48 @@ public class CanvasManager : MonoBehaviour
         SetInteractionText(text);
         SetInteractionUIActive(true);
     }
+
+    public void SetHandQuickSlots(HandsManager.HandMode handMode)
+    {
+        switch(handMode)
+        {
+            default : return; 
+            case HandsManager.HandMode.single:
+                {
+                    bothHandQuickSlotHolder.CloseUI();
+                    leftHandQuickSlotHolder.OpenUI();
+                    rightHandQuickSlotHolder.OpenUI();
+                    return;
+                }
+            case HandsManager.HandMode.both:
+                {
+                    bothHandQuickSlotHolder.OpenUI();
+                    leftHandQuickSlotHolder.CloseUI();
+                    rightHandQuickSlotHolder.CloseUI();
+                    return;
+                }
+        }
+    }
+
+    public void SetItemPileToHand(ItemPile itemPile, HandsManager.Hand hand)
+    {
+        switch(hand)
+        {
+            case HandsManager.Hand.both:
+                {
+                    SetHandQuickSlots(HandsManager.HandMode.both);
+                    return;
+                }
+            case HandsManager.Hand.left:
+                {
+                    SetHandQuickSlots(HandsManager.HandMode.single);
+                    return;
+                }
+            case HandsManager.Hand.right:
+                {
+                    SetHandQuickSlots(HandsManager.HandMode.single);
+                    return;
+                }
+        }
+    }
 }
