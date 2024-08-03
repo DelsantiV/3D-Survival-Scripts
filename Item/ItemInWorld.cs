@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
 
-public class Item : MonoBehaviour
+public class ItemInWorld : MonoBehaviour
 {
     public GeneralItem item;
     public void PickUpItem(PlayerManager player)

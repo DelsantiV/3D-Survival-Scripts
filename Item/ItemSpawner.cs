@@ -14,9 +14,9 @@ public class ItemSpawner : MonoBehaviour
         {
             Debug.Log(item.StackSize);
             GameObject itemPrefab = Instantiate(item.ItemPrefab, transform.position, transform.rotation);
-            itemPrefab.AddComponent<Item>();
+            itemPrefab.AddComponent<ItemInWorld>();
             itemPrefab.AddComponent<Rigidbody>();
-            itemPrefab.GetComponent<Item>().item = item;
+            itemPrefab.GetComponent<ItemInWorld>().item = item;
             Destroy(gameObject);
         }
     }

@@ -101,7 +101,7 @@ public class PlayerManagerV2 : MonoBehaviour, IDamageable
         {
             var selectionTransform = hit.transform;
 
-            if (selectionTransform.GetComponent<Item>())
+            if (selectionTransform.GetComponent<ItemInWorld>())
             {
                 Item currentInteraction = selectionTransform.GetComponent<Item>();
                 //interactionText.text = currentInteraction.ObjectName;
@@ -110,7 +110,7 @@ public class PlayerManagerV2 : MonoBehaviour, IDamageable
 
                 if (Input.GetKeyDown(KeyCode.E))
                 {
-                    selectionTransform.GetComponent<Item>().PickUpItem(Player);
+                    selectionTransform.GetComponent<ItemInWorld>().PickUpItem(Player);
                 }
             }
             else
@@ -173,9 +173,9 @@ public class PlayerManagerV2 : MonoBehaviour, IDamageable
             for (int i = 0; i < amount; i++)
             {
                 GameObject itemPrefab = Instantiate(item.ItemPrefab, itemDropper.position, itemDropper.rotation);
-                itemPrefab.AddComponent<Item>();
+                itemPrefab.AddComponent<ItemInWorld>();
                 itemPrefab.AddComponent<Rigidbody>();
-                itemPrefab.GetComponent<Item>().item = item;
+                itemPrefab.GetComponent<ItemInWorld>().item = item;
             }
         }
     }
