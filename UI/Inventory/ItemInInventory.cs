@@ -96,6 +96,7 @@ public class ItemInInventory : Dragable, IPointerDownHandler
         //Make movement consistent with canvas scale
         rectTransform.anchoredPosition += eventData.delta/canvas.scaleFactor;
 
+        // Need to modify to correctly get bounds
         if (rectTransform.anchoredPosition.x > inventoryGO.GetComponent<RectTransform>().sizeDelta.x / 2 + inventoryGO.GetComponent<RectTransform>().anchoredPosition.x)
         {
             gameObject.GetComponent<Image>().color = Color.red;
