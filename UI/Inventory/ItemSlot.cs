@@ -29,6 +29,8 @@ public class ItemSlot : MonoBehaviour, IDropHandler
         }
     }
 
+    public ItemPile currentPile { get; private set; }
+
 
     public virtual int amountOfItem
     {
@@ -46,7 +48,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
     {
         get
         {
-            if (currentItemUI == null)
+            if (currentItemUI == null && currentPile == null)
             {
                 return true;
             }
@@ -54,7 +56,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
         }
         set 
         { 
-            if (currentItem == null && !_isInOp) 
+            if (currentItem == null && currentPile == null && !_isInOp) 
             {
                 isEmpty = true;
             }
@@ -64,6 +66,15 @@ public class ItemSlot : MonoBehaviour, IDropHandler
             }
             return;
         }
+    }
+
+    public virtual bool isHoldingPile
+    {
+        get { return (currentItem == null && currentPile != null); }
+    }
+    public virtual bool isSingleItem
+    {
+        get { return (currentItem != null && currentPile == null); }
     }
 
     public virtual void OnDrop(PointerEventData eventData)
