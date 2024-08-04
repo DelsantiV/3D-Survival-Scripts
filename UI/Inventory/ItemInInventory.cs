@@ -45,7 +45,6 @@ public class ItemInInventory : Dragable, IPointerDownHandler
 
     public override void Initialize()
     {
-        Debug.Log("Initializing item...");
         base.Initialize();
         if (Item != null)
         {
@@ -56,9 +55,9 @@ public class ItemInInventory : Dragable, IPointerDownHandler
         SetAmountOfItem(amountOfItem);
         canvas = FindFirstObjectByType<Canvas>();
         itemInfoTemplate = Resources.Load<GameObject>("UI/ItemInfoTemplate"); // Replace with Addressables ?
+        inventoryGO = transform.parent.parent.gameObject;
         isOutsideBounds = false;
         slot = transform.parent.GetComponent<ItemSlot>();
-        Debug.Log(slot.name);
     }
 
     public void SetAmountOfItem(int amount)

@@ -38,7 +38,8 @@ public class GeneralItem
     {
         if (itemIconHandle.Status == AsyncOperationStatus.Succeeded)
         {
-            ItemInInventory itemUI = UnityEngine.Object.Instantiate(itemIconHandle.Result.AddComponent<ItemInInventory>(), slot.transform.position, slot.transform.rotation);
+            GameObject itemUIGO = UnityEngine.Object.Instantiate(itemIconHandle.Result, slot.transform.position, slot.transform.rotation);
+            ItemInInventory itemUI = itemUIGO.AddComponent<ItemInInventory>();
             slot.SetItemToSlot(itemUI);
             InitializeItemInInventory(itemUI, amount);
             slot._isInOp = false;
