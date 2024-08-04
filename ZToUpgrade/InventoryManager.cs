@@ -34,28 +34,28 @@ public class InventoryManager
         SetInventoryUI(inventoryUI);
     }
 
-    public void AddNewItemToInventoryEmptySlot(Item_General_SO itemSO, int amount)
+    public void AddNewItemToInventoryEmptySlot(GeneralItem item, int amount)
     {
         ItemSlot slotToEquip = FindNextEmptySlot();
-        slotToEquip.AddItemToNewSlot(iconInInventory, itemSO, amount);
+        slotToEquip.AddItemToNewSlot(iconInInventory, item, amount);
         
-        itemsInInventory.Add(new InventoryItemInfos(itemSO, amount));
+        itemsInInventory.Add(new InventoryItemInfos(item, amount));
     }
 
-    public void AddItemToInventory(Item_General_SO itemSO, int amount)
+    public void AddItemToInventory(GeneralItem item, int amount)
     {
         int amountLeft = amount;
-        int maxStackSize = itemSO.maxStackSize;
-        if (IsItemInInventory(itemSO))
+        int maxStackSize = item.StackSize;
+        if (IsItemInInventory(item))
         {
-            ItemSlot slotWithItem = FindNextSlotkWithItemNotFull(itemSO);
+            ItemSlot slotWithItem = FindNextSlotkWithItemNotFull(item);
             while (slotWithItem != null && amountLeft > 0)
             {
-                int currentAmount = slotWithItem.currentItem.GetComponent<ItemInInventory>().amountOfItem;
+                int currentAmount = slotWithItem.currentItemUI.GetComponent<ItemInInventory>().amountOfItem;
                 int amountToAdd = Mathf.Min(maxStackSize - currentAmount, amountLeft);
                 slotWithItem.AddItemAmountToSlot(amountToAdd);
                 amountLeft -= amountToAdd;
-                slotWithItem = FindNextSlotkWithItemNotFull(itemSO);
+                slotWithItem = FindNextSlotkWithItemNotFull(item);
 
             }
         }
@@ -65,7 +65,7 @@ public class InventoryManager
         while (slotEmpty != null && amountLeft > 0)
         {
             int amountToAdd = Mathf.Min(maxStackSize, amountLeft);
-            slotEmpty.AddItemToNewSlot(iconInInventory, itemSO, amountToAdd);
+            slotEmpty.AddItemToNewSlot(iconInInventory, item, amountToAdd);
             amountLeft -= amountToAdd;
             slotEmpty = FindNextEmptySlot();
         }
@@ -73,40 +73,40 @@ public class InventoryManager
         if (amountLeft > 0)
         {
             Debug.Log("Could not add item, inventory is full");
-            PlayerManager.Player.SpawnItemFromPlayer(itemSO, amountLeft);
+            PlayerManager.Player.SpawnItemFromPlayer(item, amountLeft);
         }
 
         if (amountLeft < amount)
         {
-            InventoryItemInfos item = FindItemInInventory(itemSO);
-            if (item != null)
+            InventoryItemInfos itemInfos = FindItemInInventory(item);
+            if (itemInfos != null)
             {
-                item.itemAmount += amount - amountLeft;
+                itemInfos.itemAmount += amount - amountLeft;
             }
             else
             {
-                itemsInInventory.Add(new InventoryItemInfos(itemSO, amount - amountLeft));
+                itemsInInventory.Add(new InventoryItemInfos(item, amount - amountLeft));
             }
         }
 
     }
 
-    public void RemoveItemFromInventory(Item_General_SO itemSO, int amount) 
+    public void RemoveItemFromInventory(GeneralItem item, int amount) 
     {
-        ItemSlot slotWithItem = FindNextSlotkWithItem(itemSO);
+        ItemSlot slotWithItem = FindNextSlotkWithItem(item);
         int amountLeft = amount;
         while (slotWithItem != null && amountLeft > 0)
         {
-            int currentAmount = slotWithItem.currentItem.GetComponent<ItemInInventory>().amountOfItem;
+            int currentAmount = slotWithItem.currentItemUI.GetComponent<ItemInInventory>().amountOfItem;
             int amountToRemove = Mathf.Min(currentAmount, amountLeft);
             slotWithItem.RemoveItemAmountFromSlot(amountToRemove);
             amountLeft -= amountToRemove;
             //Debug.Log("Removing " + amountToRemove + itemSO.itemName + " from " + slotWithItem.name + " (Containing "+currentAmount+"). Still "+amountLeft+" to remove.");
-            slotWithItem = FindNextSlotkWithItem(itemSO);
+            slotWithItem = FindNextSlotkWithItem(item);
 
         }
 
-        RemoveItemFromInventoryList(itemSO, amount - amountLeft);
+        RemoveItemFromInventoryList(item, amount - amountLeft);
         if (amountLeft > 0)
         {
             Debug.Log("Could not remove enough items, no more in inventory");
@@ -115,13 +115,13 @@ public class InventoryManager
 
     public void RemoveItemFromInventory(ItemSlot slotWithItem, int amount)
     {
-        int currentAmount = slotWithItem.currentItem.amountOfItem;
+        int currentAmount = slotWithItem.currentItemUI.amountOfItem;
         if  (currentAmount < amount)
         {
             Debug.Log("Tried to remove too many items from slot, capped to current amount.");
             amount = currentAmount;
         }
-        RemoveItemFromInventoryList(slotWithItem.currentItem.itemSO, amount);
+        RemoveItemFromInventoryList(slotWithItem.currentItemUI.Item, amount);
         slotWithItem.RemoveItemAmountFromSlot(amount);
     }
 
@@ -134,9 +134,9 @@ public class InventoryManager
     {
         foreach (ItemSlot slot in slotList)
         {
-            if (slot.currentItem != null)
+            if (slot.currentItemUI != null)
             {
-                AddItemToInventoryList(slot.currentItem.itemSO, slot.currentItem.amountOfItem);
+                AddItemToInventoryList(slot.currentItemUI.Item, slot.currentItemUI.amountOfItem);
             }
         }
     }
@@ -145,63 +145,63 @@ public class InventoryManager
     {
         if (itemsInInventory != null)
         {
-            foreach (InventoryItemInfos item in itemsInInventory)
+            foreach (InventoryItemInfos itemInfo in itemsInInventory)
             {
-                AddItemToInventory(item.itemSO, item.itemAmount);
+                AddItemToInventory(itemInfo.item, itemInfo.itemAmount);
             }
         }
     }
 
-    public bool IsItemInInventory(Item_General_SO itemSO)
+    public bool IsItemInInventory(GeneralItem item)
     {
-        foreach (InventoryItemInfos item in itemsInInventory)    
+        foreach (InventoryItemInfos itemInfo in itemsInInventory)    
         {
-            if (item.itemSO == itemSO) { return true; }
+            if (item.ItemSO == itemInfo.item.ItemSO) { return true; }
         }
         return false;
     }
 
-    public int AmountOfItemInInventory(Item_General_SO itemSO)
+    public int AmountOfItemInInventory(GeneralItem item)
     {
-        InventoryItemInfos item = FindItemInInventory(itemSO);
-        if (item == null) return 0;
-        else return item.itemAmount;
+        InventoryItemInfos itemInfo = FindItemInInventory(item);
+        if (itemInfo == null) return 0;
+        else return itemInfo.itemAmount;
     }
 
-    public InventoryItemInfos FindItemInInventory(Item_General_SO itemSO)
+    public InventoryItemInfos FindItemInInventory(GeneralItem item)
     {
-        foreach (InventoryItemInfos item in itemsInInventory)
+        foreach (InventoryItemInfos itemInfo in itemsInInventory)
         {
-            if (item.itemSO == itemSO) { return item; }
+            if (item.ItemSO == itemInfo.item.ItemSO) { return itemInfo; }
         }
         return null;
     }
 
-    private void AddItemToInventoryList(Item_General_SO itemSO, int amount)
+    private void AddItemToInventoryList(GeneralItem item, int amount)
     {
         if (amount > 0)
         {
-            InventoryItemInfos item = FindItemInInventory(itemSO);
-            if (item != null)
+            InventoryItemInfos itemInfo = FindItemInInventory(item);
+            if (itemInfo != null)
             {
-                item.itemAmount += amount;
+                itemInfo.itemAmount += amount;
             }
             else
             {
-                itemsInInventory.Add(new InventoryItemInfos(itemSO, amount));
+                itemsInInventory.Add(new InventoryItemInfos(item, amount));
             }
         }
     }
 
-    private void RemoveItemFromInventoryList(Item_General_SO itemSO, int amount)
+    private void RemoveItemFromInventoryList(GeneralItem item, int amount)
     {
-        InventoryItemInfos item = FindItemInInventory(itemSO);
-        if (item != null)
+        InventoryItemInfos itemInfo = FindItemInInventory(item);
+        if (itemInfo != null)
         {
-            item.itemAmount -= amount;
-            if (item.itemAmount <= 0)
+            itemInfo.itemAmount -= amount;
+            if (itemInfo.itemAmount <= 0)
             {
-                itemsInInventory.Remove(item);
+                itemsInInventory.Remove(itemInfo);
             }
         }
     }
@@ -218,7 +218,7 @@ public class InventoryManager
     {
         foreach (ItemSlot slot in slotList)
         {
-            if (slot.currentItem == null)
+            if (slot.currentItemUI == null)
             {
                 return slot;
             }
@@ -226,13 +226,13 @@ public class InventoryManager
         return null;
     }
 
-    public ItemSlot FindNextSlotkWithItem(Item_General_SO itemSO)
+    public ItemSlot FindNextSlotkWithItem(GeneralItem item)
     {
         foreach (ItemSlot slot in slotList)
         {
-            if (slot.currentItem != null)
+            if (slot.currentItemUI != null)
             {
-                if (slot.currentItem.itemSO == itemSO && slot.currentItem.amountOfItem > 0)
+                if (slot.currentItemUI.ItemSO == item.ItemSO && slot.currentItemUI.amountOfItem > 0)
                 {
                     return slot;
                 }
@@ -241,13 +241,13 @@ public class InventoryManager
         return null;
     }
 
-    public ItemSlot FindNextSlotkWithItemNotFull(Item_General_SO itemSO)
+    public ItemSlot FindNextSlotkWithItemNotFull(GeneralItem item)
     {
         foreach (ItemSlot slot in slotList)
         {
-            if (slot.currentItem != null)
+            if (slot.currentItemUI != null)
             {
-                if (slot.currentItem.itemSO == itemSO && slot.currentItem.amountOfItem < itemSO.maxStackSize)
+                if (slot.currentItemUI.ItemSO == item.ItemSO && slot.currentItemUI.amountOfItem < item.ItemSO.maxStackSize)
                 {
                     return slot;
                 }

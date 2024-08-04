@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class ItemInInventory : Dragable, IPointerDownHandler
 {
@@ -16,20 +17,22 @@ public class ItemInInventory : Dragable, IPointerDownHandler
     protected GameObject inventoryGO;
     protected bool isOutsideBounds;
 
-    public Item_General_SO itemSO;
+    public Item_General_SO ItemSO {get; private set;}
+    public GeneralItem Item { get; private set; }
 
-    public PlayerManager player = PlayerManager.Player;
+    public PlayerManager player;
     public InventoryManager inventory;
     public ItemSlot slot;
-    public static ItemInInventory activeItem;
+    public static ItemInInventory activeItem; //replace with true/false bool to avoid use of static
 
-    public void CreateItemInInventory(Item_General_SO itemSO, int amount)
+    public void CreateItemInInventory(GeneralItem item, int amount)
     {
+        this.Item = item;
+        ItemSO = item.ItemSO;
         Initialize();
         inventory = player.GetInventory();
-        this.itemSO = itemSO; 
         amountOfItem = amount;
-        gameObject.GetComponent<Image>().sprite = itemSO.iconInInventory;
+        gameObject.GetComponent<Image>().sprite = ItemSO.iconInInventory;
         amountText = transform.Find("AmountText").GetComponent<TextMeshProUGUI>();
         canvas = FindFirstObjectByType<Canvas>();
         itemInfoTemplate = Resources.Load<GameObject>("UI/ItemInfoTemplate");
@@ -37,7 +40,25 @@ public class ItemInInventory : Dragable, IPointerDownHandler
         isOutsideBounds = false;
         slot = transform.parent.GetComponent<ItemSlot>();
 
-        inventoryGO = player.GetInventoryUI().gameObject;
+        //inventoryGO = player.GetInventoryUI().gameObject;
+    }
+
+    public override void Initialize()
+    {
+        Debug.Log("Initializing item...");
+        base.Initialize();
+        if (Item != null)
+        {
+            ItemSO = Item.ItemSO;
+        }
+        player = PlayerManager.Player;
+        amountText = transform.Find("AmountText").GetComponent<TextMeshProUGUI>();
+        SetAmountOfItem(amountOfItem);
+        canvas = FindFirstObjectByType<Canvas>();
+        itemInfoTemplate = Resources.Load<GameObject>("UI/ItemInfoTemplate"); // Replace with Addressables ?
+        isOutsideBounds = false;
+        slot = transform.parent.GetComponent<ItemSlot>();
+        Debug.Log(slot.name);
     }
 
     public void SetAmountOfItem(int amount)
@@ -105,6 +126,11 @@ public class ItemInInventory : Dragable, IPointerDownHandler
 
     public virtual void RemoveItemFromSlot()
     {
+        if (slot is QuickSlot)
+        {
+            QuickSlot quickslot = (QuickSlot) slot;
+            quickslot.RemoveItemFromHands();
+        }
         slot.RemoveItem();
     }
 
@@ -119,17 +145,30 @@ public class ItemInInventory : Dragable, IPointerDownHandler
         {
             OpenItemInfo();
         }
+        else if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            EquipItemInNextEmptyHand();
+        }
     }
 
     protected virtual void OpenItemInfo()
     {
-        if (itemInfoGO == null)
+        if (itemInfoGO == null && slot is not QuickSlot)
         {
-            itemInfoGO = Instantiate(itemInfoTemplate, transform.parent.parent);
-            itemInfoGO.transform.Find("ItemNameText").GetComponent<TextMeshProUGUI>().SetText(itemSO.itemName);
+            /*
+            itemInfoGO = Instantiate(itemInfoTemplate, canvas.transform);
+            itemInfoGO.transform.Find("ItemNameText").GetComponent<TextMeshProUGUI>().SetText(ItemSO.name);
 
-            itemInfoGO.transform.Find("ItemInfoText").GetComponent<TextMeshProUGUI>().SetText(itemSO.itemInfo);
+            itemInfoGO.transform.Find("ItemInfoText").GetComponent<TextMeshProUGUI>().SetText(ItemSO.item_info);
             itemInfoGO.transform.Find("DropButton").GetComponent<Button>().onClick.AddListener(DropItem);
+
+            GameObject useButtonGO = itemInfoGO.transform.Find("UseButton").gameObject;
+            useButtonGO.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Equip";
+            useButtonGO.SetActive(true);
+            Button useButton = useButtonGO.GetComponent<Button>();
+            useButton.onClick.AddListener(EquipItemInNextEmptyHand);
+            */
+            Debug.Log("Should show Info");
         }
     }
 
@@ -143,12 +182,49 @@ public class ItemInInventory : Dragable, IPointerDownHandler
 
     private void DropItem()
     {
-        player.SpawnItemFromPlayer(itemSO, amountOfItem);
+        player.SpawnItemFromPlayer(Item, amountOfItem);
         Destroy(gameObject);
         Debug.Log("Dropped item");
         CloseItemInfo();
     }
 
-    public GameObject ItemGO() { return itemSO.itemPrefab; }
-    public string Name { get { return itemSO.name; } }  
+    private void UseItem()
+    {
+        if (Item != null) { Item.UseItem(player, this); }
+        else { }
+    }
+
+    public void EquipItemInNextEmptyHand()
+    {
+        ItemSlot previousSlot = slot;
+        if (player.HandsManager.TryEquipItemToNextEmptyHand(Item))
+        {
+            Debug.Log("Equiped " + ItemSO.name);
+            previousSlot.RemoveItem();
+            RefreshSlot();
+        }
+        else
+        {
+            Debug.Log("Could not equip item, no empty hand found !");
+        }
+    }
+
+    public void EquipItemInHand(HandsManager.Hand hand)
+    {
+        if (player.HandsManager.TryEquipItemToHand(Item, hand))
+        {
+            Debug.Log("Equiped " + ItemSO.name);
+        }
+        else
+        {
+            Debug.Log("Could not equip item, hand was not empty !");
+        }
+    }
+
+    public void SetItem(GeneralItem item, int amount = 1) 
+    { 
+        Item = item; 
+        amountOfItem = amount;
+        gameObject.GetComponent<Image>().sprite = item.ItemSprite;
+    }
 }

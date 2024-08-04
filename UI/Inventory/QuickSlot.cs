@@ -11,19 +11,6 @@ public class QuickSlot : ItemSlot
     public HandsManager.Hand hand;
 
 
-    public virtual bool isEmpty
-    {
-        get
-        {
-            if (currentItem  == null)
-            {
-                return true;
-            }
-            return false;
-        }
-    }
-
-
     public virtual void SetHandsManager(HandsManager handsManager,  HandsManager.Hand hand)
     {
         this.hand = hand;
@@ -39,11 +26,20 @@ public class QuickSlot : ItemSlot
         base.AddItem(item);
         // Needs to be improved: do not instantiate item if could not add
     }
+    public override void AddItem(GeneralItem item, int amount = 1)
+    {
+        if (currentItem == null)
+        {
+            handsManager.InstantiateItemInHand(item, hand);
+        }
+        base.AddItem(item);
+        // Needs to be improved: do not instantiate item if could not add
+    }
 
     public override void OnDrop(PointerEventData eventData)
     {
         GameObject itemBeingDragGO = eventData.pointerDrag;
-        EquippableItem item;
+        ItemInInventory item;
         if (itemBeingDragGO != null && itemBeingDragGO.TryGetComponent(out item)) 
         { 
             AddItem(item);

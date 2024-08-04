@@ -104,7 +104,7 @@ namespace Invector.vCharacterController
         internal Vector3 colliderCenter;                    // storage the center of the capsule collider info                
         internal Vector3 inputSmooth;                       // generate smooth input based on the inputSmooth value       
         internal Vector3 moveDirection;                     // used to know the direction you're moving 
-        internal GenerateTerrainGrid terrainGrid;
+        internal TerrainGrid terrainGrid;
         [HideInInspector] public GridCell currentGridCell { get; protected set; }
 
         #endregion
@@ -149,7 +149,7 @@ namespace Invector.vCharacterController
             isGrounded = true;
 
             // terrain grid data
-            terrainGrid = Terrain.activeTerrain.GetComponent<GenerateTerrainGrid>();
+            terrainGrid = Terrain.activeTerrain.GetComponent<TerrainGrid>();
             currentGridCell = terrainGrid.GetGridCell(transform.position);
         }
 
@@ -241,7 +241,7 @@ namespace Invector.vCharacterController
 
         public virtual void GetGridCellAfterMovement()
         {
-            if (input.magnitude >= 0.001)
+            if (input.magnitude >= 0.001 && terrainGrid.IsInsideBounds(transform.position))
             {
                 currentGridCell = terrainGrid.GetGridCell(transform.position);
             }

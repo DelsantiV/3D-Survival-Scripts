@@ -8,6 +8,7 @@ using System;
 using Invector.vCharacterController;
 using static UnityEditor.Progress;
 using UnityEditor.Animations;
+using UnityEngine.Events;
 
 
 public class PlayerManager : MonoBehaviour, IDamageable
@@ -18,33 +19,51 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     [HideInInspector] public InventoryManager inventory { get; private set; }
     [HideInInspector] public CraftingManager craftingManager { get; private set; }
-    private DigestiveSystem digestiveSystem;
+    public DigestiveSystem DigestiveSystem { get; private set; }
     private TextMeshProUGUI interactionText;
-    private PlayerStatus playerStatus;
+    public PlayerStatus PlayerStatus { get; private set; }
     private Transform playerHead;
-    private HandsManager handsManager;
-
-
+    public HandsManager HandsManager {get; private set; }
     [SerializeField] private float maxHealth;
     [SerializeField] private float maxFatigue;
     [SerializeField] private float maxCalories;
-    [SerializeField] private GeneralInventoryUI inventoryUI;
-    [SerializeField] private int numberOfInventorySlots;
-    [SerializeField] private CraftingUI craftingUI;
-    [SerializeField] private GameObject interaction_Info_UI;
-    [SerializeField] private InventoryItemInfos[] startingItems;
-    [SerializeField] private Image pickUpImage;
+    [SerializeField] private string[] startingItems;
     [SerializeField] private GameObject rightHand;
     [SerializeField] private GameObject leftHand;
-    [SerializeField] private QuickSlot leftHandQuickSlot;
-    [SerializeField] private QuickSlot rightHandQuickSlot;
     [SerializeField] private HandsManager.Hand prefHand = HandsManager.Hand.right;
+    public HandsInventory HandsInventory { get; private set; }
+
+    private CanvasManager canvasManager;
+
+    public QuickSlot LeftHandQuickSlot
+    {
+        get
+        {
+            return canvasManager.GetHandQuickSlot(HandsManager.Hand.left);
+        }
+    }
+    public QuickSlot RightHandQuickSlot
+    {
+        get
+        {
+            return canvasManager.GetHandQuickSlot(HandsManager.Hand.right);
+        }
+    }
+    public QuickSlot BothHandQuickSlot
+    {
+        get
+        {
+            return canvasManager.GetHandQuickSlot(HandsManager.Hand.both);
+        }
+    }
 
     private Transform itemDropper;
     private LayerMask playerLayer;
     public UpgradedThirdPersonInput InputManager { get; private set; }
     public UpgradedThirdPersonController PlayerController { get; private set; }
     public AnimatorController AnimatorController { get; private set; }
+
+    public UnityEvent OnPlayerReady = new();
 
     //public event Action OnUIChange; // not implemented yet
 
@@ -56,25 +75,35 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private void Awake()
     {
         Player = this;
-        inventory = new InventoryManager(numberOfInventorySlots, inventoryUI);
-        craftingManager = new CraftingManager(craftingUI, inventory);
+        //inventory = new InventoryManager(numberOfInventorySlots, inventoryUI);
+        //craftingManager = new CraftingManager(craftingUI, inventory);
         itemDropper = transform.Find("Item Dropper");
-        playerStatus = new PlayerStatus(maxHealth, maxFatigue, maxCalories);
-        digestiveSystem = new DigestiveSystem(playerStatus);
+        PlayerStatus = new PlayerStatus(maxHealth, maxFatigue, maxCalories);
+        DigestiveSystem = new DigestiveSystem(PlayerStatus);
         playerLayer = LayerMask.GetMask("Player");
         playerHead = transform.Find("PlayerHead");
         InputManager = GetComponent<UpgradedThirdPersonInput>();
-        handsManager = new HandsManager(leftHand, rightHand, leftHandQuickSlot, rightHandQuickSlot, prefHand);
         AnimatorController = GetComponent<AnimatorController>();
     }
 
     void Start()
     {
-        interactionText = interaction_Info_UI.GetComponent<TextMeshProUGUI>();
-        inventoryUI.CloseUI();
-        craftingUI.CloseUI();
+        //interactionText = interaction_Info_UI.GetComponent<TextMeshProUGUI>();
+        //inventoryUI.CloseUI();
+        //craftingUI.CloseUI();
 
-        foreach (InventoryItemInfos item in startingItems) { inventory.AddItemToInventory(item.itemSO, item.itemAmount); }
+        //foreach (InventoryItemInfos item in startingItems) { inventory.AddItemToInventory(item.itemSO, item.itemAmount); }
+        OnPlayerReady.Invoke();
+        InputManager.cameraLocked = false;
+        InputManager.canAction = true;
+        InputManager.canMove = true;
+    }
+
+    public void SetCanvasManager(CanvasManager canvasManager)
+    {
+        this.canvasManager = canvasManager;
+        HandsManager = new HandsManager(leftHand, rightHand, LeftHandQuickSlot, RightHandQuickSlot, prefHand);
+        HandsInventory = new HandsInventory(this);
     }
 
 
@@ -86,7 +115,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     public bool hasSomeUIOpen()
     {
-        return (inventoryUI.IsOpen() || craftingUI.IsOpen());
+        //return (inventoryUI.IsOpen() || craftingUI.IsOpen());
+        return false;
     }
 
     private void HandleInteractions()
@@ -97,32 +127,32 @@ public class PlayerManager : MonoBehaviour, IDamageable
         {
             var selectionTransform = hit.transform;
 
-            if (selectionTransform.GetComponent<Item>())
+            if (selectionTransform.GetComponent<ItemInWorld>())
             {
-                Item currentInteraction = selectionTransform.GetComponent<Item>();
-                interactionText.text = currentInteraction.DisplayObjectName();
-                interaction_Info_UI.SetActive(true);
+                ItemInWorld currentInteraction = selectionTransform.GetComponent<ItemInWorld>();
+                canvasManager.SetInteractionTextAndActivate(currentInteraction.ObjectName);
                 isInteracting = true;
 
                 if (Input.GetKeyDown(KeyCode.E))
                 {
-                    selectionTransform.GetComponent<Item>().PickUpItem(Player);
+                    selectionTransform.GetComponent<ItemInWorld>().PickUpItem(Player);
                 }
             }
             else
             {
-                interaction_Info_UI.SetActive(false);
+                canvasManager.SetInteractionUIActive(false);
             }
 
         }
         else
         {
-            interaction_Info_UI.SetActive(false);
+            canvasManager.SetInteractionUIActive(false);
         }
     }
 
     private void HandleKeyInputs()
     {
+        /*
         if (Input.GetKeyDown(KeyCode.I))
         {
 
@@ -140,7 +170,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         if (Input.GetKeyDown(KeyCode.U))
         {
-            if (!craftingUI.IsOpen())
+            if (!canvasManager.craftingUI.IsOpen())
             {
                 Debug.Log("Crafting panel opened !");
                 craftingUI.OpenUI();
@@ -152,6 +182,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
                 craftingUI.CloseUI();
             }
         }
+        */
 
         InputManager.cameraLocked = hasSomeUIOpen();
         InputManager.canAction = !hasSomeUIOpen();
@@ -162,23 +193,21 @@ public class PlayerManager : MonoBehaviour, IDamageable
         }
     }
 
-    public void SpawnItemFromPlayer(Item_General_SO itemSO, int amount)
+    public void SpawnItemFromPlayer(GeneralItem item, int amount)
     {
-        if (itemSO.itemPrefab != null)
+        if (item.ItemPrefab != null)
         {
             for (int i = 0; i < amount; i++)
             {
-                GameObject itemPrefab = Instantiate(itemSO.itemPrefab, itemDropper.position, itemDropper.rotation);
-                itemPrefab.AddComponent<Item>();
+                GameObject itemPrefab = Instantiate(item.ItemPrefab, itemDropper.position, itemDropper.rotation);
+                itemPrefab.AddComponent<ItemInWorld>();
                 itemPrefab.AddComponent<Rigidbody>();
-                itemPrefab.GetComponent<Item>().itemSO = itemSO;
+                itemPrefab.GetComponent<ItemInWorld>().item = item;
             }
         }
     }
-
-    public PlayerStatus GetPlayerStatus() { return playerStatus; }
     public InventoryManager GetInventory() { return inventory; }
-    public GeneralInventoryUI GetInventoryUI() { return inventoryUI; }
+    //public GeneralInventoryUI GetInventoryUI() { return inventoryUI; }
     public void Die()
     {
         Debug.Log("You died !");
@@ -186,21 +215,23 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     public void TakeDamage(float damageAmount, DamageSource damageSource)
     {
-        playerStatus.currentHealth -= damageAmount;
-        if (playerStatus.currentHealth < 0) { Die(); };
+        PlayerStatus.currentHealth -= damageAmount;
+        if (PlayerStatus.currentHealth < 0) { Die(); };
 
     }
 
-    public DigestiveSystem GetDigestiveSystem() { return digestiveSystem; }
     public bool TryEatFood(FoodItem foodItem)
     {
-        return digestiveSystem.TryAddFoodToDigestiveSystem(foodItem);
+        return DigestiveSystem.TryAddFoodToDigestiveSystem(foodItem);
     }
-
-    public HandsManager GetHandsManager() {  return handsManager; }
 
     public void SetActionAnimation(AnimationClip anim)
     {
         
+    }
+
+    public bool TryCollectItem(ItemInWorld itemObject) 
+    {
+        return HandsInventory.TryAddItemToHands(itemObject.item);
     }
 }

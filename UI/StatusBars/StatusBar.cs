@@ -8,22 +8,30 @@ using System;
 public class StatusBar : MonoBehaviour
 {
     private Slider slider;
+    private CanvasManager canvasManager;
+    private PlayerManager player;
     protected TextMeshProUGUI amountText;
     protected float maxAmount;
     protected float currentAmount;
     protected PlayerStatus status;
 
+
     public virtual void Awake()
+    {
+        
+    }
+
+    public virtual void InitializeStatusBar(PlayerManager player)
     {
         maxAmount = 0;
         currentAmount = 0;
         amountText = transform.Find("FillArea").transform.Find("AmountText").GetComponent<TextMeshProUGUI>();
-    }
-    public virtual void Start()
-    {
         slider = GetComponent<Slider>();
-        status = PlayerManager.Player.GetPlayerStatus();
-        CustomTickSystem.OnLargeTick += UpdateSlider;
+        canvasManager = transform.root.GetComponent<CanvasManager>();
+
+        status = player.PlayerStatus;
+        UpdateStatusBar();
+        CustomTickSystem.OnLargeTick += UpdateStatusBar;
     }
 
     public virtual void SetAmount(float amount)
@@ -44,6 +52,8 @@ public class StatusBar : MonoBehaviour
         SetAmount(currentAmount - amount);
     }
 
+    public virtual void UpdateValues() { }
+
     public virtual void SetText() { amountText.SetText(currentAmount.ToString() + "/" + maxAmount.ToString()); }
     public virtual void SetText(string text) { amountText.SetText(text); }
     public virtual void SetSlider() { slider.value = currentAmount / maxAmount; }
@@ -52,6 +62,12 @@ public class StatusBar : MonoBehaviour
     {
         SetText();
         SetSlider();
+    }
+
+    public virtual void UpdateStatusBar()
+    {
+        UpdateValues();
+        UpdateSlider();
     }
 
 }

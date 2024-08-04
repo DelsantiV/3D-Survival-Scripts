@@ -12,7 +12,7 @@ public class CraftingButton : MonoBehaviour
     private CraftingRecipes_SO craftingRecipe;
     private GameObject craftButtonHolder;
     private Image outputImageHolder;
-    private Item_General_SO resultItem;
+    private GeneralItem resultItem;
     private CraftingCost[] totalCraftingCost;
     private GameObject ingredientText;
     private TextMeshProUGUI titleText;
@@ -23,15 +23,15 @@ public class CraftingButton : MonoBehaviour
     {
         SetCraftingManager(craftingManager);
         this.craftingRecipe = craftingRecipe;
+        resultItem = craftingRecipe.resultItem;
         craftButtonHolder = transform.Find("CraftButton").gameObject;
-        Sprite outputImage = craftingRecipe.resultItem.iconInInventory;
+        Sprite outputImage = craftingRecipe.resultItem.ItemSprite;
         outputImageHolder = transform.Find("Image").Find("OutputImage").GetComponent<Image>();
         outputImageHolder.sprite = outputImage;
-        resultItem = craftingRecipe.resultItem;
         totalCraftingCost = craftingRecipe.craftRequirements;
         ingredientText = transform.Find("IngredientText").gameObject;
         titleText = transform.Find("Title").GetComponent<TextMeshProUGUI>();
-        titleText.SetText(craftingRecipe.resultItem.itemName);
+        titleText.SetText(craftingRecipe.resultItem.ItemName);
 
         SetIngredients();
         CustomTickSystem.OnTick += UpdateButton;
@@ -41,16 +41,16 @@ public class CraftingButton : MonoBehaviour
     {
         foreach(CraftingCost craftRequirement in totalCraftingCost) 
         {
-            Item_General_SO ingredient = craftRequirement.item;
+            GeneralItem ingredient = craftRequirement.item;
             int amount = craftRequirement.itemAmount;
             if (ingredientText.GetComponent<TextMeshProUGUI>().text == "")
             {
-                ingredientText.GetComponent<TextMeshProUGUI>().SetText(ingredient.itemName + " : " + amount.ToString());
+                ingredientText.GetComponent<TextMeshProUGUI>().SetText(ingredient.ItemName + " : " + amount.ToString());
             }
             else
             {
                 
-                ingredientText.GetComponent<TextMeshProUGUI>().SetText(ingredientText.GetComponent<TextMeshProUGUI>().text + "\n" + ingredient.itemName + " : " + amount.ToString());
+                ingredientText.GetComponent<TextMeshProUGUI>().SetText(ingredientText.GetComponent<TextMeshProUGUI>().text + "\n" + ingredient.ItemName + " : " + amount.ToString());
                 
             }
             if (craftRequirement.isTool)
