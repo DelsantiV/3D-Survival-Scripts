@@ -38,7 +38,7 @@ public class BunnyBehaviour : MonoBehaviour
     void Update()
     {
 
-        anim.SetBool("isRunning", true);
+        
         transform.Translate(Vector3.forward * Time.deltaTime * 3 * speed);
         anim.speed = Mathf.Pow(speed, 0.7f);
 
@@ -50,7 +50,7 @@ public class BunnyBehaviour : MonoBehaviour
             coroutineWalking = StartCoroutine(Walking());
             walkingTime = Random.Range(3, 7);
             idleTime = Random.Range(1, 3);
-            runningTime = Random.Range(5, 10);
+            runningTime = Random.Range(2, 5);
             targetPosition = Random.insideUnitSphere;
             targetPosition.y = 0;
             transform.rotation = Quaternion.LookRotation(targetPosition);
@@ -68,6 +68,8 @@ public class BunnyBehaviour : MonoBehaviour
     public IEnumerator Walking()
     {
 
+
+        anim.SetBool("isRunning", true);
         yield return new WaitForSeconds(walkingTime);
 
 
@@ -76,7 +78,7 @@ public class BunnyBehaviour : MonoBehaviour
         anim.speed = 0;
         anim.SetBool("isRunning", false);
         yield return new WaitForSeconds(idleTime);
-
+        
         speed = 1;
 
         coroutineWalking = null;
@@ -86,8 +88,8 @@ public class BunnyBehaviour : MonoBehaviour
 
     public IEnumerator Running()
     {
-
-        yield return new WaitForSeconds(runningTime / 10);
+        anim.SetBool("isRunning", true);
+        yield return new WaitForSeconds(runningTime);
 
 
 
