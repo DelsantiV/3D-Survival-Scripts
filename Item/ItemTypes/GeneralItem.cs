@@ -42,8 +42,9 @@ public class GeneralItem
             ItemInInventory itemUI = itemUIGO.AddComponent<ItemInInventory>();
             slot.SetItemToSlot(itemUI);
             InitializeItemInInventory(itemUI, amount);
-            slot._isInOp = false;
         }
+        slot._isInOp = false;
+        Addressables.Release(itemIconHandle);
     }
 
     public virtual void InitializeItemInInventory(ItemInInventory itemUI, int amount)
