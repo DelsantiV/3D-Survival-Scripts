@@ -45,6 +45,7 @@ public class ItemInInventory : Dragable, IPointerDownHandler
 
     public override void Initialize()
     {
+        Debug.Log("Initializing item...");
         base.Initialize();
         if (Item != null)
         {
@@ -52,10 +53,12 @@ public class ItemInInventory : Dragable, IPointerDownHandler
         }
         player = PlayerManager.Player;
         amountText = transform.Find("AmountText").GetComponent<TextMeshProUGUI>();
+        SetAmountOfItem(amountOfItem);
         canvas = FindFirstObjectByType<Canvas>();
         itemInfoTemplate = Resources.Load<GameObject>("UI/ItemInfoTemplate"); // Replace with Addressables ?
         isOutsideBounds = false;
         slot = transform.parent.GetComponent<ItemSlot>();
+        Debug.Log(slot.name);
     }
 
     public void SetAmountOfItem(int amount)
@@ -150,9 +153,10 @@ public class ItemInInventory : Dragable, IPointerDownHandler
 
     protected virtual void OpenItemInfo()
     {
-        if (itemInfoGO == null)
+        if (itemInfoGO == null && slot is not QuickSlot)
         {
-            itemInfoGO = Instantiate(itemInfoTemplate, transform.parent.parent);
+            /*
+            itemInfoGO = Instantiate(itemInfoTemplate, canvas.transform);
             itemInfoGO.transform.Find("ItemNameText").GetComponent<TextMeshProUGUI>().SetText(ItemSO.name);
 
             itemInfoGO.transform.Find("ItemInfoText").GetComponent<TextMeshProUGUI>().SetText(ItemSO.item_info);
@@ -163,6 +167,8 @@ public class ItemInInventory : Dragable, IPointerDownHandler
             useButtonGO.SetActive(true);
             Button useButton = useButtonGO.GetComponent<Button>();
             useButton.onClick.AddListener(EquipItemInNextEmptyHand);
+            */
+            Debug.Log("Should show Info");
         }
     }
 

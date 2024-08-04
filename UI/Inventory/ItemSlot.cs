@@ -13,7 +13,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
 
     [HideInInspector] public PlayerManager player = PlayerManager.Player;
     public ItemInInventory currentItemUI { get; private set; }
-    public bool _isInOp;
+    public bool _isInOp = false;
     public GeneralItem currentItem 
     {  
         get
@@ -90,7 +90,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
         if (item != null)
         {
             //if there is not item already then set our item.
-            if (currentItemUI == null)
+            if (isEmpty)
             {
                 Debug.Log("Trying to add item " + item.ItemName + " to slot " + name + ", which is empty");
                 Task itemUICreation = new Task(item.CreateItemInInventory(amount, this));
@@ -127,7 +127,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
         if (itemUI != null)
         {
             //if there is not item already then set our item.
-            if (currentItemUI == null)
+            if (isEmpty)
             {
                 // Reparent itemUI to this slot
                 SetItemToSlot(itemUI);

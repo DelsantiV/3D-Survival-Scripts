@@ -49,7 +49,6 @@ public class GeneralItem
     {
         itemUI.SetItem(this, amount : amount);
         itemUI.Initialize();
-        itemUI.amountOfItem = amount;
     }
 
     public virtual void UseItem(PlayerManager player, ItemInInventory itemUI)

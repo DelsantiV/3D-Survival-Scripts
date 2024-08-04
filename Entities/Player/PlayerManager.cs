@@ -94,6 +94,9 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         //foreach (InventoryItemInfos item in startingItems) { inventory.AddItemToInventory(item.itemSO, item.itemAmount); }
         OnPlayerReady.Invoke();
+        InputManager.cameraLocked = false;
+        InputManager.canAction = true;
+        InputManager.canMove = true;
     }
 
     public void SetCanvasManager(CanvasManager canvasManager)
