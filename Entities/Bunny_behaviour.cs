@@ -19,7 +19,7 @@ public class BunnyBehaviour : MonoBehaviour
     private Coroutine coroutineWalking;
     private Coroutine coroutineRunning;
     Animator anim;
-    public SphereCollider detectionSphere;
+    SphereCollider detectionSphere;
 
 
 
