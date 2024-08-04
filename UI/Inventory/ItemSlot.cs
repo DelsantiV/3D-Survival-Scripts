@@ -72,7 +72,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
     {
         get { return (currentItem == null && currentPile != null); }
     }
-    public virtual bool isSingleItem
+    public virtual bool isHoldingSingleItem
     {
         get { return (currentItem != null && currentPile == null); }
     }
