@@ -38,7 +38,7 @@ public class GeneralItem
         if (itemIconHandle.Status == AsyncOperationStatus.Succeeded)
         {
             ItemInInventory itemUI = UnityEngine.Object.Instantiate(itemIconHandle.Result.AddComponent<ItemInInventory>(), slot.transform.position, slot.transform.rotation);
-            itemUI.transform.SetParent(slot.transform);
+            slot.SetItemToSlot(itemUI);
             InitializeItemInInventory(itemUI, amount);
         }
     }

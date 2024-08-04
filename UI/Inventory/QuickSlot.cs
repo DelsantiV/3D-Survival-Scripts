@@ -15,7 +15,7 @@ public class QuickSlot : ItemSlot
     {
         get
         {
-            if (currentItem  == null)
+            if (currentItemUI  == null)
             {
                 return true;
             }
@@ -31,6 +31,15 @@ public class QuickSlot : ItemSlot
     }
 
     public override void AddItem(ItemInInventory item)
+    {
+        if (currentItem == null)
+        {
+            handsManager.InstantiateItemInHand(item, hand);
+        }
+        base.AddItem(item);
+        // Needs to be improved: do not instantiate item if could not add
+    }
+    public override void AddItem(GeneralItem item, int amount = 1)
     {
         if (currentItem == null)
         {

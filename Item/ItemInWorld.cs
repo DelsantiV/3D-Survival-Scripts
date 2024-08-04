@@ -9,11 +9,18 @@ public class ItemInWorld : MonoBehaviour
     public GeneralItem item;
     public void PickUpItem(PlayerManager player)
     {
-        if (item != null && player.inventory != null)
+        if (item != null && player.HandsInventory != null)
         {
-            player.inventory.AddItemToInventory(item, 3);
-            Destroy(gameObject);
-            Debug.Log("Picked up " + ItemName + "!");
+            bool isCollected = player.TryCollectItem(this);
+            if (isCollected)
+            {
+                Destroy(gameObject);
+                Debug.Log("Picked up " + ItemName + "!");
+            }
+            else
+            {
+                Debug.Log("Cannot collect " + ItemName + " !");
+            }
         }
         else { Debug.Log("Problemos"); }
     }

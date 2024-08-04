@@ -29,7 +29,7 @@ public class StatusBar : MonoBehaviour
         slider = GetComponent<Slider>();
         canvasManager = transform.root.GetComponent<CanvasManager>();
 
-        status = player.GetPlayerStatus();
+        status = player.PlayerStatus;
         UpdateStatusBar();
         CustomTickSystem.OnLargeTick += UpdateStatusBar;
     }

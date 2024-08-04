@@ -23,7 +23,7 @@ public class ItemInInventory : Dragable, IPointerDownHandler
     public PlayerManager player;
     public InventoryManager inventory;
     public ItemSlot slot;
-    public static ItemInInventory activeItem;
+    public static ItemInInventory activeItem; //replace with true/false bool to avoid use of static
 
     public void CreateItemInInventory(GeneralItem item, int amount)
     {
@@ -40,7 +40,7 @@ public class ItemInInventory : Dragable, IPointerDownHandler
         isOutsideBounds = false;
         slot = transform.parent.GetComponent<ItemSlot>();
 
-        inventoryGO = player.GetInventoryUI().gameObject;
+        //inventoryGO = player.GetInventoryUI().gameObject;
     }
 
     public override void Initialize()
@@ -191,7 +191,7 @@ public class ItemInInventory : Dragable, IPointerDownHandler
     public void EquipItemInNextEmptyHand()
     {
         ItemSlot previousSlot = slot;
-        if (player.GetHandsManager().TryEquipItemToNextEmptyHand(this))
+        if (player.HandsManager.TryEquipItemToNextEmptyHand(Item))
         {
             Debug.Log("Equiped " + ItemSO.name);
             previousSlot.RemoveItem();
@@ -205,7 +205,7 @@ public class ItemInInventory : Dragable, IPointerDownHandler
 
     public void EquipItemInHand(HandsManager.Hand hand)
     {
-        if (player.GetHandsManager().TryEquipItemToHand(this, hand))
+        if (player.HandsManager.TryEquipItemToHand(Item, hand))
         {
             Debug.Log("Equiped " + ItemSO.name);
         }
@@ -214,9 +214,6 @@ public class ItemInInventory : Dragable, IPointerDownHandler
             Debug.Log("Could not equip item, hand was not empty !");
         }
     }
-
-    public GameObject ItemGO() { return ItemSO.itemPrefab; }
-    public string Name { get { return ItemSO.name; } }
 
     public void SetItem(GeneralItem item, int amount = 1) 
     { 

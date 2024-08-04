@@ -15,8 +15,11 @@ public class HandsInventory
         leftHandQuickSlot = player.LeftHandQuickSlot;
         rightHandQuickSlot = player.RightHandQuickSlot;
         bothHandQuickSlot = player.BothHandQuickSlot;
-        handsManager = player.GetHandsManager();
+        handsManager = player.HandsManager;
     }
 
-
+    public bool TryAddItemToHands(GeneralItem item)
+    {
+        return handsManager.TryEquipItemToNextEmptyHand(item);
+    }
 }

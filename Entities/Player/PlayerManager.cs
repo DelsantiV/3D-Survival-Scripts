@@ -19,24 +19,19 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     [HideInInspector] public InventoryManager inventory { get; private set; }
     [HideInInspector] public CraftingManager craftingManager { get; private set; }
-    private DigestiveSystem digestiveSystem;
+    public DigestiveSystem DigestiveSystem { get; private set; }
     private TextMeshProUGUI interactionText;
-    private PlayerStatus playerStatus;
+    public PlayerStatus PlayerStatus { get; private set; }
     private Transform playerHead;
-    private HandsManager handsManager;
-    private Canvas mainCanvas;
-
+    public HandsManager HandsManager {get; private set; }
     [SerializeField] private float maxHealth;
     [SerializeField] private float maxFatigue;
     [SerializeField] private float maxCalories;
-    [SerializeField] private GeneralInventoryUI inventoryUI;
-    [SerializeField] private int numberOfInventorySlots;
-    [SerializeField] private CraftingUI craftingUI;
-    [SerializeField] private GameObject interaction_Info_UI;
     [SerializeField] private string[] startingItems;
     [SerializeField] private GameObject rightHand;
     [SerializeField] private GameObject leftHand;
     [SerializeField] private HandsManager.Hand prefHand = HandsManager.Hand.right;
+    public HandsInventory HandsInventory { get; private set; }
 
     private CanvasManager canvasManager;
 
@@ -83,8 +78,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
         //inventory = new InventoryManager(numberOfInventorySlots, inventoryUI);
         //craftingManager = new CraftingManager(craftingUI, inventory);
         itemDropper = transform.Find("Item Dropper");
-        playerStatus = new PlayerStatus(maxHealth, maxFatigue, maxCalories);
-        digestiveSystem = new DigestiveSystem(playerStatus);
+        PlayerStatus = new PlayerStatus(maxHealth, maxFatigue, maxCalories);
+        DigestiveSystem = new DigestiveSystem(PlayerStatus);
         playerLayer = LayerMask.GetMask("Player");
         playerHead = transform.Find("PlayerHead");
         InputManager = GetComponent<UpgradedThirdPersonInput>();
@@ -104,14 +99,15 @@ public class PlayerManager : MonoBehaviour, IDamageable
     public void SetCanvasManager(CanvasManager canvasManager)
     {
         this.canvasManager = canvasManager;
-        handsManager = new HandsManager(leftHand, rightHand, LeftHandQuickSlot, RightHandQuickSlot, prefHand);
+        HandsManager = new HandsManager(leftHand, rightHand, LeftHandQuickSlot, RightHandQuickSlot, prefHand);
+        HandsInventory = new HandsInventory(this);
     }
 
 
     void Update()
     {
         HandleInteractions();
-        //HandleKeyInputs();
+        HandleKeyInputs();
     }
 
     public bool hasSomeUIOpen()
@@ -153,6 +149,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void HandleKeyInputs()
     {
+        /*
         if (Input.GetKeyDown(KeyCode.I))
         {
 
@@ -170,7 +167,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         if (Input.GetKeyDown(KeyCode.U))
         {
-            if (!craftingUI.IsOpen())
+            if (!canvasManager.craftingUI.IsOpen())
             {
                 Debug.Log("Crafting panel opened !");
                 craftingUI.OpenUI();
@@ -182,6 +179,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
                 craftingUI.CloseUI();
             }
         }
+        */
 
         InputManager.cameraLocked = hasSomeUIOpen();
         InputManager.canAction = !hasSomeUIOpen();
@@ -205,10 +203,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
             }
         }
     }
-
-    public PlayerStatus GetPlayerStatus() { return playerStatus; }
     public InventoryManager GetInventory() { return inventory; }
-    public GeneralInventoryUI GetInventoryUI() { return inventoryUI; }
+    //public GeneralInventoryUI GetInventoryUI() { return inventoryUI; }
     public void Die()
     {
         Debug.Log("You died !");
@@ -216,21 +212,23 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     public void TakeDamage(float damageAmount, DamageSource damageSource)
     {
-        playerStatus.currentHealth -= damageAmount;
-        if (playerStatus.currentHealth < 0) { Die(); };
+        PlayerStatus.currentHealth -= damageAmount;
+        if (PlayerStatus.currentHealth < 0) { Die(); };
 
     }
 
-    public DigestiveSystem GetDigestiveSystem() { return digestiveSystem; }
     public bool TryEatFood(FoodItem foodItem)
     {
-        return digestiveSystem.TryAddFoodToDigestiveSystem(foodItem);
+        return DigestiveSystem.TryAddFoodToDigestiveSystem(foodItem);
     }
-
-    public HandsManager GetHandsManager() {  return handsManager; }
 
     public void SetActionAnimation(AnimationClip anim)
     {
         
+    }
+
+    public bool TryCollectItem(ItemInWorld itemObject) 
+    {
+        return HandsInventory.TryAddItemToHands(itemObject.item);
     }
 }

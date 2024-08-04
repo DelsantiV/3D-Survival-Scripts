@@ -12,7 +12,7 @@ public class HandsManager
     private Hand otherHand;
 
 
-    public HandsManager(GameObject leftHand, GameObject rightHand, QuickSlot leftHandQuickSlot, QuickSlot rightHandQuickSlot, HandsManager.Hand prefHand)
+    public HandsManager(GameObject leftHand, GameObject rightHand, QuickSlot leftHandQuickSlot, QuickSlot rightHandQuickSlot, Hand prefHand)
     {
         this.leftHand = leftHand;
         this.rightHand = rightHand;
@@ -80,9 +80,14 @@ public class HandsManager
         return Hand.left;
     }
 
-    public ItemInInventory ItemInHand(Hand hand)
+    public ItemInInventory ItemUIInHand(Hand hand)
     {
-        return HandQuickSlot(hand).currentItem;
+        return HandQuickSlot(hand).currentItemUI;
+    }
+
+    public GeneralItem ItemInHand(Hand hand)
+    {
+        return ItemUIInHand(hand).Item;
     }
 
     public EquippedItem EquippedItemInHand(Hand hand)
@@ -92,7 +97,14 @@ public class HandsManager
 
     public void InstantiateItemInHand(ItemInInventory item, Hand hand)
     {
-        GameObject itemInHand = Object.Instantiate(item.ItemGO(), HandTransform(hand));
+        GameObject itemInHand = Object.Instantiate(item.Item.ItemPrefab, HandTransform(hand));
+        itemInHand.GetComponent<BoxCollider>().isTrigger = true;  // à améliorer
+        itemInHand.AddComponent<EquippedItem>();
+    }
+
+    public void InstantiateItemInHand(GeneralItem item, Hand hand)
+    {
+        GameObject itemInHand = Object.Instantiate(item.ItemPrefab, HandTransform(hand));
         itemInHand.GetComponent<BoxCollider>().isTrigger = true;  // à améliorer
         itemInHand.AddComponent<EquippedItem>();
     }
@@ -110,13 +122,13 @@ public class HandsManager
         }
     }
 
-    private void EquipItemToHand(Hand hand, ItemInInventory item)
+    private void EquipItemToHand(Hand hand, GeneralItem item)
     {
         HandQuickSlot(hand).AddItem(item);
     }
-    private void EquipItemToHand(Hand hand, ItemInInventory item, Vector3 itemPosition, Quaternion itemRotation)
+    private void EquipItemToHand(Hand hand, ItemInInventory itemUI)
     {
-        GameObject itemInHand = Object.Instantiate(item.ItemGO(), itemPosition, itemRotation, HandTransform(hand));
+        HandQuickSlot(hand).AddItem(itemUI);
     }
 
     public bool isHandEmpty(Hand hand)
@@ -131,7 +143,7 @@ public class HandsManager
         return Hand.none;
     }
 
-    public bool TryEquipItemToNextEmptyHand(ItemInInventory item)
+    public bool TryEquipItemToNextEmptyHand(GeneralItem item)
     {
         Hand emptyHand = GetNextEmptyHand();
         if (emptyHand == Hand.none) { return false; }
@@ -141,19 +153,7 @@ public class HandsManager
             return true;
         }
     }
-
-    public bool TryEquipItemToNextEmptyHand(ItemInInventory item, Vector3 itemPosition, Quaternion itemRotation)
-    {
-        Hand emptyHand = GetNextEmptyHand();
-        if (emptyHand == Hand.none) { return false; }
-        else
-        {
-            EquipItemToHand(emptyHand, item, itemPosition, itemRotation);
-            return true;
-        }
-    }
-
-    public bool TryEquipItemToHand(ItemInInventory item, Hand hand)
+    public bool TryEquipItemToHand(GeneralItem item, Hand hand)
     {
         if (!isHandEmpty(hand)) { return false; }
         else
@@ -162,14 +162,22 @@ public class HandsManager
             return true;
         }
     }
-
-
-    public bool TryEquipItemToHand(ItemInInventory item, Vector3 itemPosition, Quaternion itemRotation, Hand hand)
+    public bool TryEquipItemToNextEmptyHand(ItemInInventory itemUI)
+    {
+        Hand emptyHand = GetNextEmptyHand();
+        if (emptyHand == Hand.none) { return false; }
+        else
+        {
+            EquipItemToHand(emptyHand, itemUI);
+            return true;
+        }
+    }
+    public bool TryEquipItemToHand(ItemInInventory itemUI, Hand hand)
     {
         if (!isHandEmpty(hand)) { return false; }
         else
         {
-            EquipItemToHand(hand, item, itemPosition, itemRotation);
+            EquipItemToHand(hand, itemUI);
             return true;
         }
     }
