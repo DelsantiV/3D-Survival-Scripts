@@ -13,6 +13,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
 
     [HideInInspector] public PlayerManager player = PlayerManager.Player;
     public ItemInInventory currentItemUI { get; private set; }
+    public bool _isInOp;
     public GeneralItem currentItem 
     {  
         get
@@ -41,6 +42,29 @@ public class ItemSlot : MonoBehaviour, IDropHandler
         }
     }
 
+    public virtual bool isEmpty
+    {
+        get
+        {
+            if (currentItemUI == null)
+            {
+                return true;
+            }
+            return false;
+        }
+        set 
+        { 
+            if (currentItem == null && !_isInOp) 
+            {
+                isEmpty = true;
+            }
+            else
+            {
+                isEmpty = false;
+            }
+            return;
+        }
+    }
 
     public virtual void OnDrop(PointerEventData eventData)
     {

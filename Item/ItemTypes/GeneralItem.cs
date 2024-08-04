@@ -28,6 +28,7 @@ public class GeneralItem
 
     public virtual IEnumerator CreateItemInInventory(int amount, ItemSlot slot)
     {
+        slot._isInOp = true;
         AsyncOperationHandle<GameObject> itemIconHandle = Addressables.LoadAssetAsync<GameObject>(iconTemplateAddress);
         itemIconHandle.Completed += delegate { OnItemIconLoaded(itemIconHandle, amount, slot); };
         yield return itemIconHandle;
@@ -40,6 +41,7 @@ public class GeneralItem
             ItemInInventory itemUI = UnityEngine.Object.Instantiate(itemIconHandle.Result.AddComponent<ItemInInventory>(), slot.transform.position, slot.transform.rotation);
             slot.SetItemToSlot(itemUI);
             InitializeItemInInventory(itemUI, amount);
+            slot._isInOp = false;
         }
     }
 

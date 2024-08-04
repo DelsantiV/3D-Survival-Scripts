@@ -11,19 +11,6 @@ public class QuickSlot : ItemSlot
     public HandsManager.Hand hand;
 
 
-    public virtual bool isEmpty
-    {
-        get
-        {
-            if (currentItemUI  == null)
-            {
-                return true;
-            }
-            return false;
-        }
-    }
-
-
     public virtual void SetHandsManager(HandsManager handsManager,  HandsManager.Hand hand)
     {
         this.hand = hand;
