@@ -65,6 +65,8 @@ public class BunnyBehaviour : MonoBehaviour
     }
 
 
+
+    //Coroutines need improvement
     public IEnumerator Walking()
     {
 
