@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemPile
+public class ItemPile : ICarryable
 {
     private List<GeneralItem> itemsInPile;
 
@@ -61,5 +61,15 @@ public class ItemPile
     public void RemoveAllCorrespondingItems(Item_General_SO itemSO)
     {
         foreach (GeneralItem item in GetAllCorrespondingItems(itemSO)) { RemoveItemFromPile(item); }
+    }
+
+    public void SpawnInWorld(Vector3 spawnPosition)
+    {
+        
+    }
+
+    public void Action(PlayerManager player)
+    {
+
     }
 }

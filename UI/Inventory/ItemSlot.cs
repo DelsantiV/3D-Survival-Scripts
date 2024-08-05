@@ -14,6 +14,8 @@ public class ItemSlot : MonoBehaviour, IDropHandler
     [HideInInspector] public PlayerManager player = PlayerManager.Player;
     public ItemInInventory currentItemUI { get; private set; }
     public bool _isInOp = false;
+
+    public ICarryable currentContent {  get; private set; }
     public GeneralItem currentItem 
     {  
         get
@@ -108,26 +110,10 @@ public class ItemSlot : MonoBehaviour, IDropHandler
                 itemUICreation.Finished += RefreshItem;
             }
 
-            //if there is an item already, check for stackability
+            //if there is an item already, create an ItemPile
             else
             {
                 Debug.Log("Trying to add item " + item.ItemSO + " to slot " + name + ", containing " + currentItem.ItemSO);
-                if (currentItem.ItemSO == item.ItemSO)
-                {
-                    if (currentItem.ItemSO.maxStackSize >= currentItemUI.amountOfItem + amount)
-                    {
-                        currentItemUI.AddAmountOfItem(amount);
-                    }
-                    else
-                    {
-                        int amountToTransfer = currentItem.ItemSO.maxStackSize - currentItemUI.amountOfItem;
-                        currentItemUI.AddAmountOfItem(amountToTransfer);
-                    }
-                }
-                else
-                {
-                    Debug.Log("Could not add item to slot, as different item was already in slot");
-                }
             }
         }
         else { Debug.Log("Trying to add null item"); }
@@ -144,45 +130,16 @@ public class ItemSlot : MonoBehaviour, IDropHandler
                 SetItemToSlot(itemUI);
             }
 
-            //if there is an item already, check for stackability
+            //if there is an item already, create an ItemPile
             else
             {
                 Debug.Log("Trying to add item " + itemUI.ItemSO + " to slot " + name + ", containing " + currentItem.ItemSO);
-                if (currentItemUI.ItemSO == itemUI.ItemSO)
-                {
-                    if (currentItem.ItemSO.maxStackSize >= currentItemUI.amountOfItem + itemUI.amountOfItem)
-                    {
-                        currentItemUI.AddAmountOfItem(itemUI.amountOfItem);
-                    }
-                    else
-                    {
-                        int amountToTransfer = currentItem.ItemSO.maxStackSize - currentItemUI.amountOfItem;
-                        currentItemUI.AddAmountOfItem(amountToTransfer);
-                        itemUI.RemoveAmountOfItem(amountToTransfer);
-                    }
-                }
-                else
-                {
-                    Debug.Log("Could not add item to slot, as different item was already in slot");
-                }
             }
         }
         else { Debug.Log("Trying to add null item"); }
     }
 
-
-    public void AddItemToNewSlot(GameObject iconInInventory, GeneralItem item, int amount)
-    {
-        if (currentItem == null)
-        {
-            GameObject itemInInventoryGO = Instantiate(iconInInventory, transform.position, transform.rotation);
-            itemInInventoryGO.transform.SetParent(transform);
-            ItemInInventory itemInInventory = itemInInventoryGO.GetComponent<ItemInInventory>();
-            itemInInventory.CreateItemInInventory(item, amount); //Needs to be modified
-            currentItemUI = itemInInventory;
-        }
-        else { Debug.Log("Could not add item cause slot was not empty !"); }
-    }
+    /*
 
     //Could be fused with previous method, kept apart for now
     public void AddItemAmountToSlot(int amount)
@@ -212,6 +169,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
         }
         else { Debug.Log("Problemos"); }
     }
+    */
 
     public virtual void DestroyItem()
     {

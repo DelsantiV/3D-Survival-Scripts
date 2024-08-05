@@ -4,10 +4,8 @@ using UnityEngine;
 
 public interface ICarryable
 {
-    public void SpawnInWorld();
+    void SpawnInWorld(Vector3 spawnPosition);
 
-    public void Action();
-
-
+    void Action(PlayerManager player);
 }
 

@@ -8,7 +8,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using static UnityEditor.Progress;
 
-public class GeneralItem
+public class GeneralItem : ICarryable
 {
     public Item_General_SO ItemSO { get; protected set; }
 
@@ -40,17 +40,23 @@ public class GeneralItem
         {
             GameObject itemUIGO = UnityEngine.Object.Instantiate(itemIconHandle.Result, slot.transform.position, slot.transform.rotation);
             ItemInInventory itemUI = itemUIGO.AddComponent<ItemInInventory>();
+            itemUI.SetItem(this);
             slot.SetItemToSlot(itemUI);
-            InitializeItemInInventory(itemUI, amount);
         }
         slot._isInOp = false;
         Addressables.Release(itemIconHandle);
     }
 
-    public virtual void InitializeItemInInventory(ItemInInventory itemUI, int amount)
+    public virtual ItemInInventory CreateItemInInventory()
     {
-        itemUI.SetItem(this, amount : amount);
-        itemUI.Initialize();
+        ItemInInventory itemUI = ItemManager.itemUITemplate;
+        itemUI.SetItem(this); 
+        return itemUI;
+    }
+
+    public virtual void SetItemToSlot(ItemSlot slot)
+    {
+        slot.SetItemToSlot(CreateItemInInventory());
     }
 
     public virtual void UseItem(PlayerManager player, ItemInInventory itemUI)
@@ -59,6 +65,15 @@ public class GeneralItem
     }
 
     public virtual void EquipItem()
+    {
+
+    }
+    public virtual void SpawnInWorld(Vector3 spawnPosition)
+    {
+
+    }
+
+    public void Action(PlayerManager player)
     {
 
     }

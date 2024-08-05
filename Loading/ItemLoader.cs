@@ -53,17 +53,20 @@ public class ItemLoader
             Addressables.MergeMode.Intersection) ;
         yield return itemsLoading;
         allItemNames = allItems.Keys.ToArray();
-        ItemManager.InitializeItemManager(allItems, allItemsSO);
-        foreach (string prefabLoc in allPrefabsLocations)
-        {
-            Debug.Log(prefabLoc);
-        }
+        Task itemManagerInitialization = new Task(ItemManager.InitializeItemManager(allItems, allItemsSO));
+        itemManagerInitialization.Finished += FireAssetsReady;
+        yield return itemManagerInitialization;
         Addressables.Release(allPrefabsLocationsLoading);
         Addressables.Release(allIconsLocationsLoading);
         Addressables.Release(itemsLoading);
+    }
+
+    public void FireAssetsReady (bool manual)
+    {
         Ready.Invoke();
     }
 
+    /* Old way of loading items
     public IEnumerator LoadItemsJSONFromMemory()
     {
         Debug.Log("Start retrieving items json locations...");
@@ -110,6 +113,7 @@ public class ItemLoader
             CreateItem(jsonFileHandle.Result);
         }
     }
+    */
 
     private void CreateItem(TextAsset jsonFile)
     {

@@ -25,24 +25,6 @@ public class ItemInInventory : Dragable, IPointerDownHandler
     public ItemSlot slot;
     public static ItemInInventory activeItem; //replace with true/false bool to avoid use of static
 
-    public void CreateItemInInventory(GeneralItem item, int amount)
-    {
-        this.Item = item;
-        ItemSO = item.ItemSO;
-        Initialize();
-        inventory = player.GetInventory();
-        amountOfItem = amount;
-        gameObject.GetComponent<Image>().sprite = ItemSO.iconInInventory;
-        amountText = transform.Find("AmountText").GetComponent<TextMeshProUGUI>();
-        canvas = FindFirstObjectByType<Canvas>();
-        itemInfoTemplate = Resources.Load<GameObject>("UI/ItemInfoTemplate");
-        SetAmountOfItem(amountOfItem);
-        isOutsideBounds = false;
-        slot = transform.parent.GetComponent<ItemSlot>();
-
-        //inventoryGO = player.GetInventoryUI().gameObject;
-    }
-
     public override void Initialize()
     {
         base.Initialize();
@@ -51,15 +33,15 @@ public class ItemInInventory : Dragable, IPointerDownHandler
             ItemSO = Item.ItemSO;
         }
         player = PlayerManager.Player;
-        amountText = transform.Find("AmountText").GetComponent<TextMeshProUGUI>();
-        SetAmountOfItem(amountOfItem);
+        //amountText = transform.Find("AmountText").GetComponent<TextMeshProUGUI>();
+        //SetAmountOfItem(amountOfItem);
         canvas = FindFirstObjectByType<Canvas>();
         itemInfoTemplate = Resources.Load<GameObject>("UI/ItemInfoTemplate"); // Replace with Addressables ?
         inventoryGO = transform.parent.parent.gameObject;
         isOutsideBounds = false;
         slot = transform.parent.GetComponent<ItemSlot>();
     }
-
+    /*
     public void SetAmountOfItem(int amount)
     {
         amountOfItem = amount;
@@ -80,6 +62,8 @@ public class ItemInInventory : Dragable, IPointerDownHandler
     {
         amountText.gameObject.SetActive(false);
     }
+
+    */
 
     public void RefreshSlot()
     {
@@ -221,10 +205,10 @@ public class ItemInInventory : Dragable, IPointerDownHandler
         }
     }
 
-    public void SetItem(GeneralItem item, int amount = 1) 
+    public void SetItem(GeneralItem item) 
     { 
         Item = item; 
-        amountOfItem = amount;
         gameObject.GetComponent<Image>().sprite = item.ItemSprite;
+        Initialize();
     }
 }
