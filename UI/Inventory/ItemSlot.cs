@@ -106,8 +106,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
             if (isEmpty)
             {
                 Debug.Log("Trying to add item " + item.ItemName + " to slot " + name + ", which is empty");
-                Task itemUICreation = new Task(item.CreateItemInInventory(amount, this));
-                itemUICreation.Finished += RefreshItem;
+                item.SetItemToSlot(this);
             }
 
             //if there is an item already, create an ItemPile

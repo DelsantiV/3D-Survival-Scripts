@@ -11,8 +11,6 @@ public class CanvasManager : MonoBehaviour
 
     private StatusBar[] allStatusBar;
 
-    [SerializeField] private PlayerInventoryUI playerInventoryUI;
-    [SerializeField] private CraftingUI craftingUI;
     [SerializeField] private QuickSlot leftHandQuickSlot;
     [SerializeField] private QuickSlot rightHandQuickSlot;
     [SerializeField] private QuickSlot bothHandQuickSlot;

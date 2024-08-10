@@ -17,8 +17,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
     #region Variables
     public static PlayerManager Player { get; private set; }
 
-    [HideInInspector] public InventoryManager inventory { get; private set; }
-    [HideInInspector] public CraftingManager craftingManager { get; private set; }
     public DigestiveSystem DigestiveSystem { get; private set; }
     private TextMeshProUGUI interactionText;
     public PlayerStatus PlayerStatus { get; private set; }
@@ -206,7 +204,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
             }
         }
     }
-    public InventoryManager GetInventory() { return inventory; }
     //public GeneralInventoryUI GetInventoryUI() { return inventoryUI; }
     public void Die()
     {

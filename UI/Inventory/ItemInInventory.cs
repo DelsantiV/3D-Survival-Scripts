@@ -19,9 +19,9 @@ public class ItemInInventory : Dragable, IPointerDownHandler
 
     public Item_General_SO ItemSO {get; private set;}
     public GeneralItem Item { get; private set; }
+    public ItemPile ItemPile { get; private set; }
 
     public PlayerManager player;
-    public InventoryManager inventory;
     public ItemSlot slot;
     public static ItemInInventory activeItem; //replace with true/false bool to avoid use of static
 
@@ -39,7 +39,7 @@ public class ItemInInventory : Dragable, IPointerDownHandler
         itemInfoTemplate = Resources.Load<GameObject>("UI/ItemInfoTemplate"); // Replace with Addressables ?
         inventoryGO = transform.parent.parent.gameObject;
         isOutsideBounds = false;
-        slot = transform.parent.GetComponent<ItemSlot>();
+        RefreshSlot();
     }
     /*
     public void SetAmountOfItem(int amount)
@@ -205,10 +205,17 @@ public class ItemInInventory : Dragable, IPointerDownHandler
         }
     }
 
-    public void SetItem(GeneralItem item) 
-    { 
-        Item = item; 
+    public void SetItem(GeneralItem item)
+    {
+        Item = item;
         gameObject.GetComponent<Image>().sprite = item.ItemSprite;
+        Initialize();
+    }
+
+    public void SetItem(ItemPile itemPile)
+    {
+        ItemPile = itemPile;
+        gameObject.GetComponent<Image>().sprite = ItemManager.PileIcon;
         Initialize();
     }
 }

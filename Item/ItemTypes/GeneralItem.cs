@@ -26,27 +26,6 @@ public class GeneralItem : ICarryable
         ItemSO = itemSO;
     }
 
-    public virtual IEnumerator CreateItemInInventory(int amount, ItemSlot slot)
-    {
-        slot._isInOp = true;
-        AsyncOperationHandle<GameObject> itemIconHandle = Addressables.LoadAssetAsync<GameObject>(iconTemplateAddress);
-        itemIconHandle.Completed += delegate { OnItemIconLoaded(itemIconHandle, amount, slot); };
-        yield return itemIconHandle;
-    }
-
-    public virtual void OnItemIconLoaded(AsyncOperationHandle<GameObject> itemIconHandle, int amount, ItemSlot slot)
-    {
-        if (itemIconHandle.Status == AsyncOperationStatus.Succeeded)
-        {
-            GameObject itemUIGO = UnityEngine.Object.Instantiate(itemIconHandle.Result, slot.transform.position, slot.transform.rotation);
-            ItemInInventory itemUI = itemUIGO.AddComponent<ItemInInventory>();
-            itemUI.SetItem(this);
-            slot.SetItemToSlot(itemUI);
-        }
-        slot._isInOp = false;
-        Addressables.Release(itemIconHandle);
-    }
-
     public virtual ItemInInventory CreateItemInInventory()
     {
         ItemInInventory itemUI = ItemManager.itemUITemplate;

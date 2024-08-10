@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemPile : ICarryable
+public class ItemPile
 {
     private List<GeneralItem> itemsInPile;
 
@@ -14,6 +14,14 @@ public class ItemPile : ICarryable
         }
     }
 
+    public bool isPileUniqueItem
+    {
+        get
+        {
+            if (itemsInPile == null) { return false; }
+            return itemsInPile.Count == 1;
+        }
+    }
 
     public ItemPile()
     {
@@ -23,6 +31,22 @@ public class ItemPile : ICarryable
     public ItemPile(List<GeneralItem> itemsInPile)
     {
         this.itemsInPile = itemsInPile;
+    }
+
+    public ItemPile(GeneralItem item)
+    {
+        itemsInPile = new List<GeneralItem>() { item };
+    }
+
+    public virtual ItemInInventory CreateItemInInventory()
+    {
+        ItemInInventory itemUI = ItemManager.itemUITemplate;
+        itemUI.SetItem(this);
+        return itemUI;
+    }
+    public virtual void SetItemToSlot(ItemSlot slot)
+    {
+        slot.SetItemToSlot(CreateItemInInventory());
     }
 
     public void AddItemToPile(GeneralItem item)

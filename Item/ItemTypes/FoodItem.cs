@@ -20,7 +20,7 @@ public class FoodItem : GeneralItem
         bool isEaten = player.TryEatFood(this);
         if (isEaten)
         {
-            itemUI.RemoveAmountOfItem(1);
+            itemUI.RemoveItemFromSlot();
         }
     }
 }
