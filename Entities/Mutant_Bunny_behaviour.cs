@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UIElements;
 
-public class BunnyBehaviour : MonoBehaviour
+public class MutantBunnyBehaviour : MonoBehaviour
 {
 
 
@@ -28,10 +28,10 @@ public class BunnyBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        
         detectionSphere = GetComponent<SphereCollider>();
         anim = GetComponent<Animator>();
-
+        
 
 
     }
@@ -40,12 +40,12 @@ public class BunnyBehaviour : MonoBehaviour
     void Update()
     {
 
-
+        
         transform.Translate(Vector3.forward * Time.deltaTime * 3 * speed);
         anim.speed = Mathf.Pow(speed, 0.7f);
 
         transform.rotation = Quaternion.LookRotation(targetPosition);
-
+        
         if (coroutineWalking == null)
         {
 
@@ -62,7 +62,7 @@ public class BunnyBehaviour : MonoBehaviour
         }
 
 
-
+       
 
     }
 
@@ -108,7 +108,7 @@ public class BunnyBehaviour : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isInSphere = true;
-            targetPosition = (transform.position - other.transform.position);
+            targetPosition = (other.transform.position - transform.position);
 
             targetPosition = targetPosition.normalized;
             targetPosition.y = 0;
@@ -125,9 +125,9 @@ public class BunnyBehaviour : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isInSphere = false;
-
+            
             coroutineWalking = StartCoroutine(Running());
-
+           
 
 
         }
