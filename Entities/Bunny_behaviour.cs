@@ -17,12 +17,15 @@ public class BunnyBehaviour : MonoBehaviour
     public float wanderingSpeed = 2f;
     public float runningSpeed = 4f;
     private float speed;
+    private bool isMoving
+    {
+        get { return speed != 0; }
+    }
     private Vector3 targetPosition;
     private Coroutine coroutineWalking;
     private Coroutine coroutineRunning;
     Animator anim;
     SphereCollider detectionSphere;
-
 
 
     // Start is called before the first frame update
@@ -42,16 +45,22 @@ public class BunnyBehaviour : MonoBehaviour
 
 
         transform.Translate(Vector3.forward * Time.deltaTime * 3 * speed);
-        anim.speed = Mathf.Pow(speed, 0.7f);
-
+        if (isMoving)
+        {
+            anim.speed = Mathf.Pow(speed, 0.7f);
+        }
+        else
+        {
+            anim.speed = 1;
+        }
         transform.rotation = Quaternion.LookRotation(targetPosition);
 
         if (coroutineWalking == null)
         {
-
+            Debug.Log("Start walking");
             coroutineWalking = StartCoroutine(Walking());
-            walkingTime = Random.Range(3, 7);
-            idleTime = Random.Range(1, 3);
+            walkingTime = Random.Range(5, 7);
+            idleTime = Random.Range(3, 5);
             runningTime = Random.Range(2, 5);
             targetPosition = Random.insideUnitSphere;
             targetPosition.y = 0;
@@ -63,7 +72,6 @@ public class BunnyBehaviour : MonoBehaviour
 
 
 
-
     }
 
 
@@ -71,22 +79,17 @@ public class BunnyBehaviour : MonoBehaviour
     //Coroutines need improvement : see utilities
     public IEnumerator Walking()
     {
-
-
+        speed = wanderingSpeed;
         anim.SetBool("isRunning", true);
         yield return new WaitForSeconds(walkingTime);
 
 
 
         speed = 0;
-        anim.speed = 0;
         anim.SetBool("isRunning", false);
         yield return new WaitForSeconds(idleTime);
 
-        speed = wanderingSpeed;
-
         coroutineWalking = null;
-
     }
 
 

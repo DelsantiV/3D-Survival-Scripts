@@ -79,7 +79,7 @@ public class MutantBunnyBehaviour : MonoBehaviour
 
 
         speed = 0;
-        anim.speed = 0;
+        anim.speed = 1;
         anim.SetBool("isRunning", false);
         yield return new WaitForSeconds(idleTime);
 
