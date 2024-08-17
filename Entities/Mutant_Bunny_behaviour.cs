@@ -14,8 +14,8 @@ public class MutantBunnyBehaviour : MonoBehaviour
     float walkingTime;
     float idleTime;
     float runningTime;
-    public float wanderingSpeed;
-    public float runningSpeed;
+    public float wanderingSpeed = 2f;
+    public float runningSpeed = 4f;
     private float speed;
     private Vector3 targetPosition;
     private Coroutine coroutineWalking;
