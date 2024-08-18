@@ -181,5 +181,29 @@ public class HandsManager
             return true;
         }
     }
+
+    public bool TryEquipPileToHand(ItemPileInInventory pileUI, Hand hand)
+    {
+        if (!isHandEmpty(hand)) { return false; }
+        else
+        {
+            Debug.Log("Equipped Pile " + pileUI.ItemPile.ToString());
+            return true;
+        }
+    }
+    public bool TryEquipPileToNextEmptyHand(ItemPileInInventory pileUI)
+    {
+        Hand emptyHand = GetNextEmptyHand();
+        if (emptyHand == Hand.none) { return false; }
+        else
+        {
+            EquipPileToHand(emptyHand, pileUI);
+            return true;
+        }
+    }
+    private void EquipPileToHand(Hand hand, ItemPileInInventory pileUI)
+    {
+       
+    }
 }
 

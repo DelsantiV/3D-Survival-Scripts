@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using Unity.VisualScripting.Antlr3.Runtime;
 using System;
 using Invector.vCharacterController;
-using static UnityEditor.Progress;
 using UnityEditor.Animations;
 using UnityEngine.Events;
 
@@ -191,7 +189,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
         }
     }
 
-    public void SpawnItemFromPlayer(GeneralItem item, int amount)
+    public void SpawnItemFromPlayer(GeneralItem item, int amount = 1)
     {
         if (item.ItemPrefab != null)
         {
@@ -203,6 +201,11 @@ public class PlayerManager : MonoBehaviour, IDamageable
                 itemPrefab.GetComponent<ItemInWorld>().item = item;
             }
         }
+    }
+
+    public void SpawnPileFromPlayer(ItemPile pile)
+    {
+        ItemPileSpawner.SpawnPile(pile, itemDropper.position);
     }
     //public GeneralInventoryUI GetInventoryUI() { return inventoryUI; }
     public void Die()

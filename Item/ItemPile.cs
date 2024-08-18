@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class ItemPile
 {
-    private List<GeneralItem> itemsInPile;
+    public List<GeneralItem> ItemsInPile {get; private set;}
 
-    private List<Item_General_SO> itemsSOInPile
+    public List<Item_General_SO> ItemsSOInPile
     {
         get 
         {
-            return itemsInPile.ConvertAll(item => item.ItemSO);
+            return ItemsInPile.ConvertAll(item => item.ItemSO);
         }
     }
 
@@ -18,8 +18,16 @@ public class ItemPile
     {
         get
         {
-            if (itemsInPile == null) { return false; }
-            return itemsInPile.Count == 1;
+            if (ItemsInPile == null) { return false; }
+            return ItemsInPile.Count == 1;
+        }
+    }
+
+    public GeneralItem FirstItemInPile
+    {
+        get
+        {
+            return ItemsInPile[0];
         }
     }
 
@@ -30,12 +38,12 @@ public class ItemPile
 
     public ItemPile(List<GeneralItem> itemsInPile)
     {
-        this.itemsInPile = itemsInPile;
+        this.ItemsInPile = ItemsInPile;
     }
 
     public ItemPile(GeneralItem item)
     {
-        itemsInPile = new List<GeneralItem>() { item };
+        ItemsInPile = new List<GeneralItem>() { item };
     }
 
     public virtual ItemInInventory CreateItemInInventory()
@@ -51,30 +59,30 @@ public class ItemPile
 
     public void AddItemToPile(GeneralItem item)
     {
-        itemsInPile.Add(item);
+        ItemsInPile.Add(item);
     }
 
     public bool IsItemInPile(GeneralItem item)
     {
-        return itemsInPile.Contains(item);
+        return ItemsInPile.Contains(item);
     }
     public bool IsCorrespondingItemInPile(Item_General_SO itemSO)
     {
-        return itemsSOInPile.Contains(itemSO);
+        return ItemsSOInPile.Contains(itemSO);
     }
 
     public List<GeneralItem> GetAllCorrespondingItems(Item_General_SO itemSO)
     {
-        return itemsInPile.FindAll(item => item.ItemSO == itemSO);
+        return ItemsInPile.FindAll(item => item.ItemSO == itemSO);
     }
     public GeneralItem GetFirstCorrespondingItem(Item_General_SO itemSO)
     {
-        return itemsInPile.Find(item => item.ItemSO == itemSO);
+        return ItemsInPile.Find(item => item.ItemSO == itemSO);
     }
 
     public void RemoveItemFromPile(GeneralItem item)
     {
-        if (IsItemInPile(item)) { itemsInPile.Remove(item); };
+        if (IsItemInPile(item)) { ItemsInPile.Remove(item); };
     }
 
     public void RemoveFirstCorrespondingItem(Item_General_SO itemSO)
@@ -95,5 +103,12 @@ public class ItemPile
     public void Action(PlayerManager player)
     {
 
+    }
+
+    public override string ToString()
+    {
+        string pileName = "";
+        foreach (Item_General_SO itemSO in ItemsSOInPile) { pileName = pileName + ", " + itemSO.name; }
+        return pileName;
     }
 }
