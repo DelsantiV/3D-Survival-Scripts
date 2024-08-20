@@ -15,7 +15,9 @@ public class ItemManager
     private static string iconTemplateAddress = "IconInInventoryTemplate.prefab";
     private static string itemInfoAddress = "ItemInfoTemplate.prefab";
     private static string pileIconAddress = "ItemPile.png";
-    public static ItemInInventory itemUITemplate
+
+    private static ItemInInventory itemUITemplate;
+    public static ItemInInventory ItemUITemplate
     {
         get
         {
@@ -31,13 +33,14 @@ public class ItemManager
             itemUITemplate = value;
         }
     }
-    public static GameObject itemInfoTemplate
+    private static GameObject itemInfoTemplate;
+    public static GameObject ItemInfoTemplate
     {
         get
         {
             if (itemInfoTemplate == null)
             {
-                Debug.Log("Reloading Item UI Teemplate...");
+                Debug.Log("Reloading Item UI Template...");
                 itemInfoTemplate = Addressables.LoadAssetAsync<GameObject>(itemInfoAddress).WaitForCompletion();
             }
             return itemInfoTemplate;
@@ -47,20 +50,21 @@ public class ItemManager
             itemInfoTemplate = value;
         }
     }
+    private static Sprite pileIcon;
     public static Sprite PileIcon
     {
         get
         {
-            if (PileIcon == null)
+            if (pileIcon == null)
             {
-                Debug.Log("Reloading Item UI Teemplate...");
-                PileIcon = Addressables.LoadAssetAsync<Sprite>(pileIconAddress).WaitForCompletion();
+                Debug.Log("Reloading Pile Icon Template...");
+                pileIcon = Addressables.LoadAssetAsync<Sprite>(pileIconAddress).WaitForCompletion();
             }
-            return PileIcon;
+            return pileIcon;
         }
         private set
         {
-            PileIcon = value;
+            pileIcon = value;
         }
     }
 

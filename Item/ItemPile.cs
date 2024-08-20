@@ -38,7 +38,7 @@ public class ItemPile
 
     public ItemPile(List<GeneralItem> itemsInPile)
     {
-        this.ItemsInPile = ItemsInPile;
+        this.ItemsInPile = itemsInPile;
     }
 
     public ItemPile(GeneralItem item)
@@ -48,7 +48,7 @@ public class ItemPile
 
     public virtual ItemInInventory CreateItemInInventory()
     {
-        ItemInInventory itemUI = ItemManager.itemUITemplate;
+        ItemInInventory itemUI = ItemManager.ItemUITemplate;
         itemUI.SetItem(this);
         return itemUI;
     }
@@ -97,7 +97,8 @@ public class ItemPile
 
     public void SpawnInWorld(Vector3 spawnPosition)
     {
-        
+        ItemPileInWorld itemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
+        itemPileInWorld.SpawnItemPile(this, spawnPosition);
     }
 
     public void Action(PlayerManager player)

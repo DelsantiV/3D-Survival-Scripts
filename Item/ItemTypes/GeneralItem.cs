@@ -28,7 +28,7 @@ public class GeneralItem : ICarryable
 
     public virtual ItemInInventory CreateItemInInventory()
     {
-        ItemInInventory itemUI = ItemManager.itemUITemplate;
+        ItemInInventory itemUI = ItemManager.ItemUITemplate;
         itemUI.SetItem(this); 
         return itemUI;
     }

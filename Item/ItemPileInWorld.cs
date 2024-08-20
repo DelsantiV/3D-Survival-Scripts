@@ -9,21 +9,28 @@ public class ItemPileInWorld : MonoBehaviour
 
     public void SpawnItemPile(ItemPile itemPile, Vector3 spawnPosition)
     {
-        if (itemPile == null)
+        this.itemPile = itemPile;
+        transform.position = spawnPosition;
+        if (itemPile != null)
         {
-
+            foreach (GeneralItem item in itemPile.ItemsInPile)
+            {
+                SpawnIndividualItem(item);
+            }
         }
     }
-}
 
-public class ItemPileSpawner
-{
-    public static void SpawnPile(ItemPile pile, Vector3 worldPosition)
+    private void SpawnIndividualItem(GeneralItem item)
     {
-        if (pile != null)
+        if (item != null)
         {
-            ItemPileInWorld itemPileInWorld = new GameObject("Pile " + pile.ToString()).AddComponent<ItemPileInWorld>();
-            itemPileInWorld.SpawnItemPile(pile, worldPosition);
+            if (item.ItemPrefab != null)
+            {
+                GameObject itemPrefab = Instantiate(item.ItemPrefab, transform.position, transform.rotation);
+                itemPrefab.AddComponent<ItemInWorld>();
+                itemPrefab.AddComponent<Rigidbody>();
+                itemPrefab.GetComponent<ItemInWorld>().item = item;
+            }
         }
     }
 }

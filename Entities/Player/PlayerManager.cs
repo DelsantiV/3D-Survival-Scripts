@@ -205,7 +205,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     public void SpawnPileFromPlayer(ItemPile pile)
     {
-        ItemPileSpawner.SpawnPile(pile, itemDropper.position);
+        pile.SpawnInWorld(itemDropper.position);
     }
     //public GeneralInventoryUI GetInventoryUI() { return inventoryUI; }
     public void Die()

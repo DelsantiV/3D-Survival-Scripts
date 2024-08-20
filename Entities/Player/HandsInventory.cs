@@ -9,6 +9,9 @@ public class HandsInventory
     private QuickSlot rightHandQuickSlot;
     private QuickSlot bothHandQuickSlot;
     private HandsManager handsManager;
+    private ItemPile rightHandPile;
+    private ItemPile leftHandPile;
+    private ItemPile bothHandPile;
     public HandsInventory(PlayerManager player)
     {
         this.player = player;
