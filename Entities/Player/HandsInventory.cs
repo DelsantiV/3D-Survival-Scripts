@@ -21,8 +21,8 @@ public class HandsInventory
         handsManager = player.HandsManager;
     }
 
-    public bool TryAddItemToHands(GeneralItem item)
+    public bool TryAddItemPileToHands(ItemPile pile)
     {
-        return handsManager.TryEquipItemToNextEmptyHand(item);
+        return handsManager.TryEquipItemPileToNextEmptyHand(pile);
     }
 }

@@ -20,13 +20,26 @@ public class ItemPileInWorld : MonoBehaviour
         }
     }
 
+    public void SpawnItemPile(ItemPile itemPile, Transform targetTransform)
+    {
+        this.itemPile = itemPile;
+        transform.SetParent(targetTransform);
+        if (itemPile != null)
+        {
+            foreach (GeneralItem item in itemPile.ItemsInPile)
+            {
+                SpawnIndividualItem(item);
+            }
+        }
+    }
+
     private void SpawnIndividualItem(GeneralItem item)
     {
         if (item != null)
         {
             if (item.ItemPrefab != null)
             {
-                GameObject itemPrefab = Instantiate(item.ItemPrefab, transform.position, transform.rotation);
+                GameObject itemPrefab = Instantiate(item.ItemPrefab, this.transform);
                 itemPrefab.AddComponent<ItemInWorld>();
                 itemPrefab.AddComponent<Rigidbody>();
                 itemPrefab.GetComponent<ItemInWorld>().item = item;

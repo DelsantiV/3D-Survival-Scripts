@@ -16,15 +16,15 @@ public class ItemManager
     private static string itemInfoAddress = "ItemInfoTemplate.prefab";
     private static string pileIconAddress = "ItemPile.png";
 
-    private static ItemInInventory itemUITemplate;
-    public static ItemInInventory ItemUITemplate
+    private static ItemPileInInventory itemUITemplate;
+    public static ItemPileInInventory ItemUITemplate
     {
         get
         {
             if (itemUITemplate == null)
             {
                 Debug.Log("Reloading Item UI Teemplate...");
-                itemUITemplate = Addressables.LoadAssetAsync<GameObject>(iconTemplateAddress).WaitForCompletion().AddComponent<ItemInInventory>();
+                itemUITemplate = Addressables.LoadAssetAsync<GameObject>(iconTemplateAddress).WaitForCompletion().AddComponent<ItemPileInInventory>();
             }
             return itemUITemplate;
         }
@@ -87,7 +87,7 @@ public class ItemManager
         if (itemIconHandle.Status == AsyncOperationStatus.Succeeded)
         {
             GameObject itemUIGO = itemIconHandle.Result;
-            itemUITemplate = itemUIGO.AddComponent<ItemInInventory>();
+            itemUITemplate = itemUIGO.AddComponent<ItemPileInInventory>();
         }
         Addressables.Release(itemIconHandle);
     }

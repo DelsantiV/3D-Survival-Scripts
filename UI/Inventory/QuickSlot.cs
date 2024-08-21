@@ -17,37 +17,28 @@ public class QuickSlot : ItemSlot
         this.handsManager = handsManager;
     }
 
-    public override void AddItem(ItemInInventory item)
+    public override void AddPile(ItemPile pile)
     {
-        if (currentItem == null)
+        if (CurrentPileUI == null)
         {
-            handsManager.InstantiateItemInHand(item, hand);
+            handsManager.InstantiateItemPileInHand(pile, hand);
         }
-        base.AddItem(item);
-        // Needs to be improved: do not instantiate item if could not add
-    }
-    public override void AddItem(GeneralItem item, int amount = 1)
-    {
-        if (currentItem == null)
-        {
-            handsManager.InstantiateItemInHand(item, hand);
-        }
-        base.AddItem(item);
+        base.AddPile(pile);
         // Needs to be improved: do not instantiate item if could not add
     }
 
     public override void OnDrop(PointerEventData eventData)
     {
         GameObject itemBeingDragGO = eventData.pointerDrag;
-        ItemInInventory item;
-        if (itemBeingDragGO != null && itemBeingDragGO.TryGetComponent(out item)) 
+        ItemPileInInventory pile;
+        if (itemBeingDragGO != null && itemBeingDragGO.TryGetComponent(out pile)) 
         { 
-            AddItem(item);
+            AddPile(pile.ItemPile);
         }
     }
 
     public void RemoveItemFromHands()
     {
-        handsManager.RemoveItemFromHand(hand); 
+        handsManager.RemoveItemPileFromHand(hand); 
     }
 }

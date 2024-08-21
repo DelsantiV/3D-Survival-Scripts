@@ -72,19 +72,19 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
         else { base.OnEndDrag(eventData); }
         if (startParent != transform.parent) // si l'item est déplacé depuis un quickslot vers un autre slot, supprimer la prefab en main du joueur
         {
-            RemoveItemFromSlot();
+            RemoveItemPileFromSlot();
         }
         RefreshSlot();
     }
 
-    public virtual void RemoveItemFromSlot()
+    public virtual void RemoveItemPileFromSlot()
     {
         if (slot is QuickSlot)
         {
             QuickSlot quickslot = (QuickSlot) slot;
             quickslot.RemoveItemFromHands();
         }
-        slot.RemoveItem();
+        slot.RemovePile();
     }
 
     public virtual void OnPointerDown(PointerEventData eventData)
@@ -143,17 +143,17 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
 
     private void UsePile()
     {
-        if (ItemPile.isPileUniqueItem) { ItemPile.FirstItemInPile.Action(player); }
+        if (ItemPile.IsPileUniqueItem) { ItemPile.FirstItemInPile.Action(player); }
         else { }
     }
 
     public void EquipPileInNextEmptyHand()
     {
         ItemSlot previousSlot = slot;
-        if (player.HandsManager.TryEquipPileToNextEmptyHand(this))
+        if (player.HandsManager.TryEquipItemPileToNextEmptyHand(ItemPile))
         {
             Debug.Log("Equiped " + ItemPile.ToString());
-            previousSlot.RemoveItem();
+            previousSlot.RemovePile();
             RefreshSlot();
         }
         else
@@ -164,7 +164,7 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
 
     public void EquipItemInHand(HandsManager.Hand hand)
     {
-        if (player.HandsManager.TryEquipPileToHand(this, hand))
+        if (player.HandsManager.TryEquipItemPileToHand(ItemPile, hand))
         {
             Debug.Log("Equiped " + ItemPile.ToString());
         }

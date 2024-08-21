@@ -8,7 +8,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using static UnityEditor.Progress;
 
-public class GeneralItem : ICarryable
+public class GeneralItem
 {
     public Item_General_SO ItemSO { get; protected set; }
 
@@ -26,19 +26,7 @@ public class GeneralItem : ICarryable
         ItemSO = itemSO;
     }
 
-    public virtual ItemInInventory CreateItemInInventory()
-    {
-        ItemInInventory itemUI = ItemManager.ItemUITemplate;
-        itemUI.SetItem(this); 
-        return itemUI;
-    }
-
-    public virtual void SetItemToSlot(ItemSlot slot)
-    {
-        slot.SetItemToSlot(CreateItemInInventory());
-    }
-
-    public virtual void UseItem(PlayerManager player, ItemInInventory itemUI)
+    public virtual void UseItem(PlayerManager player, ItemPileInInventory pileUI)
     {
 
     }

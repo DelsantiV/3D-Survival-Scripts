@@ -12,71 +12,34 @@ public class ItemSlot : MonoBehaviour, IDropHandler
 {
 
     [HideInInspector] public PlayerManager player = PlayerManager.Player;
-    public ItemInInventory currentItemUI { get; private set; }
     public bool _isInOp = false;
 
-    public ICarryable currentContent {  get; private set; }
-    public GeneralItem currentItem 
-    {  
-        get
-        { 
-            if (currentItemUI == null)
-            {
-                return null;
-            }
-            else
-            {
-                return currentItemUI.Item;
-            }
-        }
-    }
-
-    public ItemPile currentPile { get; private set; }
-
-
-    public virtual int amountOfItem
+    public ItemPileInInventory CurrentPileUI { get; private set; }
+    public ItemPile CurrentPile
     {
         get
         {
-            if (currentItemUI != null)
-            {
-                return currentItemUI.amountOfItem;
-            }
-            return 0;
+            if (CurrentPileUI == null) { return null; }
+            else { return CurrentPileUI.ItemPile; }
         }
     }
 
-    public virtual bool isEmpty
+
+    public virtual bool IsEmpty
     {
         get
         {
-            if (currentItemUI == null && currentPile == null)
+            if (CurrentPileUI == null && !_isInOp)
             {
                 return true;
             }
             return false;
         }
-        set 
-        { 
-            if (currentItem == null && currentPile == null && !_isInOp) 
-            {
-                isEmpty = true;
-            }
-            else
-            {
-                isEmpty = false;
-            }
-            return;
-        }
     }
 
-    public virtual bool isHoldingPile
+    public virtual bool IsHoldingSingleItem
     {
-        get { return (currentItem == null && currentPile != null); }
-    }
-    public virtual bool isHoldingSingleItem
-    {
-        get { return (currentItem != null && currentPile == null); }
+        get { return (CurrentPileUI.ItemPile.IsPileUniqueItem); }
     }
 
     public virtual void OnDrop(PointerEventData eventData)
@@ -84,106 +47,53 @@ public class ItemSlot : MonoBehaviour, IDropHandler
         GameObject itemBeingDragGO = eventData.pointerDrag;
         if (itemBeingDragGO != null)
         {
-            ItemInInventory itemBeingDrag = itemBeingDragGO.GetComponent<ItemInInventory>();
+            ItemPileInInventory itemBeingDrag = itemBeingDragGO.GetComponent<ItemPileInInventory>();
             if (itemBeingDrag.slot != this)
             {
-                AddItem(itemBeingDrag.Item, itemBeingDrag.amountOfItem);
+                AddPile(itemBeingDrag.ItemPile);
             }
         }
 
     }
 
-    public virtual void RefreshItem(bool manual)
+    public virtual void RefreshItemPile(bool manual)
     {
-        currentItemUI = transform.GetComponentInChildren<ItemInInventory>(true);
+        CurrentPileUI = transform.GetComponentInChildren<ItemPileInInventory>(true);
     }
 
-    public virtual void AddItem(GeneralItem item, int amount = 1)
+    public virtual void AddPile(ItemPile pile)
     {
-        if (item != null)
+        if (pile != null)
         {
-            //if there is not item already then set our item.
-            if (isEmpty)
+            //if there is no pile already in the slot then set our pile.
+            if (IsEmpty)
             {
-                Debug.Log("Trying to add item " + item.ItemName + " to slot " + name + ", which is empty");
-                item.SetItemToSlot(this);
+                Debug.Log("Trying to add pile " + pile + " to slot " + name + ", which is empty");
+                pile.SetItemToSlot(this);
             }
 
-            //if there is an item already, create an ItemPile
+            //if there is a pile already, try to merge pile
             else
             {
-                Debug.Log("Trying to add item " + item.ItemSO + " to slot " + name + ", containing " + currentItem.ItemSO);
+                Debug.Log("Trying to add item " + pile + " to slot " + name + ", containing " + CurrentPile.ToString());
             }
         }
         else { Debug.Log("Trying to add null item"); }
     }
-
-    public virtual void AddItem(ItemInInventory itemUI)
-    {
-        if (itemUI != null)
-        {
-            //if there is not item already then set our item.
-            if (isEmpty)
-            {
-                // Reparent itemUI to this slot
-                SetItemToSlot(itemUI);
-            }
-
-            //if there is an item already, create an ItemPile
-            else
-            {
-                Debug.Log("Trying to add item " + itemUI.ItemSO + " to slot " + name + ", containing " + currentItem.ItemSO);
-            }
-        }
-        else { Debug.Log("Trying to add null item"); }
-    }
-
-    /*
-
-    //Could be fused with previous method, kept apart for now
-    public void AddItemAmountToSlot(int amount)
-    {
-        if (currentItemUI != null)
-        {
-            currentItemUI.AddAmountOfItem(amount);
-        }
-
-    }
-
-    public virtual void RemoveItemAmountFromSlot(int amount)
-    {
-        if (currentItemUI != null)
-        {
-            if (currentItemUI.amountOfItem < amount)
-            {
-                Debug.Log("Not enough items in slot !");
-                return;
-            }
-            currentItemUI.RemoveAmountOfItem(amount);
-
-            if (currentItemUI.amountOfItem == 0)
-            {
-                DestroyItem();
-            }
-        }
-        else { Debug.Log("Problemos"); }
-    }
-    */
 
     public virtual void DestroyItem()
     {
-        Debug.Log("Destroying item " + currentItem.ItemSO + " from slot " + name);
-        currentItemUI.CloseItemInfo();
-        Destroy(currentItemUI.gameObject);
-        currentItemUI = null;
+        Debug.Log("Destroying pile " + CurrentPile.ToString() + " from slot " + name);
+        Destroy(CurrentPileUI.gameObject);
+        CurrentPileUI = null;
     }
-    public virtual void RemoveItem()
+    public virtual void RemovePile()
     {
-        if (currentItem != null)
+        if (CurrentPileUI != null)
         {
-            Debug.Log("Removing item " + currentItem.ItemSO + " from slot" + name);
-            currentItemUI.CloseItemInfo();
-            currentItemUI = null;
+            Debug.Log("Removing item " + CurrentPile.ToString() + " from slot" + name);
+            CurrentPileUI.CloseItemInfo();
+            CurrentPileUI = null;
         }
         else
         {
@@ -191,11 +101,11 @@ public class ItemSlot : MonoBehaviour, IDropHandler
         }
     }
 
-    public virtual void SetItemToSlot(ItemInInventory itemUI)
+    public virtual void SetItemPileToSlot(ItemPileInInventory pileUI)
     {
-        currentItemUI = itemUI;
-        itemUI.transform.SetParent(transform);
-        itemUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-        itemUI.RefreshSlot();
+        CurrentPileUI = pileUI;
+        pileUI.transform.SetParent(transform);
+        pileUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+        pileUI.RefreshSlot();
     }
 }

@@ -232,6 +232,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     public bool TryCollectItem(ItemInWorld itemObject) 
     {
-        return HandsInventory.TryAddItemToHands(itemObject.item);
+        return HandsInventory.TryAddItemPileToHands(new ItemPile(itemObject.item));
     }
 }

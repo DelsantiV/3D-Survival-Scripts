@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class HandsManager
@@ -80,41 +81,34 @@ public class HandsManager
         return Hand.left;
     }
 
-    public ItemInInventory ItemUIInHand(Hand hand)
+    public ItemPileInInventory ItemPileUIInHand(Hand hand)
     {
-        return HandQuickSlot(hand).currentItemUI;
+        return HandQuickSlot(hand).CurrentPileUI;
     }
 
-    public GeneralItem ItemInHand(Hand hand)
+    public ItemPile ItemPileInHand(Hand hand)
     {
-        return ItemUIInHand(hand).Item;
+        return ItemPileUIInHand(hand).ItemPile;
     }
 
-    public EquippedItem EquippedItemInHand(Hand hand)
+    public EquippedItem EquippedItemPileInHand(Hand hand)
     {
         return HandTransform(hand).GetComponentInChildren<EquippedItem>();
     }
 
-    public void InstantiateItemInHand(ItemInInventory item, Hand hand)
+
+    public void InstantiateItemPileInHand(ItemPile pile, Hand hand)
     {
-        GameObject itemInHand = Object.Instantiate(item.Item.ItemPrefab, HandTransform(hand));
-        itemInHand.GetComponent<BoxCollider>().isTrigger = true;  // à améliorer
-        itemInHand.AddComponent<EquippedItem>();
+        ItemPileInWorld equippedPile = pile.SpawnInWorld(HandTransform(hand));
+        equippedPile.AddComponent<EquippedItem>();
     }
 
-    public void InstantiateItemInHand(GeneralItem item, Hand hand)
-    {
-        GameObject itemInHand = Object.Instantiate(item.ItemPrefab, HandTransform(hand));
-        itemInHand.GetComponent<BoxCollider>().isTrigger = true;  // à améliorer
-        itemInHand.AddComponent<EquippedItem>();
-    }
-
-    public void RemoveItemFromHand(Hand hand)
+    public void RemoveItemPileFromHand(Hand hand)
     {
         if (!isHandEmpty(hand))
         {
-            Debug.Log("Removing " + EquippedItemInHand(hand).name);
-            EquippedItemInHand(hand).Remove();
+            Debug.Log("Removing " + EquippedItemPileInHand(hand).name);
+            EquippedItemPileInHand(hand).Remove();
         }
         else
         {
@@ -122,18 +116,13 @@ public class HandsManager
         }
     }
 
-    private void EquipItemToHand(Hand hand, GeneralItem item)
+    private void EquipItemPileToHand(Hand hand, ItemPile pile)
     {
-        HandQuickSlot(hand).AddItem(item);
+        HandQuickSlot(hand).AddPile(pile);
     }
-    private void EquipItemToHand(Hand hand, ItemInInventory itemUI)
-    {
-        HandQuickSlot(hand).AddItem(itemUI);
-    }
-
     public bool isHandEmpty(Hand hand)
     {
-        return HandQuickSlot(hand).isEmpty;
+        return HandQuickSlot(hand).IsEmpty;
     }
 
     public Hand GetNextEmptyHand()
@@ -143,67 +132,24 @@ public class HandsManager
         return Hand.none;
     }
 
-    public bool TryEquipItemToNextEmptyHand(GeneralItem item)
+    public bool TryEquipItemPileToNextEmptyHand(ItemPile pile)
     {
         Hand emptyHand = GetNextEmptyHand();
         if (emptyHand == Hand.none) { return false; }
         else
         {
-            EquipItemToHand(emptyHand, item);
+            EquipItemPileToHand(emptyHand, pile);
             return true;
         }
     }
-    public bool TryEquipItemToHand(GeneralItem item, Hand hand)
+    public bool TryEquipItemPileToHand(ItemPile pile, Hand hand)
     {
         if (!isHandEmpty(hand)) { return false; }
         else
         {
-            EquipItemToHand(hand, item);
+            EquipItemPileToHand(hand, pile);
             return true;
         }
-    }
-    public bool TryEquipItemToNextEmptyHand(ItemInInventory itemUI)
-    {
-        Hand emptyHand = GetNextEmptyHand();
-        if (emptyHand == Hand.none) { return false; }
-        else
-        {
-            EquipItemToHand(emptyHand, itemUI);
-            return true;
-        }
-    }
-    public bool TryEquipItemToHand(ItemInInventory itemUI, Hand hand)
-    {
-        if (!isHandEmpty(hand)) { return false; }
-        else
-        {
-            EquipItemToHand(hand, itemUI);
-            return true;
-        }
-    }
-
-    public bool TryEquipPileToHand(ItemPileInInventory pileUI, Hand hand)
-    {
-        if (!isHandEmpty(hand)) { return false; }
-        else
-        {
-            Debug.Log("Equipped Pile " + pileUI.ItemPile.ToString());
-            return true;
-        }
-    }
-    public bool TryEquipPileToNextEmptyHand(ItemPileInInventory pileUI)
-    {
-        Hand emptyHand = GetNextEmptyHand();
-        if (emptyHand == Hand.none) { return false; }
-        else
-        {
-            EquipPileToHand(emptyHand, pileUI);
-            return true;
-        }
-    }
-    private void EquipPileToHand(Hand hand, ItemPileInInventory pileUI)
-    {
-       
     }
 }
 

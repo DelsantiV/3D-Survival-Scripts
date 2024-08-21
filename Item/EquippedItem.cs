@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EquippedItem : MonoBehaviour
 {
-    public GeneralItem Item { get; private set; }
+    public ItemPile ItemPile { get; private set; }
 
     private void Awake()
     {

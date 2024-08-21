@@ -14,13 +14,13 @@ public class FoodItem : GeneralItem
 
     }
 
-    public override void UseItem(PlayerManager player, ItemInInventory itemUI)
+    public override void UseItem(PlayerManager player, ItemPileInInventory pileUI)
     {
-        base.UseItem(player, itemUI);
+        base.UseItem(player, pileUI);
         bool isEaten = player.TryEatFood(this);
         if (isEaten)
         {
-            itemUI.RemoveItemFromSlot();
+            pileUI.RemoveItemPileFromSlot();
         }
     }
 }

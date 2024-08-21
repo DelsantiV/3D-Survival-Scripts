@@ -14,12 +14,20 @@ public class ItemPile
         }
     }
 
-    public bool isPileUniqueItem
+    public bool IsPileUniqueItem
     {
         get
         {
             if (ItemsInPile == null) { return false; }
             return ItemsInPile.Count == 1;
+        }
+    }
+
+    public bool IsPileUseable
+    {
+        get
+        {
+            return false;
         }
     }
 
@@ -46,15 +54,15 @@ public class ItemPile
         ItemsInPile = new List<GeneralItem>() { item };
     }
 
-    public virtual ItemInInventory CreateItemInInventory()
+    public virtual ItemPileInInventory CreateItemInInventory(PlayerManager player)
     {
-        ItemInInventory itemUI = ItemManager.ItemUITemplate;
-        itemUI.SetItem(this);
+        ItemPileInInventory itemUI = ItemManager.ItemUITemplate;
+        itemUI.SetItemPile(this, player);
         return itemUI;
     }
     public virtual void SetItemToSlot(ItemSlot slot)
     {
-        slot.SetItemToSlot(CreateItemInInventory());
+        slot.SetItemPileToSlot(CreateItemInInventory(slot.player));
     }
 
     public void AddItemToPile(GeneralItem item)
@@ -95,11 +103,19 @@ public class ItemPile
         foreach (GeneralItem item in GetAllCorrespondingItems(itemSO)) { RemoveItemFromPile(item); }
     }
 
-    public void SpawnInWorld(Vector3 spawnPosition)
+    public ItemPileInWorld SpawnInWorld(Vector3 spawnPosition)
     {
         ItemPileInWorld itemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
         itemPileInWorld.SpawnItemPile(this, spawnPosition);
+        return itemPileInWorld;
     }
+    public ItemPileInWorld SpawnInWorld(Transform targetTransform)
+    {
+        ItemPileInWorld itemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
+        itemPileInWorld.SpawnItemPile(this, targetTransform);
+        return itemPileInWorld;
+    }
+
 
     public void Action(PlayerManager player)
     {
