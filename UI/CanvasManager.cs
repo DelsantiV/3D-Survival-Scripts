@@ -34,6 +34,10 @@ public class CanvasManager : MonoBehaviour
         interactionInfoUI.CloseUI();
 
         interactionText = interactionInfoUI.GetComponent<TextMeshProUGUI>();
+
+        leftHandQuickSlot.SetPlayer(player);
+        rightHandQuickSlot.SetPlayer(player);
+        bothHandQuickSlot.SetPlayer(player);
     }
 
     public void GetSubComponents()

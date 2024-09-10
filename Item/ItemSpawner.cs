@@ -35,10 +35,9 @@ public class ItemSpawner : MonoBehaviour
 
     private void SpawnPile()
     {
-        Debug.Log(itemPile.ToString());
         if (itemPile.ItemsInPile != null)
         {
-            Debug.Log("Spawning Pile !");
+            Debug.Log("Spawning " + itemPile.ToString());
             itemPile?.SpawnInWorld(transform.position);
         }
     }

@@ -54,20 +54,27 @@ public class ItemPile
         ItemsInPile = new List<GeneralItem>() { item };
     }
 
-    public virtual ItemPileInInventory CreateItemInInventory(PlayerManager player)
+    public virtual void SetItemPileToSlot(ItemSlot slot)
     {
-        ItemPileInInventory itemUI = ItemManager.ItemUITemplate;
-        itemUI.SetItemPile(this, player);
-        return itemUI;
-    }
-    public virtual void SetItemToSlot(ItemSlot slot)
-    {
-        slot.SetItemPileToSlot(CreateItemInInventory(slot.player));
+        ItemPileInInventory pileUI = Object.Instantiate(ItemManager.ItemUITemplate, slot.transform);
+        slot.SetItemPileToSlot(pileUI);
+        pileUI.SetItemPile(this, slot.Player);
     }
 
-    public void AddItemToPile(GeneralItem item)
+    private void AddItemToPile(GeneralItem item)
     {
         ItemsInPile.Add(item);
+    }
+
+    public bool TryAddItemToPile(GeneralItem item)
+    {
+        AddItemToPile(item);
+        return true;
+    }
+
+    public bool TryAddPile(ItemPile pile) 
+    { 
+        return false;
     }
 
     public bool IsItemInPile(GeneralItem item)

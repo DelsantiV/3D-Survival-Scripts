@@ -24,7 +24,7 @@ public class ItemManager
             if (itemUITemplate == null)
             {
                 Debug.Log("Reloading Item UI Teemplate...");
-                itemUITemplate = Addressables.LoadAssetAsync<GameObject>(iconTemplateAddress).WaitForCompletion().AddComponent<ItemPileInInventory>();
+                itemUITemplate = Addressables.LoadAssetAsync<GameObject>(iconTemplateAddress).WaitForCompletion().GetComponent<ItemPileInInventory>();
             }
             return itemUITemplate;
         }
@@ -87,7 +87,7 @@ public class ItemManager
         if (itemIconHandle.Status == AsyncOperationStatus.Succeeded)
         {
             GameObject itemUIGO = itemIconHandle.Result;
-            itemUITemplate = itemUIGO.AddComponent<ItemPileInInventory>();
+            itemUITemplate = itemUIGO.GetComponent<ItemPileInInventory>();
         }
         Addressables.Release(itemIconHandle);
     }

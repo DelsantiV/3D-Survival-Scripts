@@ -29,11 +29,18 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
         this.player = player;
         canvas = FindFirstObjectByType<Canvas>();
         //itemInfoTemplate = Resources.Load<GameObject>("UI/ItemInfoTemplate"); // Replace with Addressables ?
-        inventoryGO = transform.parent.parent.gameObject;
+        inventoryGO = transform.parent.gameObject;
         isOutsideBounds = false;
         RefreshSlot();
     }
-  
+
+    public void SetItemPile(ItemPile itemPile, PlayerManager player)
+    {
+        ItemPile = itemPile;
+        gameObject.GetComponent<Image>().sprite = ItemManager.PileIcon;
+        Initialize(player);
+    }
+
     public void RefreshSlot()
     {
         slot = transform.parent.GetComponent<ItemSlot>();
@@ -73,6 +80,7 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
         if (startParent != transform.parent) // si l'item est déplacé depuis un quickslot vers un autre slot, supprimer la prefab en main du joueur
         {
             RemoveItemPileFromSlot();
+            Debug.Log("Deplacing pile from slot " + startParent.name + " to slot " + transform.parent.name);
         }
         RefreshSlot();
     }
@@ -172,13 +180,5 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
         {
             Debug.Log("Could not equip item, hand was not empty !");
         }
-    }
-
-
-    public void SetItemPile(ItemPile itemPile, PlayerManager player)
-    {
-        ItemPile = itemPile;
-        gameObject.GetComponent<Image>().sprite = ItemManager.PileIcon;
-        Initialize(player);
     }
 }
