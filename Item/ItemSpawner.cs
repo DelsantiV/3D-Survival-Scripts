@@ -24,12 +24,8 @@ public class ItemSpawner : MonoBehaviour
     {
         if (itemNamesList.Count > 0)
         {
-            List<GeneralItem> itemsList = itemNamesList.ConvertAll<GeneralItem>(itemName => ItemManager.GetItemByName(itemName)); // Handle case when ItemManager.GetItemByName returns null
+            List<GeneralItem> itemsList = itemNamesList.ConvertAll(itemName => ItemManager.GetItemByName(itemName)); // Handle case when ItemManager.GetItemByName returns null
             itemPile = new ItemPile(itemsList);
-            foreach (GeneralItem item in itemPile.ItemsInPile)
-            {
-                Debug.Log(item.ItemSO.name);
-            }
         }
     }
 
@@ -38,7 +34,7 @@ public class ItemSpawner : MonoBehaviour
         if (itemPile.ItemsInPile != null)
         {
             Debug.Log("Spawning " + itemPile.ToString());
-            itemPile?.SpawnInWorld(transform.position);
+            itemPile.SpawnInWorld(transform.position);
         }
     }
 }

@@ -25,9 +25,11 @@ public class ItemPileInWorld : MonoBehaviour
         transform.position = spawnPosition;
         if (itemPile != null)
         {
+            int height = 0;
             foreach (GeneralItem item in itemPile.ItemsInPile)
             {
-                SpawnIndividualItem(item, applyRigidBody);
+                SpawnIndividualItem(item, applyRigidBody, height);
+                height++;
             }
         }
     }
@@ -38,21 +40,23 @@ public class ItemPileInWorld : MonoBehaviour
         transform.SetParent(targetTransform);
         if (itemPile != null)
         {
+            int height = 0;
             foreach (GeneralItem item in itemPile.ItemsInPile)
             {
-                SpawnIndividualItem(item, applyRigidBody);
+                SpawnIndividualItem(item, applyRigidBody, height);
+                height++;
             }
         }
     }
 
-    private void SpawnIndividualItem(GeneralItem item, bool applyRigidBody)
+    private void SpawnIndividualItem(GeneralItem item, bool applyRigidBody, float height = 0)
     {
         if (item != null)
         {
             if (item.ItemPrefab != null)
             {
-                GameObject itemPrefab = Instantiate(item.ItemPrefab, transform, false);
-                itemPrefab.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+                GameObject itemPrefab = Instantiate(item.ItemPrefab, transform);
+                itemPrefab.transform.localPosition = Vector3.up*height;
                 ItemInWorld itemInWorld = itemPrefab.AddComponent<ItemInWorld>();
                 itemInWorld.item = item;
                 if (applyRigidBody) { itemPrefab.AddComponent<Rigidbody>(); }
