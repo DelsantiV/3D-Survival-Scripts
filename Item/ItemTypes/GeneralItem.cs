@@ -16,8 +16,17 @@ public class GeneralItem
 
     public GameObject ItemPrefab { get { return ItemSO.itemPrefab; } }
     public Sprite ItemSprite { get { return ItemSO.iconInInventory; } }
-    public int StackSize { get { return ItemSO.maxStackSize; } }
     public string ItemName { get { return ItemSO.name; } }
+
+    /// <summary>
+    /// Item weight in kg
+    /// </summary>
+    public float Weight { get { return ItemSO.weight; } }
+
+    /// <summary>
+    /// 1/Bulk = number of items a normal human can carry
+    /// </summary>
+    public float Bulk { get { return ItemSO.bulk; } }
 
     private string iconTemplateAddress = "IconInInventoryTemplate.prefab";
 

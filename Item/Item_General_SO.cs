@@ -13,16 +13,13 @@ public class Item_General_SO : ScriptableObject
     new public string name;
     public string icon_path;
     public string prefab_path;
-    public int max_stacksize;
     public string item_info;
     public string item_class;
+    public float weight;
+    public float bulk;
 
     public Sprite iconInInventory;
     public GameObject itemPrefab;
-    public int maxStackSize
-    {
-        get { return max_stacksize; }
-    }
 
 
     public void Initialize()

@@ -25,11 +25,12 @@ public class ItemInWorld : MonoBehaviour
         else { Debug.Log("Problemos"); }
     }
 
-    public GameObject ItemPrefab { get { return item.ItemSO.itemPrefab; } }
-    public Sprite ItemSprite { get { return item.ItemSO.iconInInventory; } }
-    public int StackSize { get { return item.ItemSO.maxStackSize; } }
-    public string ItemName { get { return item.ItemSO.name; } }
-    public string ObjectName { get { return item.ItemSO.name + " [E to pick up]"; } }
+    public GameObject ItemPrefab { get { return item.ItemPrefab; } }
+    public Sprite ItemSprite { get { return item.ItemSprite; } }
+    public string ItemName { get { return item.ItemName; } }
+    public string ObjectName { get { return ItemName + " [E to pick up]"; } }
+    public float Weight { get { return item.Weight; } }
+    public float bulk { get { return item.Bulk; } }
 
 
     private void Update()

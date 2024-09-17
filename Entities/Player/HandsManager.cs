@@ -105,7 +105,7 @@ public class HandsManager
 
     public void RemoveItemPileFromHand(Hand hand)
     {
-        if (!isHandEmpty(hand))
+        if (!IsHandEmpty(hand))
         {
             Debug.Log("Removing " + EquippedItemPileInHand(hand).name);
             EquippedItemPileInHand(hand).Remove();
@@ -120,15 +120,15 @@ public class HandsManager
     {
         HandQuickSlot(hand).AddPile(pile);
     }
-    public bool isHandEmpty(Hand hand)
+    public bool IsHandEmpty(Hand hand)
     {
         return HandQuickSlot(hand).IsEmpty;
     }
 
     public Hand GetNextEmptyHand()
     {
-        if (isHandEmpty(prefHand)) { return prefHand; }
-        else if (isHandEmpty(otherHand)) { return otherHand; }
+        if (IsHandEmpty(prefHand)) { return prefHand; }
+        else if (IsHandEmpty(otherHand)) { return otherHand; }
         return Hand.none;
     }
 
@@ -144,7 +144,7 @@ public class HandsManager
     }
     public bool TryEquipItemPileToHand(ItemPile pile, Hand hand)
     {
-        if (!isHandEmpty(hand)) { return false; }
+        if (!IsHandEmpty(hand)) { return false; }
         else
         {
             EquipItemPileToHand(hand, pile);

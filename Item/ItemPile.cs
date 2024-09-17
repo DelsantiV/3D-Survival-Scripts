@@ -1,11 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ItemPile
 {
+
+    /// <summary>
+    /// All items in the pile
+    /// </summary>
     public List<GeneralItem> ItemsInPile {get; private set;}
 
+
+    /// <summary>
+    /// Items SO of all items in the pile
+    /// </summary>
     public List<Item_General_SO> ItemsSOInPile
     {
         get 
@@ -14,6 +23,9 @@ public class ItemPile
         }
     }
 
+    /// <summary>
+    /// True if pile contains only one item, false otherwise (even if pile is null)
+    /// </summary>
     public bool IsPileUniqueItem
     {
         get
@@ -23,19 +35,43 @@ public class ItemPile
         }
     }
 
-    public bool IsPileUseable
-    {
-        get
-        {
-            return false;
-        }
-    }
-
+    /// <summary>
+    /// Returns the first item of the pile
+    /// </summary>
     public GeneralItem FirstItemInPile
     {
         get
         {
             return ItemsInPile[0];
+        }
+    }
+
+    public GeneralItem ItemInPile(int index)
+    {
+        return ItemsInPile[index];
+    }
+
+
+    /// <summary>
+    /// Total weight of the pile (sum of items weights)
+    /// </summary>
+    public float Weight
+    {
+        get
+        {
+            return ItemsInPile.Sum(item => item.Weight);
+        }
+    }
+
+    /// <summary>
+    /// Total bulk of the pile
+    /// </summary>
+    // For now total bulk is sum of items bulks. Future : increase bulk when carrying different kind of items
+    public float Bulk
+    {
+        get
+        {
+            return ItemsInPile.Sum(item => item.Bulk);
         }
     }
 
@@ -49,6 +85,12 @@ public class ItemPile
         this.ItemsInPile = itemsInPile;
     }
 
+
+    /// <summary>
+    /// Creates an ItemPile containing this item
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns> ItemPile </returns>
     public ItemPile(GeneralItem item)
     {
         ItemsInPile = new List<GeneralItem>() { item };
@@ -112,14 +154,24 @@ public class ItemPile
 
     public ItemPileInWorld SpawnInWorld(Vector3 spawnPosition)
     {
+        Debug.Log("Spawning item pile : " + ToString());
         ItemPileInWorld itemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
         itemPileInWorld.SpawnItemPile(this, spawnPosition);
         return itemPileInWorld;
     }
     public ItemPileInWorld SpawnInWorld(Transform targetTransform)
     {
+        Debug.Log("Spawning item pile : " + ToString());
         ItemPileInWorld itemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
         itemPileInWorld.SpawnItemPile(this, targetTransform);
+        return itemPileInWorld;
+    }
+
+    public ItemPileInWorld SpawnInHands(Transform hand)
+    {
+        Debug.Log("Spawning item pile : " + ToString());
+        ItemPileInWorld itemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
+        itemPileInWorld.SpawnItemPile(this, hand, false);
         return itemPileInWorld;
     }
 
@@ -133,6 +185,6 @@ public class ItemPile
     {
         string pileName = "";
         foreach (Item_General_SO itemSO in ItemsSOInPile) { pileName = pileName + ", " + itemSO.name; }
-        return pileName;
+        return pileName[2..];
     }
 }
