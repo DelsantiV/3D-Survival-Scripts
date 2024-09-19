@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System;
-using static UnityEditor.Progress;
 
 
 
@@ -14,7 +13,18 @@ public class ItemSlot : MonoBehaviour, IDropHandler
     [HideInInspector] public PlayerManager Player {get; private set;}
     public bool _isInOp = false;
 
-    public ItemPileInInventory CurrentPileUI { get; private set; }
+    public ItemPileInInventory CurrentPileUI 
+    { 
+        get
+        {
+            if (transform.childCount > 0)
+            {
+                return transform.GetChild(0).GetComponent<ItemPileInInventory>();
+            }
+
+            return null;
+        }
+    }
     public ItemPile CurrentPile
     {
         get
@@ -58,12 +68,6 @@ public class ItemSlot : MonoBehaviour, IDropHandler
                 AddPile(itemBeingDrag);
             }
         }
-
-    }
-
-    public virtual void RefreshItemPile()
-    {
-        CurrentPileUI = transform.GetComponentInChildren<ItemPileInInventory>(true);
     }
 
     public virtual void AddPile(ItemPile pile)
@@ -110,7 +114,6 @@ public class ItemSlot : MonoBehaviour, IDropHandler
     {
         Debug.Log("Destroying pile " + CurrentPile.ToString() + " from slot " + name);
         Destroy(CurrentPileUI.gameObject);
-        CurrentPileUI = null;
     }
     public virtual void RemovePile()
     {
@@ -118,7 +121,6 @@ public class ItemSlot : MonoBehaviour, IDropHandler
         {
             Debug.Log("Removing item " + CurrentPile.ToString() + " from slot" + name);
             CurrentPileUI.CloseItemInfo();
-            CurrentPileUI = null;
         }
         else
         {
@@ -128,8 +130,8 @@ public class ItemSlot : MonoBehaviour, IDropHandler
 
     public virtual void SetItemPileToSlot(ItemPileInInventory pileUI)
     {
-        CurrentPileUI = pileUI;
+        pileUI.transform.SetParent(transform, false);
         pileUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-        pileUI.slot = this;
+        pileUI.RefreshSlot();
     }
 }

@@ -93,7 +93,7 @@ public class HandsManager
 
     public EquippedItem EquippedItemPileInHand(Hand hand)
     {
-        return HandTransform(hand).GetComponentInChildren<EquippedItem>();
+        return HandTransform(hand).gameObject.GetComponentInChildren<EquippedItem>();
     }
 
 
@@ -105,7 +105,7 @@ public class HandsManager
 
     public void RemoveItemPileFromHand(Hand hand)
     {
-        if (!IsHandEmpty(hand))
+        if (EquippedItemPileInHand(hand) != null)
         {
             Debug.Log("Removing " + EquippedItemPileInHand(hand).name);
             EquippedItemPileInHand(hand).Remove();

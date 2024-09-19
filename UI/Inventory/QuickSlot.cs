@@ -27,16 +27,6 @@ public class QuickSlot : ItemSlot
         // Needs to be improved: do not instantiate item if could not add
     }
 
-    public override void OnDrop(PointerEventData eventData)
-    {
-        GameObject itemBeingDragGO = eventData.pointerDrag;
-        ItemPileInInventory pile;
-        if (itemBeingDragGO != null && itemBeingDragGO.TryGetComponent(out pile)) 
-        { 
-            AddPile(pile.ItemPile);
-        }
-    }
-
     public void RemoveItemFromHands()
     {
         handsManager.RemoveItemPileFromHand(hand); 

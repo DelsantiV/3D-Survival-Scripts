@@ -77,17 +77,11 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
             DropPile();
         }
         else { base.OnEndDrag(eventData); }
-        if (startParent != transform.parent) // si l'item est déplacé depuis un quickslot vers un autre slot, supprimer la prefab en main du joueur
-        {
-            RemoveItemPileFromSlot();
-            Debug.Log("Deplacing pile from slot " + startParent.name + " to slot " + transform.parent.name);
-        }
-        RefreshSlot();
     }
 
     public virtual void RemoveItemPileFromSlot()
     {
-        if (slot is QuickSlot)
+        if (slot is QuickSlot) // si l'item est déplacé depuis un quickslot, supprimer la prefab en main du joueur
         {
             QuickSlot quickslot = (QuickSlot) slot;
             quickslot.RemoveItemFromHands();

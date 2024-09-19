@@ -14,14 +14,11 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
     protected Vector3 startPosition;
     protected Transform startParent;
 
-
-
     public virtual void Initialize()
     {
 
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
-
     }
 
 
@@ -55,7 +52,6 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
             
             transform.position = startPosition;
             transform.SetParent(startParent);
-
         }
 
         Debug.Log("OnEndDrag");
