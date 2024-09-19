@@ -90,7 +90,7 @@ public class CanvasManager : MonoBehaviour
         SetInteractionUIActive(true);
     }
 
-    public void SetHandQuickSlots(HandsManager.HandMode handMode)
+    public void SetHandModeUI(HandsManager.HandMode handMode)
     {
         switch(handMode)
         {
@@ -107,28 +107,6 @@ public class CanvasManager : MonoBehaviour
                     bothHandQuickSlotHolder.OpenUI();
                     leftHandQuickSlotHolder.CloseUI();
                     rightHandQuickSlotHolder.CloseUI();
-                    return;
-                }
-        }
-    }
-
-    public void SetItemPileToHand(ItemPile itemPile, HandsManager.Hand hand)
-    {
-        switch(hand)
-        {
-            case HandsManager.Hand.both:
-                {
-                    SetHandQuickSlots(HandsManager.HandMode.both);
-                    return;
-                }
-            case HandsManager.Hand.left:
-                {
-                    SetHandQuickSlots(HandsManager.HandMode.single);
-                    return;
-                }
-            case HandsManager.Hand.right:
-                {
-                    SetHandQuickSlots(HandsManager.HandMode.single);
                     return;
                 }
         }

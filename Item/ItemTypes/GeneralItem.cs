@@ -28,7 +28,6 @@ public class GeneralItem
     /// </summary>
     public float Bulk { get { return ItemSO.bulk; } }
 
-    private string iconTemplateAddress = "IconInInventoryTemplate.prefab";
 
     public GeneralItem(Item_General_SO itemSO)
     {

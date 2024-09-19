@@ -12,27 +12,12 @@ public class ItemManager
     private static Dictionary<string, GeneralItem> _allItemsByName = new Dictionary<string, GeneralItem>();
     private static List<Item_General_SO> _allItemsSO = new List<Item_General_SO>();
 
-    private static string iconTemplateAddress = "IconInInventoryTemplate.prefab";
+    private static string iconTemplateAddress = "PileIconInInventoryTemplate.prefab";
     private static string itemInfoAddress = "ItemInfoTemplate.prefab";
     private static string pileIconAddress = "ItemPile.png";
+    private static string pileIconTemplateAddress = "PileIconInInventoryTemplate.prefab";
 
-    private static ItemPileInInventory itemUITemplate;
-    public static ItemPileInInventory ItemUITemplate
-    {
-        get
-        {
-            if (itemUITemplate == null)
-            {
-                Debug.Log("Reloading Item UI Teemplate...");
-                itemUITemplate = Addressables.LoadAssetAsync<GameObject>(iconTemplateAddress).WaitForCompletion().GetComponent<ItemPileInInventory>();
-            }
-            return itemUITemplate;
-        }
-        private set
-        {
-            itemUITemplate = value;
-        }
-    }
+
     private static GameObject itemInfoTemplate;
     public static GameObject ItemInfoTemplate
     {
@@ -44,10 +29,6 @@ public class ItemManager
                 itemInfoTemplate = Addressables.LoadAssetAsync<GameObject>(itemInfoAddress).WaitForCompletion();
             }
             return itemInfoTemplate;
-        }
-        private set
-        {
-            itemInfoTemplate = value;
         }
     }
     private static Sprite pileIcon;
@@ -62,9 +43,19 @@ public class ItemManager
             }
             return pileIcon;
         }
-        private set
+    }
+
+    private static GameObject pileIconTemplate;
+    public static ItemPileInInventory PileIconTemplate
+    {
+        get
         {
-            pileIcon = value;
+            if (pileIconTemplate == null)
+            {
+                Debug.Log("Reloading Pile Icon Template...");
+                pileIcon = Addressables.LoadAssetAsync<Sprite>(pileIconTemplateAddress).WaitForCompletion();
+            }
+            return pileIconTemplate.GetComponent<ItemPileInInventory>();
         }
     }
 
@@ -73,29 +64,31 @@ public class ItemManager
         _allItemsByName = allItemsByName;
         _items = _allItemsByName.Values.ToList();
         _allItemsSO = allItemsSO;
-        AsyncOperationHandle<GameObject> itemIconHandle = Addressables.LoadAssetAsync<GameObject>(iconTemplateAddress);
-        AsyncOperationHandle<GameObject> itemInfoHandle = Addressables.LoadAssetAsync<GameObject>(iconTemplateAddress);
-        AsyncOperationHandle<GameObject> pileIconHandle = Addressables.LoadAssetAsync<GameObject>(iconTemplateAddress);
-        itemIconHandle.Completed += OnItemIconLoaded;
-        itemInfoHandle.Completed += delegate { OnResultLoaded(itemInfoHandle, itemInfoTemplate); };
-        pileIconHandle.Completed += delegate { OnResultLoaded(pileIconHandle, PileIcon); };
-        yield return itemIconHandle;
+        AsyncOperationHandle<GameObject> itemInfoHandle = Addressables.LoadAssetAsync<GameObject>(itemInfoAddress);
+        AsyncOperationHandle<Sprite> pileIconHandle = Addressables.LoadAssetAsync<Sprite>(pileIconAddress); //To remove when template is operational
+        AsyncOperationHandle<GameObject> pileIconTemplateHandle = Addressables.LoadAssetAsync<GameObject>(pileIconTemplateAddress);
+        itemInfoHandle.Completed += delegate { OnGameObjectLoaded(itemInfoHandle, out itemInfoTemplate); };
+        pileIconTemplateHandle.Completed += delegate { OnGameObjectLoaded(pileIconTemplateHandle, out pileIconTemplate); };
+        pileIconHandle.Completed += delegate { OnSpriteLoaded(pileIconHandle, out pileIcon); };
+        yield return pileIconHandle;
     }
 
-    public static void OnItemIconLoaded(AsyncOperationHandle<GameObject> itemIconHandle)
+    public static void OnGameObjectLoaded(AsyncOperationHandle<GameObject> loadHandle, out GameObject result)
     {
-        if (itemIconHandle.Status == AsyncOperationStatus.Succeeded)
-        {
-            GameObject itemUIGO = itemIconHandle.Result;
-            itemUITemplate = itemUIGO.GetComponent<ItemPileInInventory>();
-        }
-        Addressables.Release(itemIconHandle);
-    }
-    public static void OnResultLoaded(AsyncOperationHandle<GameObject> loadHandle, Object receiver)
-    {
+        result = null;
         if (loadHandle.Status == AsyncOperationStatus.Succeeded)
         {
-            receiver = loadHandle.Result;
+            result = loadHandle.Result;
+        }
+        Addressables.Release(loadHandle);
+    }
+
+    public static void OnSpriteLoaded(AsyncOperationHandle<Sprite> loadHandle, out Sprite result)
+    {
+        result = null;
+        if (loadHandle.Status == AsyncOperationStatus.Succeeded)
+        {
+            result = loadHandle.Result;
         }
         Addressables.Release(loadHandle);
     }

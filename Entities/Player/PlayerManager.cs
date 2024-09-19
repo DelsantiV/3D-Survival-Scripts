@@ -93,12 +93,16 @@ public class PlayerManager : MonoBehaviour, IDamageable
         InputManager.cameraLocked = false;
         InputManager.canAction = true;
         InputManager.canMove = true;
+
+        //Test starting inventory :
+        ItemPile pile = new ItemPile(new List<string>(){"stone", "knapped_stone", "stone", "knapped_stone", "stone", "knapped_stone", "stone", "knapped_stone", "stone", "knapped_stone", "stone", "knapped_stone", "stone", "knapped_stone", "stone", "knapped_stone", "stone" });
+        HandsInventory.TryAddItemPileToHands(pile);
     }
 
     public void SetCanvasManager(CanvasManager canvasManager)
     {
         this.canvasManager = canvasManager;
-        HandsManager = new HandsManager(leftHand, rightHand, LeftHandQuickSlot, RightHandQuickSlot, prefHand);
+        HandsManager = new HandsManager(leftHand, rightHand, LeftHandQuickSlot, RightHandQuickSlot, BothHandQuickSlot, prefHand);
         HandsInventory = new HandsInventory(this);
     }
 
@@ -233,5 +237,10 @@ public class PlayerManager : MonoBehaviour, IDamageable
     public bool TryCollectItem(ItemInWorld itemObject) 
     {
         return HandsInventory.TryAddItemPileToHands(new ItemPile(itemObject.item));
+    }
+
+    public void SetHandMode(HandsManager.HandMode handMode)
+    {
+        canvasManager.SetHandModeUI(handMode);
     }
 }

@@ -9,20 +9,27 @@ public class HandsManager
     private GameObject leftHand;
     private QuickSlot leftHandQuickSlot;
     private QuickSlot rightHandQuickSlot;
+    private QuickSlot bothHandsQuickSlot;
     private Hand prefHand = Hand.right;
     private Hand otherHand;
 
+    public HandMode CurrentHandMode { get; private set; }
 
-    public HandsManager(GameObject leftHand, GameObject rightHand, QuickSlot leftHandQuickSlot, QuickSlot rightHandQuickSlot, Hand prefHand)
+
+    public HandsManager(GameObject leftHand, GameObject rightHand, QuickSlot leftHandQuickSlot, QuickSlot rightHandQuickSlot, QuickSlot bothHandsQuickSlot, Hand prefHand)
     {
         this.leftHand = leftHand;
         this.rightHand = rightHand;
         this.leftHandQuickSlot = leftHandQuickSlot;
         this.rightHandQuickSlot = rightHandQuickSlot;
+        this.bothHandsQuickSlot = bothHandsQuickSlot;
         this.prefHand = prefHand;
         otherHand = GetOtherHand(prefHand);
         leftHandQuickSlot.SetHandsManager(this, Hand.left);
         rightHandQuickSlot.SetHandsManager(this, Hand.right);
+        bothHandsQuickSlot.SetHandsManager(this, Hand.both);
+
+        CurrentHandMode = HandMode.single;
     }
 
     public enum Hand
@@ -99,7 +106,7 @@ public class HandsManager
 
     public void InstantiateItemPileInHand(ItemPile pile, Hand hand)
     {
-        ItemPileInWorld equippedPile = pile.SpawnInWorld(HandTransform(hand));
+        ItemPileInWorld equippedPile = pile.SpawnInHands(HandTransform(hand));
         equippedPile.AddComponent<EquippedItem>();
     }
 
@@ -150,6 +157,19 @@ public class HandsManager
             EquipItemPileToHand(hand, pile);
             return true;
         }
+    }
+
+    public void SetHandModes(HandMode handMode)
+    {
+        if (CurrentHandMode == handMode) { return; }
+
+
+        CurrentHandMode = handMode;
+    }
+
+    private void MergeBothHands()
+    {
+        // Get pile in left hand and pile in right hand. Merge them and affect them to "both" hands
     }
 }
 
