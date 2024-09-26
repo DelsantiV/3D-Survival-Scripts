@@ -95,7 +95,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
         InputManager.canMove = true;
 
         //Test starting inventory :
-        ItemPile pile = new ItemPile(new List<string>(){"stone", "knapped_stone", "stone", "knapped_stone", "stone", "knapped_stone", "stone", "knapped_stone", "stone", "knapped_stone", "stone", "knapped_stone", "stone", "knapped_stone", "stone", "knapped_stone", "stone" });
+        ItemPile pile = new ItemPile(new List<string>(){"stone", "knapped_stone", "stone"});
         HandsInventory.TryAddItemPileToHands(pile);
     }
 

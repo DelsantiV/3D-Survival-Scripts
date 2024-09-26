@@ -38,17 +38,38 @@ public class ItemPileInWorld : MonoBehaviour
     {
         this.itemPile = itemPile;
         transform.SetParent(targetTransform);
+        transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         if (itemPile != null)
         {
-            int height = 0;
+            float previousItemHeight = 0;
+            float currentItemHeight;
             foreach (GeneralItem item in itemPile.ItemsInPile)
             {
-                SpawnIndividualItem(item, applyRigidBody, height);
-                height++;
+                SpawnIndividualItem(item, applyRigidBody, out currentItemHeight, previousItemHeight);
+                previousItemHeight = currentItemHeight;
             }
         }
     }
 
+    private void SpawnIndividualItem(GeneralItem item, bool applyRigidBody, out float prefabHeight, float height = 0)
+    {
+        prefabHeight = 0;
+        if (item != null)
+        {
+            if (item.ItemPrefab != null)
+            {
+                GameObject itemPrefab = Instantiate(item.ItemPrefab, transform, false);
+                BoxCollider prefabCollider = itemPrefab.GetComponent<BoxCollider>();
+                prefabCollider.isTrigger = true;
+                prefabHeight = prefabCollider.size.y * itemPrefab.transform.localScale.y;
+                itemPrefab.transform.localPosition = Vector3.up * height;
+                ItemInWorld itemInWorld = itemPrefab.AddComponent<ItemInWorld>();
+                itemInWorld.item = item;
+                if (applyRigidBody) { itemPrefab.AddComponent<Rigidbody>(); }
+                itemsPrefabs.Add(itemInWorld);
+            }
+        }
+    }
     private void SpawnIndividualItem(GeneralItem item, bool applyRigidBody, float height = 0)
     {
         if (item != null)
@@ -56,7 +77,9 @@ public class ItemPileInWorld : MonoBehaviour
             if (item.ItemPrefab != null)
             {
                 GameObject itemPrefab = Instantiate(item.ItemPrefab, transform);
-                itemPrefab.transform.localPosition = Vector3.up*height;
+                BoxCollider prefabCollider = itemPrefab.GetComponent<BoxCollider>();
+                prefabCollider.isTrigger = true;
+                itemPrefab.transform.localPosition = Vector3.up * height;
                 ItemInWorld itemInWorld = itemPrefab.AddComponent<ItemInWorld>();
                 itemInWorld.item = item;
                 if (applyRigidBody) { itemPrefab.AddComponent<Rigidbody>(); }
