@@ -37,7 +37,7 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
     public void SetItemPile(ItemPile itemPile, PlayerManager player)
     {
         ItemPile = itemPile;
-        gameObject.GetComponent<Image>().sprite = ItemManager.PileIcon;
+        CreatePileIcon();
         Initialize(player);
     }
 
@@ -133,6 +133,39 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
         {
             Destroy(itemInfoGO);
         }
+    }
+
+    private void CreatePileIcon()
+    {
+
+        GameObject imageTemplateGO = transform.Find("TemplateImage").gameObject;
+        float totalImageSize = imageTemplateGO.GetComponent<RectTransform>().sizeDelta.x;
+
+        int numberOfRows = Mathf.CeilToInt(Mathf.Sqrt(ItemPile.NumberOfItemsInPile));
+        int numberOfColumns = Mathf.CeilToInt((float)ItemPile.NumberOfItemsInPile / numberOfRows);
+        Debug.Log("Creating pile icon with " + numberOfRows + " rows and " + numberOfColumns + " columns");
+        imageTemplateGO.GetComponent<RectTransform>().localScale = new Vector3(1.0f / numberOfRows, 1.0f / numberOfRows); // numberOfRows >= numberOfColumns (always)
+        float delta = totalImageSize / numberOfRows;
+        float startPos = -delta / 2.0f * (numberOfRows - 1);
+        Vector2 firstImagePosition = new Vector2(startPos, startPos);
+
+        int i = 0;
+        int j = 0;
+        foreach (GeneralItem item in ItemPile.ItemsInPile)
+        {
+            Debug.Log(new Vector2(i, j));
+            GameObject itemImage = Instantiate(imageTemplateGO, transform);
+            itemImage.GetComponent<Image>().sprite = item.ItemSprite;
+            itemImage.GetComponent<RectTransform>().anchoredPosition = firstImagePosition + new Vector2(i * delta, j * delta);
+
+            j++;
+            j %= numberOfRows;
+            if (j == 0)
+            {
+                i++;
+            }
+        }
+        Destroy(imageTemplateGO);
     }
 
     private void DropPile()

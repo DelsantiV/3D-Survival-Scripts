@@ -4,10 +4,12 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class ItemPile
 {
     public Sprite PileIcon { get; private set; }
+    private ItemPileInInventory pileUI;
 
     /// <summary>
     /// All items in the pile
@@ -121,8 +123,7 @@ public class ItemPile
 
     public virtual void SetItemPileToSlot(ItemSlot slot)
     {
-        ItemPileInInventory pileUI = Object.Instantiate(ItemManager.PileIconTemplate, slot.transform);
-        CreatePileIcon(pileUI);
+        pileUI = Object.Instantiate(ItemManager.PileIconTemplate, slot.transform);
         slot.SetItemPileToSlot(pileUI);
         pileUI.SetItemPile(this, slot.Player);
     }
@@ -132,16 +133,24 @@ public class ItemPile
         ItemsInPile.Add(item);
     }
 
-    public bool TryAddItemToPile(GeneralItem item)
+    public bool TryAddItemToPile(GeneralItem item, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity)
     {
-        AddItemToPile(item);
-        return true;
+        if (item.Weight + this.Weight > maxWeight || item.Bulk + this.Bulk > maxBulk) { return false; } // If pile would be too heavy or too bulky, do not add item
+        else
+        {
+            AddItemToPile(item);
+            return true;
+        }
     }
 
-    public bool TryMergePile(ItemPile pileToMerge) 
+    public bool TryMergePile(ItemPile pileToMerge, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity) 
     {
-        MergePiles(pileToMerge);
-        return true;
+        if (pileToMerge.Weight + this.Weight > maxWeight || pileToMerge.Bulk + this.Bulk > maxBulk) { return false; } // If pile would be too heavy or too bulky, do not merge piles
+        else
+        {
+            MergePiles(pileToMerge);
+            return true;
+        }
     }
 
     private void MergePiles(ItemPile pileToMerge)
@@ -149,6 +158,7 @@ public class ItemPile
         List<GeneralItem> newItemsInPile = new List<GeneralItem> (NumberOfItemsInPile + pileToMerge.NumberOfItemsInPile);
         newItemsInPile.AddRange(ItemsInPile);
         newItemsInPile.AddRange(pileToMerge.ItemsInPile);
+        ItemsInPile = newItemsInPile;
     }
 
     public bool IsItemInPile(GeneralItem item)
@@ -212,46 +222,6 @@ public class ItemPile
     {
 
     }
-
-    private void CreatePileIcon(ItemPileInInventory pileUI)
-    {
-
-        GameObject imageTemplateGO = pileUI.transform.Find("TemplateImage").gameObject;
-        float totalImageSize = imageTemplateGO.GetComponent<RectTransform>().sizeDelta.x;
-
-        int numberOfRows = Mathf.CeilToInt(Mathf.Sqrt(NumberOfItemsInPile));
-        int numberOfColumns = Mathf.CeilToInt( (float) NumberOfItemsInPile / numberOfRows);
-        Debug.Log("Creating pile icon with " + numberOfRows + " rows and " + numberOfColumns + " columns");
-        imageTemplateGO.GetComponent<RectTransform>().localScale = new Vector3 (1.0f / numberOfRows, 1.0f / numberOfRows); // numberOfRows >= numberOfColumns (always)
-        float delta = totalImageSize / numberOfRows;
-        float startPos = - delta / 2.0f * (numberOfRows - 1);
-        Vector2 firstImagePosition = new Vector2 (startPos, startPos);
-
-        int i = 0;
-        int j = 0;
-        foreach (GeneralItem item in ItemsInPile)
-        {
-            Debug.Log(new Vector2(i, j));
-            GameObject itemImage = Object.Instantiate(imageTemplateGO, pileUI.transform);
-            itemImage.GetComponent<Image>().sprite = item.ItemSprite;
-            itemImage.GetComponent<RectTransform>().anchoredPosition = firstImagePosition + new Vector2( i * delta , j * delta);
-
-            j++;
-            j %= numberOfRows;
-            if (j == 0)
-            {
-                i++;
-            }
-        }
-        Object.Destroy(imageTemplateGO);
-    }
-
-    private void UpdatePileIcon(ItemPileInInventory pileUI) 
-    { 
-
-    }
-
-
 
     public override string ToString()
     {
