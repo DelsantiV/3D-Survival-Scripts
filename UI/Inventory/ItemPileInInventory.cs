@@ -161,8 +161,15 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
         imageTemplateGO.SetActive(false);
     }
 
+    private void ClearIcon()
+    {
+        for (int childIndex = transform.childCount - 1; childIndex > 0; childIndex--) { Destroy(transform.GetChild(childIndex).gameObject); }
+    }
+
     public void UpdatePileIcon()
     {
+        //Quick and dirty for now, would need improvement (do not clear whole Icon when same size)
+        ClearIcon();
         CreatePileIcon();
     }
 

@@ -163,6 +163,7 @@ public class ItemPile
         newItemsInPile.AddRange(ItemsInPile);
         newItemsInPile.AddRange(pileToMerge.ItemsInPile);
         ItemsInPile = newItemsInPile;
+        OnPileChanged?.Invoke();
     }
 
     public bool IsItemInPile(GeneralItem item)
@@ -186,6 +187,7 @@ public class ItemPile
     public void RemoveItemFromPile(GeneralItem item)
     {
         if (IsItemInPile(item)) { ItemsInPile.Remove(item); };
+        OnPileChanged?.Invoke();
     }
 
     public void RemoveFirstCorrespondingItem(Item_General_SO itemSO)
