@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,7 +10,6 @@ using static UnityEditor.Progress;
 public class ItemPile
 {
     public Sprite PileIcon { get; private set; }
-    private ItemPileInInventory pileUI;
 
     /// <summary>
     /// All items in the pile
@@ -123,7 +123,7 @@ public class ItemPile
 
     public virtual void SetItemPileToSlot(ItemSlot slot)
     {
-        pileUI = Object.Instantiate(ItemManager.PileIconTemplate, slot.transform);
+        ItemPileInInventory pileUI = Object.Instantiate(ItemManager.PileIconTemplate, slot.transform);
         slot.SetItemPileToSlot(pileUI);
         pileUI.SetItemPile(this, slot.Player);
     }
@@ -228,5 +228,28 @@ public class ItemPile
         string pileName = "";
         foreach (Item_General_SO itemSO in ItemsSOInPile) { pileName = pileName + ", " + itemSO.name; }
         return pileName[2..];
+    }
+}
+
+public static class ItemPilesUtilities
+{
+    public static ItemPile MergePiles(ItemPile itemPile1, ItemPile itemPile2)
+    {
+        List<GeneralItem> newItemsInPile = new List<GeneralItem>(itemPile1.NumberOfItemsInPile + itemPile2.NumberOfItemsInPile);
+        newItemsInPile.AddRange(itemPile1.ItemsInPile);
+        newItemsInPile.AddRange(itemPile2.ItemsInPile);
+        return new ItemPile(newItemsInPile);
+    }
+
+
+    public static bool TryMergePiles(ItemPile itemPile1, ItemPile itemPile2, out ItemPile resultPile, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity)
+    {
+        resultPile = null;
+        if (itemPile1.Weight + itemPile2.Weight > maxWeight || itemPile1.Bulk + itemPile2.Bulk > maxBulk) { return false; } // If pile would be too heavy or too bulky, do not merge piles
+        else
+        {
+            resultPile = MergePiles(itemPile1, itemPile2);
+            return true;
+        }
     }
 }

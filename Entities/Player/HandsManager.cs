@@ -5,29 +5,18 @@ using UnityEngine;
 
 public class HandsManager
 {
-    private GameObject rightHand;
-    private GameObject leftHand;
-    private QuickSlot leftHandQuickSlot;
-    private QuickSlot rightHandQuickSlot;
-    private QuickSlot bothHandsQuickSlot;
-    private Hand prefHand = Hand.right;
-    private Hand otherHand;
+    private readonly GameObject rightHand;
+    private readonly GameObject leftHand;
+    private Hand prefHand;
 
     public HandMode CurrentHandMode { get; private set; }
 
 
-    public HandsManager(GameObject leftHand, GameObject rightHand, QuickSlot leftHandQuickSlot, QuickSlot rightHandQuickSlot, QuickSlot bothHandsQuickSlot, Hand prefHand)
+    public HandsManager(GameObject leftHand, GameObject rightHand, Hand prefHand)
     {
         this.leftHand = leftHand;
         this.rightHand = rightHand;
-        this.leftHandQuickSlot = leftHandQuickSlot;
-        this.rightHandQuickSlot = rightHandQuickSlot;
-        this.bothHandsQuickSlot = bothHandsQuickSlot;
         this.prefHand = prefHand;
-        otherHand = GetOtherHand(prefHand);
-        leftHandQuickSlot.SetHandsManager(this, Hand.left);
-        rightHandQuickSlot.SetHandsManager(this, Hand.right);
-        bothHandsQuickSlot.SetHandsManager(this, Hand.both);
 
         CurrentHandMode = HandMode.single;
     }
@@ -67,36 +56,6 @@ public class HandsManager
         }
         return null;
     }
-    public QuickSlot HandQuickSlot(Hand hand)
-    {
-        switch (hand)
-        {
-            case Hand.left: return leftHandQuickSlot;
-            case Hand.right: return rightHandQuickSlot;
-            case Hand.both: return HandQuickSlot(prefHand);
-        }
-        return null;
-    }
-
-    private Hand GetOtherHand(Hand prefHand)
-    {
-        switch (prefHand)
-        {
-            case Hand.left: return Hand.right;
-            case Hand.right: return Hand.left;
-        }
-        return Hand.left;
-    }
-
-    public ItemPileInInventory ItemPileUIInHand(Hand hand)
-    {
-        return HandQuickSlot(hand).CurrentPileUI;
-    }
-
-    public ItemPile ItemPileInHand(Hand hand)
-    {
-        return ItemPileUIInHand(hand).ItemPile;
-    }
 
     public EquippedItem EquippedItemPileInHand(Hand hand)
     {
@@ -123,53 +82,14 @@ public class HandsManager
         }
     }
 
-    private void EquipItemPileToHand(Hand hand, ItemPile pile)
-    {
-        HandQuickSlot(hand).AddPile(pile);
-    }
-    public bool IsHandEmpty(Hand hand)
-    {
-        return HandQuickSlot(hand).IsEmpty;
-    }
-
-    public Hand GetNextEmptyHand()
-    {
-        if (IsHandEmpty(prefHand)) { return prefHand; }
-        else if (IsHandEmpty(otherHand)) { return otherHand; }
-        return Hand.none;
-    }
-
-    public bool TryEquipItemPileToNextEmptyHand(ItemPile pile)
-    {
-        Hand emptyHand = GetNextEmptyHand();
-        if (emptyHand == Hand.none) { return false; }
-        else
-        {
-            EquipItemPileToHand(emptyHand, pile);
-            return true;
-        }
-    }
-    public bool TryEquipItemPileToHand(ItemPile pile, Hand hand)
-    {
-        if (!IsHandEmpty(hand)) { return false; }
-        else
-        {
-            EquipItemPileToHand(hand, pile);
-            return true;
-        }
-    }
-
     public void SetHandModes(HandMode handMode)
     {
         if (CurrentHandMode == handMode) { return; }
 
-
+        if (CurrentHandMode == HandMode.single)
+        {
+            
+        }
         CurrentHandMode = handMode;
     }
-
-    private void MergeBothHands()
-    {
-        // Get pile in left hand and pile in right hand. Merge them and affect them to "both" hands
-    }
 }
-

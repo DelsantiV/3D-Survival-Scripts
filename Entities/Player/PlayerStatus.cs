@@ -19,6 +19,14 @@ public class PlayerStatus
     public float caloriesDecayPerSecond = 1f;
     public bool isDigesting = false;
 
+    public float maxCarriyngWeightBothHands = 50f;
+    public float maxCarriyngWeightPrefHand = 20f;
+    public float maxCarriyngWeightOtherHand = 15f;
+
+    public float maxCarriyngBulkBothHands = 3f;
+    public float maxCarriyngBulkPrefHand = 1f;
+    public float maxCarriyngBulkOtherHand = 0.9f;
+
     public PlayerStatus(float maxHealth, float maxFatigue, float maxCalories)
     {
         this.maxHealth = maxHealth;

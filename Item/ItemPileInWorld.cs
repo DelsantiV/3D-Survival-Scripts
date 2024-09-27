@@ -60,12 +60,12 @@ public class ItemPileInWorld : MonoBehaviour
             {
                 GameObject itemPrefab = Instantiate(item.ItemPrefab, transform, false);
                 BoxCollider prefabCollider = itemPrefab.GetComponent<BoxCollider>();
-                prefabCollider.isTrigger = true;
                 prefabHeight = prefabCollider.size.y * itemPrefab.transform.localScale.y;
                 itemPrefab.transform.localPosition = Vector3.up * height;
                 ItemInWorld itemInWorld = itemPrefab.AddComponent<ItemInWorld>();
                 itemInWorld.item = item;
                 if (applyRigidBody) { itemPrefab.AddComponent<Rigidbody>(); }
+                else { prefabCollider.isTrigger = true;}
                 itemsPrefabs.Add(itemInWorld);
             }
         }
@@ -78,11 +78,11 @@ public class ItemPileInWorld : MonoBehaviour
             {
                 GameObject itemPrefab = Instantiate(item.ItemPrefab, transform);
                 BoxCollider prefabCollider = itemPrefab.GetComponent<BoxCollider>();
-                prefabCollider.isTrigger = true;
                 itemPrefab.transform.localPosition = Vector3.up * height;
                 ItemInWorld itemInWorld = itemPrefab.AddComponent<ItemInWorld>();
                 itemInWorld.item = item;
                 if (applyRigidBody) { itemPrefab.AddComponent<Rigidbody>(); }
+                else { prefabCollider.isTrigger = true; }
                 itemsPrefabs.Add(itemInWorld);
             }
         }

@@ -26,7 +26,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
     [SerializeField] private string[] startingItems;
     [SerializeField] private GameObject rightHand;
     [SerializeField] private GameObject leftHand;
-    [SerializeField] private HandsManager.Hand prefHand = HandsManager.Hand.right;
+    public HandsManager.Hand prefHand = HandsManager.Hand.right;
     public HandsInventory HandsInventory { get; private set; }
 
     private CanvasManager canvasManager;
@@ -96,13 +96,13 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         //Test starting inventory :
         ItemPile pile = new ItemPile(new List<string>(){"stone", "knapped_stone", "stone"});
-        HandsInventory.TryAddItemPileToHands(pile);
+        HandsInventory.TryAddItemPileToNextHand(pile);
     }
 
     public void SetCanvasManager(CanvasManager canvasManager)
     {
         this.canvasManager = canvasManager;
-        HandsManager = new HandsManager(leftHand, rightHand, LeftHandQuickSlot, RightHandQuickSlot, BothHandQuickSlot, prefHand);
+        HandsManager = new HandsManager(leftHand, rightHand, prefHand);
         HandsInventory = new HandsInventory(this);
     }
 
@@ -236,11 +236,17 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     public bool TryCollectItem(ItemInWorld itemObject) 
     {
-        return HandsInventory.TryAddItemPileToHands(new ItemPile(itemObject.item));
+        return HandsInventory.TryAddItemToNextHand(itemObject.item);
+    }
+
+    public bool TryCollectPile(ItemPileInWorld itemPileInWorld)
+    {
+        return false;
     }
 
     public void SetHandMode(HandsManager.HandMode handMode)
     {
         canvasManager.SetHandModeUI(handMode);
+        HandsManager.SetHandModes(handMode);
     }
 }

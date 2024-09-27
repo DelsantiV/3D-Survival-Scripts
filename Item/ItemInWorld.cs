@@ -11,8 +11,7 @@ public class ItemInWorld : MonoBehaviour
     {
         if (item != null && player.HandsInventory != null)
         {
-            bool isCollected = player.TryCollectItem(this);
-            if (isCollected)
+            if (player.TryCollectItem(this))
             {
                 Destroy(gameObject);
                 Debug.Log("Picked up " + ItemName + "!");

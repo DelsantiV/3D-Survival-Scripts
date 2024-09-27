@@ -81,11 +81,6 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
 
     public virtual void RemoveItemPileFromSlot()
     {
-        if (slot is QuickSlot) // si l'item est déplacé depuis un quickslot, supprimer la prefab en main du joueur
-        {
-            QuickSlot quickslot = (QuickSlot) slot;
-            quickslot.RemoveItemFromHands();
-        }
         slot.RemovePile();
     }
 
@@ -99,10 +94,6 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
         if (eventData.button == PointerEventData.InputButton.Left)
         {
             OpenItemInfo();
-        }
-        else if (eventData.button == PointerEventData.InputButton.Left)
-        {
-            EquipPileInNextEmptyHand();
         }
     }
 
@@ -168,6 +159,11 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
         Destroy(imageTemplateGO);
     }
 
+    public void UpdatePileIcon()
+    {
+        CreatePileIcon();
+    }
+
     private void DropPile()
     {
         player.SpawnPileFromPlayer(ItemPile);
@@ -185,7 +181,7 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
     public void EquipPileInNextEmptyHand()
     {
         ItemSlot previousSlot = slot;
-        if (player.HandsManager.TryEquipItemPileToNextEmptyHand(ItemPile))
+        if (player.HandsInventory.TryAddItemPileToNextEmptyHand(ItemPile))
         {
             Debug.Log("Equiped " + ItemPile.ToString());
             previousSlot.RemovePile();
@@ -194,18 +190,6 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
         else
         {
             Debug.Log("Could not equip item, no empty hand found !");
-        }
-    }
-
-    public void EquipItemInHand(HandsManager.Hand hand)
-    {
-        if (player.HandsManager.TryEquipItemPileToHand(ItemPile, hand))
-        {
-            Debug.Log("Equiped " + ItemPile.ToString());
-        }
-        else
-        {
-            Debug.Log("Could not equip item, hand was not empty !");
         }
     }
 }

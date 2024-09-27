@@ -11,7 +11,6 @@ public class ItemSlot : MonoBehaviour, IDropHandler
 {
 
     [HideInInspector] public PlayerManager Player {get; private set;}
-    public bool _isInOp = false;
 
     public ItemPileInInventory CurrentPileUI 
     { 
@@ -39,7 +38,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
     {
         get
         {
-            if (CurrentPileUI == null && !_isInOp)
+            if (CurrentPileUI == null)
             {
                 return true;
             }
@@ -121,6 +120,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
         {
             Debug.Log("Removing item " + CurrentPile.ToString() + " from slot" + name);
             CurrentPileUI.CloseItemInfo();
+            Destroy(CurrentPileUI.gameObject);
         }
         else
         {

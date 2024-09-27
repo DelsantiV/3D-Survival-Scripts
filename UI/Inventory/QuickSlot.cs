@@ -7,28 +7,37 @@ using UnityEngine.EventSystems;
 public class QuickSlot : ItemSlot
 {
     [HideInInspector] public static QuickSlot activeQuickSlot;
-    private HandsManager handsManager;
     public HandsManager.Hand hand;
 
+    private HandsInventory inventoryManager 
+    { 
+        get
+        {
+            return Player.HandsInventory;
+        } 
+    }
 
-    public virtual void SetHandsManager(HandsManager handsManager,  HandsManager.Hand hand)
+    private HandsManager handsManager
     {
-        this.hand = hand;
-        this.handsManager = handsManager;
+        get
+        {
+            return Player.HandsManager;
+        }
     }
 
     public override void AddPile(ItemPile pile)
     {
         if (CurrentPileUI == null)
         {
-            handsManager.InstantiateItemPileInHand(pile, hand);
+            handsManager?.InstantiateItemPileInHand(pile, hand);
         }
         base.AddPile(pile);
-        // Needs to be improved: do not instantiate item if could not add
+        // Needs to be improved: do not instantiate item if could not add -> TryAddPile structure
     }
 
-    public void RemoveItemFromHands()
+    public override void RemovePile()
     {
-        handsManager.RemoveItemPileFromHand(hand); 
+        base.RemovePile();
+        handsManager?.RemoveItemPileFromHand(hand);
     }
 }
