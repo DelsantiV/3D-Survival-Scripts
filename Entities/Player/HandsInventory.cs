@@ -153,7 +153,7 @@ public class HandsInventory
     public bool TryAddItemToHand(GeneralItem item, Hand hand)
     {
         ItemPile itemPileInHand = ItemPileInHand(hand);
-        Debug.Log("Trying to add "+ item.ItemName + " to " + hand.ToString() + " hand ");
+        Debug.Log("Trying to add "+ item.ItemName + " (weight: " + item.Weight + ", bulk: " + item.Bulk + ") to " + hand.ToString() + " hand ");
         if (itemPileInHand == null) { return TryAddItemPileToHand(new ItemPile(item), hand); }
         else { return ItemPileInHand(hand).TryAddItemToPile(item, MaxCarryingWeight(hand), MaxCarryingBulk(hand)); }
     }

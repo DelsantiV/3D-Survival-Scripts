@@ -37,6 +37,7 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
     public void SetItemPile(ItemPile itemPile, PlayerManager player)
     {
         ItemPile = itemPile;
+        itemPile.OnPileChanged.AddListener(UpdatePileIcon);
         CreatePileIcon();
         Initialize(player);
     }
@@ -146,6 +147,7 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
         {
             Debug.Log(new Vector2(i, j));
             GameObject itemImage = Instantiate(imageTemplateGO, transform);
+            itemImage.SetActive(true);
             itemImage.GetComponent<Image>().sprite = item.ItemSprite;
             itemImage.GetComponent<RectTransform>().anchoredPosition = firstImagePosition + new Vector2(i * delta, j * delta);
 
@@ -156,7 +158,7 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
                 i++;
             }
         }
-        Destroy(imageTemplateGO);
+        imageTemplateGO.SetActive(false);
     }
 
     public void UpdatePileIcon()

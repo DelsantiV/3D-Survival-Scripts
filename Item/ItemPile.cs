@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using static UnityEditor.Progress;
 
@@ -91,6 +92,8 @@ public class ItemPile
         }
     }
 
+    public UnityEvent OnPileChanged = new UnityEvent();
+
     public ItemPile()
     {
 
@@ -131,6 +134,7 @@ public class ItemPile
     private void AddItemToPile(GeneralItem item)
     {
         ItemsInPile.Add(item);
+        OnPileChanged?.Invoke();
     }
 
     public bool TryAddItemToPile(GeneralItem item, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity)
