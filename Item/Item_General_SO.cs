@@ -18,6 +18,8 @@ public class Item_General_SO : ScriptableObject
     public float weight;
     public float bulk;
 
+    public string classProperties;
+
     public Sprite iconInInventory;
     public GameObject itemPrefab;
 

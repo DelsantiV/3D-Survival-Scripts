@@ -13,13 +13,11 @@ using System.Reflection;
 
 public class ItemLoader
 {
-    private Dictionary<string, GeneralItem> allItems;
-    private List<Item_General_SO> allItemsSO;
+    private Dictionary<string, Item_General_SO> allItemsSOByName;
     public static UnityEvent Ready;
     public static List<string> allPrefabsLocations;
     public static List<string> allIconsLocations;
     public static string[] allItemNames;
-    Assembly asm = typeof(GeneralItem).Assembly;
     private List<string> itemsJsonKeys = new List<string>() { "JSON", "Items" };
     private List<string> itemsPrefabsKeys = new List<string>() { "Prefabs", "Items" };
     private List<string> itemsIconsKeys = new List<string>() { "Icons", "Items" };
@@ -27,8 +25,7 @@ public class ItemLoader
     public ItemLoader()
     {
         Ready = new UnityEvent();
-        allItems = new Dictionary<string, GeneralItem>();
-        allItemsSO = new List<Item_General_SO>();
+        allItemsSOByName = new();
     }
 
     public IEnumerator LoadItems()
@@ -52,8 +49,7 @@ public class ItemLoader
             itemJSON => { CreateItem(itemJSON); },
             Addressables.MergeMode.Intersection) ;
         yield return itemsLoading;
-        allItemNames = allItems.Keys.ToArray();
-        Task itemManagerInitialization = new Task(ItemManager.InitializeItemManager(allItems, allItemsSO));
+        Task itemManagerInitialization = new Task(ItemManager.InitializeItemManager(allItemsSOByName));
         itemManagerInitialization.Finished += FireAssetsReady;
         yield return itemManagerInitialization;
         Addressables.Release(allPrefabsLocationsLoading);
@@ -131,15 +127,8 @@ public class ItemLoader
         Debug.Log(jsonParsedFile["baseinfos"].ToString());
         JsonConvert.PopulateObject(jsonParsedFile["baseinfos"].ToString(), itemBaseData);
         itemBaseData.Initialize();
+        itemBaseData.classProperties = jsonParsedFile["class_properties"].ToString();
         Debug.Log("Loaded " + itemBaseData.name + " from class " + itemBaseData.item_class);
-        allItemsSO.Add(itemBaseData);
-        GeneralItem item = new GeneralItem(itemBaseData);
-        //var item = Activator.CreateInstance(asm.GetType(itemBaseData.item_class));
-        RegisterItem(item as GeneralItem, itemBaseData.name);
-    }
-
-    private void RegisterItem(GeneralItem item, string itemName)
-    {
-        allItems.Add(itemName, item);
+        allItemsSOByName.Add(itemBaseData.name, itemBaseData);
     }
 }

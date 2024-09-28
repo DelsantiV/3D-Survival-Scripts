@@ -5,14 +5,17 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using System;
+using System.Reflection;
 
 public class ItemManager
 {
-    private static List<GeneralItem> _items = new List<GeneralItem>();
-    private static Dictionary<string, GeneralItem> _allItemsByName = new Dictionary<string, GeneralItem>();
+    private static Dictionary<string, Item_General_SO> _allItemsSOByName = new Dictionary<string, Item_General_SO>();
     private static List<Item_General_SO> _allItemsSO = new List<Item_General_SO>();
+    private static List<string> _allItemsNames = new List<string>();
 
-    private static string iconTemplateAddress = "PileIconInInventoryTemplate.prefab";
+    private static Assembly asm = typeof(GeneralItem).Assembly;
+
     private static string itemInfoAddress = "ItemInfoTemplate.prefab";
     private static string pileIconTemplateAddress = "PileIconInInventoryTemplate.prefab";
 
@@ -45,11 +48,10 @@ public class ItemManager
         }
     }
 
-    public static IEnumerator InitializeItemManager(Dictionary<string, GeneralItem> allItemsByName, List<Item_General_SO> allItemsSO)
+    public static IEnumerator InitializeItemManager(Dictionary<string, Item_General_SO> allItemsSOByName)
     {
-        _allItemsByName = allItemsByName;
-        _items = _allItemsByName.Values.ToList();
-        _allItemsSO = allItemsSO;
+        _allItemsSOByName = allItemsSOByName;
+        _allItemsSO = allItemsSOByName.Values.ToList();
         AsyncOperationHandle<GameObject> itemInfoHandle = Addressables.LoadAssetAsync<GameObject>(itemInfoAddress);
         AsyncOperationHandle<GameObject> pileIconTemplateHandle = Addressables.LoadAssetAsync<GameObject>(pileIconTemplateAddress);
         itemInfoHandle.Completed += delegate { OnGameObjectLoaded(itemInfoHandle, out itemInfoTemplate); };
@@ -88,9 +90,16 @@ public class ItemManager
         }
   
     }
+
+    public static GeneralItem GenerateItemfromItemSO(Item_General_SO itemSO)
+    {
+        //var item = Activator.CreateInstance(asm.GetType(itemSO.item_class));
+        //(item as GeneralItem).ItemSO = itemSO;
+        return new GeneralItem(itemSO);
+    }
     public static GeneralItem GetItemByName(string itemName)
     {
-        if (_allItemsByName.ContainsKey(itemName)) { return _allItemsByName[itemName]; }
+        if (_allItemsSOByName.ContainsKey(itemName)) { return GenerateItemfromItemSO(_allItemsSOByName[itemName]); }
         else
         {
             Debug.Log("No item named " + itemName);
@@ -100,7 +109,7 @@ public class ItemManager
 
     public static GeneralItem GetItemByID(int id)
     {
-        if (id > 0 && id < _items.Count) { return _items[id];}
+        if (id > 0 && id < _allItemsSO.Count) { return GenerateItemfromItemSO(_allItemsSO[id]);}
         else 
         {
             Debug.Log("Item ID " + id + " is not valid");
