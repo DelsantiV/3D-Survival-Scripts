@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 public class ItemPileInWorld : MonoBehaviour
 {
     private ItemPile itemPile;
-    private List<ItemInWorld> itemsPrefabs = new List<ItemInWorld>();
-
+    private Dictionary<GeneralItem, ItemInWorld> itemsPrefabs = new();
     public List<GeneralItem> ItemsInPile {  get { return itemPile.ItemsInPile; } }
+    private float pileHeight;
     public float Weight
     {
         get { return itemPile.Weight; }
@@ -25,11 +26,11 @@ public class ItemPileInWorld : MonoBehaviour
         transform.position = spawnPosition;
         if (itemPile != null)
         {
-            int height = 0;
+            pileHeight = 0;
             foreach (GeneralItem item in itemPile.ItemsInPile)
             {
-                SpawnIndividualItem(item, applyRigidBody, height);
-                height++;
+                SpawnIndividualItem(item, applyRigidBody, pileHeight);
+                pileHeight += 1;
             }
         }
     }
@@ -42,11 +43,10 @@ public class ItemPileInWorld : MonoBehaviour
         if (itemPile != null)
         {
             float previousItemHeight = 0;
-            float currentItemHeight;
             foreach (GeneralItem item in itemPile.ItemsInPile)
             {
-                SpawnIndividualItem(item, applyRigidBody, out currentItemHeight, previousItemHeight);
-                previousItemHeight = currentItemHeight;
+                SpawnIndividualItem(item, applyRigidBody, out pileHeight, previousItemHeight);
+                previousItemHeight = pileHeight;
             }
         }
     }
@@ -66,7 +66,7 @@ public class ItemPileInWorld : MonoBehaviour
                 itemInWorld.item = item;
                 if (applyRigidBody) { itemPrefab.AddComponent<Rigidbody>(); }
                 else { prefabCollider.isTrigger = true;}
-                itemsPrefabs.Add(itemInWorld);
+                itemsPrefabs.Add(item, itemInWorld);
             }
         }
     }
@@ -83,13 +83,42 @@ public class ItemPileInWorld : MonoBehaviour
                 itemInWorld.item = item;
                 if (applyRigidBody) { itemPrefab.AddComponent<Rigidbody>(); }
                 else { prefabCollider.isTrigger = true; }
-                itemsPrefabs.Add(itemInWorld);
+                itemsPrefabs.Add(item, itemInWorld);
             }
         }
     }
 
-    public void AddItem(GeneralItem item, bool applyRigidBody)
+    public void AddItem(GeneralItem item, bool applyRigidBody = false, bool applyHeight = true)
     {
-        SpawnIndividualItem(item, applyRigidBody);
+        SpawnIndividualItem(item, applyRigidBody, out pileHeight, applyHeight ? pileHeight : 0);
+    }
+
+    public void RemoveItem(GeneralItem item)
+    {
+        ItemInWorld itemToRemove;
+        if (!itemsPrefabs.TryGetValue(item, out itemToRemove))
+        {
+            Debug.Log("Removing " + item.ItemName + " from pile " + itemPile.ToString() + " failed: no such item found");
+            return;
+        }
+        itemsPrefabs.Remove(item);
+        // Should recalculate pile Height
+
+        // Suppose that item is already removed from itemPile
+        Destroy(itemToRemove.gameObject);
+    }
+
+    public void RemoveItem(int index)
+    {
+        if (index < 0 || index >= itemsPrefabs.Count) 
+        {
+            Debug.Log("Removing item number " + index + " from pile " + itemPile.ToString() + " failed: index out of range");
+            return; 
+        }
+        RemoveItem(itemsPrefabs.Keys.ToList()[index]);
+    }
+    public void RemoveLastItem()
+    {
+
     }
 }

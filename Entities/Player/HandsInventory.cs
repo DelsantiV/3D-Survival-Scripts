@@ -155,7 +155,15 @@ public class HandsInventory
         ItemPile itemPileInHand = ItemPileInHand(hand);
         Debug.Log("Trying to add "+ item.ItemName + " (weight: " + item.Weight + ", bulk: " + item.Bulk + ") to " + hand.ToString() + " hand ");
         if (itemPileInHand == null) { return TryAddItemPileToHand(new ItemPile(item), hand); }
-        else { return ItemPileInHand(hand).TryAddItemToPile(item, MaxCarryingWeight(hand), MaxCarryingBulk(hand)); }
+        else 
+        { 
+            if (ItemPileInHand(hand).TryAddItemToPile(item, MaxCarryingWeight(hand), MaxCarryingBulk(hand)))
+            {
+                handsManager.AddItemToEquippedPileInHand(item, hand);
+                return true;
+            }
+            return false;
+        }
     }
     public bool TryAddItemToNextHand(GeneralItem item)
     {
