@@ -14,7 +14,6 @@ public class ItemManager
 
     private static string iconTemplateAddress = "PileIconInInventoryTemplate.prefab";
     private static string itemInfoAddress = "ItemInfoTemplate.prefab";
-    private static string pileIconAddress = "ItemPile.png";
     private static string pileIconTemplateAddress = "PileIconInInventoryTemplate.prefab";
 
 
@@ -31,19 +30,6 @@ public class ItemManager
             return itemInfoTemplate;
         }
     }
-    private static Sprite pileIcon;
-    public static Sprite PileIcon
-    {
-        get
-        {
-            if (pileIcon == null)
-            {
-                Debug.Log("Reloading Pile Icon Template...");
-                pileIcon = Addressables.LoadAssetAsync<Sprite>(pileIconAddress).WaitForCompletion();
-            }
-            return pileIcon;
-        }
-    }
 
     private static GameObject pileIconTemplate;
     public static ItemPileInInventory PileIconTemplate
@@ -53,7 +39,7 @@ public class ItemManager
             if (pileIconTemplate == null)
             {
                 Debug.Log("Reloading Pile Icon Template...");
-                pileIcon = Addressables.LoadAssetAsync<Sprite>(pileIconTemplateAddress).WaitForCompletion();
+                pileIconTemplate = Addressables.LoadAssetAsync<GameObject>(pileIconTemplateAddress).WaitForCompletion();
             }
             return pileIconTemplate.GetComponent<ItemPileInInventory>();
         }
@@ -65,12 +51,10 @@ public class ItemManager
         _items = _allItemsByName.Values.ToList();
         _allItemsSO = allItemsSO;
         AsyncOperationHandle<GameObject> itemInfoHandle = Addressables.LoadAssetAsync<GameObject>(itemInfoAddress);
-        AsyncOperationHandle<Sprite> pileIconHandle = Addressables.LoadAssetAsync<Sprite>(pileIconAddress); //To remove when template is operational
         AsyncOperationHandle<GameObject> pileIconTemplateHandle = Addressables.LoadAssetAsync<GameObject>(pileIconTemplateAddress);
         itemInfoHandle.Completed += delegate { OnGameObjectLoaded(itemInfoHandle, out itemInfoTemplate); };
         pileIconTemplateHandle.Completed += delegate { OnGameObjectLoaded(pileIconTemplateHandle, out pileIconTemplate); };
-        pileIconHandle.Completed += delegate { OnSpriteLoaded(pileIconHandle, out pileIcon); };
-        yield return pileIconHandle;
+        yield return pileIconTemplateHandle;
     }
 
     public static void OnGameObjectLoaded(AsyncOperationHandle<GameObject> loadHandle, out GameObject result)
