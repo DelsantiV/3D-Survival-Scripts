@@ -61,15 +61,15 @@ public class PathfindingTest : MonoBehaviour {
     Dictionary<Vector3, float> GetNeighbourNodes(Vector3 pos)
     {
         Dictionary<Vector3, float> neighbours = new Dictionary<Vector3, float>();
-        for (int i = -2; i < 3; i++)
+        for (int i = -1; i < 2; i++)
         {
-            for (int j = -2; j < 3; j++)
+            for (int j = -1; j < 2; j++)
             { 
                 if (i == 0 && j == 0) continue;
-                Vector3 dir = new Vector3(i/2.0f, 0, j/2.0f).normalized*gridSize;
+                Vector3 dir = new Vector3(i, 0, j).normalized*gridSize;
                 if (!Physics.Linecast(pos, pos + dir, obstacles))
                 {
-                    Debug.Log(dir);
+                    Debug.Log(dir + "  |  " + (pos + dir) + "  |  " + new Vector2 (i,j));
                     neighbours.Add((pos + dir), dir.magnitude);
                 }
                 
