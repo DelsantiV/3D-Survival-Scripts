@@ -93,9 +93,16 @@ public class ItemPile
 
     private ItemPileInWorld itemPileInWorld;
 
-    public bool isInWorld
+    public bool IsInWorld
     {
         get { return itemPileInWorld != null; }
+    }
+
+    private ItemPileInInventory itemPileUI;
+
+    public bool IsInInventory
+    {
+        get { return itemPileUI != null; }
     }
 
     public UnityEvent OnPileChanged = new UnityEvent();
@@ -132,9 +139,9 @@ public class ItemPile
 
     public virtual void SetItemPileToSlot(ItemSlot slot)
     {
-        ItemPileInInventory pileUI = Object.Instantiate(ItemManager.PileIconTemplate, slot.transform);
-        slot.SetItemPileToSlot(pileUI);
-        pileUI.SetItemPile(this, slot.Player);
+        itemPileUI = Object.Instantiate(ItemManager.PileIconTemplate, slot.transform);
+        slot.SetItemPileToSlot(itemPileUI);
+        itemPileUI.SetItemPile(this, slot.Player);
     }
 
     private void AddItemToPile(GeneralItem item)
@@ -232,7 +239,7 @@ public class ItemPile
 
     public void DestroyItemPileInWorld()
     {
-        if (isInWorld) { itemPileInWorld.DestroyItemPile(); }
+        if (IsInWorld) { itemPileInWorld.DestroyItemPile(); }
     }
 
 
