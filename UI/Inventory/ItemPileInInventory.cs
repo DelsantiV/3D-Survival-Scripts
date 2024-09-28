@@ -176,6 +176,10 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
     private void DropPile()
     {
         player.SpawnPileFromPlayer(ItemPile);
+        if (slot is QuickSlot)
+        {
+            player.HandsManager.RemoveItemPileFromHand((slot as QuickSlot).hand);
+        }
         Destroy(gameObject);
         Debug.Log("Dropped item");
         CloseItemInfo();

@@ -6,7 +6,6 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 public class ItemPile
 {
@@ -25,7 +24,7 @@ public class ItemPile
     {
         get 
         {
-            return ItemsInPile.ConvertAll(item => item.ItemSO);
+            return ItemsInPile.ConvertAll(item => item?.ItemSO);
         }
     }
 
