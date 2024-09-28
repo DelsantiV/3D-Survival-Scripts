@@ -91,6 +91,13 @@ public class ItemPile
         }
     }
 
+    private ItemPileInWorld itemPileInWorld;
+
+    public bool isInWorld
+    {
+        get { return itemPileInWorld != null; }
+    }
+
     public UnityEvent OnPileChanged = new UnityEvent();
 
     public ItemPile()
@@ -202,14 +209,15 @@ public class ItemPile
     public ItemPileInWorld SpawnInWorld(Vector3 spawnPosition)
     {
         Debug.Log("Spawning item pile : " + ToString());
-        ItemPileInWorld itemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
+        itemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
         itemPileInWorld.SpawnItemPile(this, spawnPosition);
+
         return itemPileInWorld;
     }
     public ItemPileInWorld SpawnInWorld(Transform targetTransform)
     {
         Debug.Log("Spawning item pile : " + ToString());
-        ItemPileInWorld itemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
+        itemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
         itemPileInWorld.SpawnItemPile(this, targetTransform);
         return itemPileInWorld;
     }
@@ -217,9 +225,14 @@ public class ItemPile
     public ItemPileInWorld SpawnInHands(Transform hand)
     {
         Debug.Log("Spawning item pile : " + ToString());
-        ItemPileInWorld itemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
+        itemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
         itemPileInWorld.SpawnItemPile(this, hand, false);
         return itemPileInWorld;
+    }
+
+    public void DestroyItemPileInWorld()
+    {
+        if (isInWorld) { itemPileInWorld.DestroyItemPile(); }
     }
 
 

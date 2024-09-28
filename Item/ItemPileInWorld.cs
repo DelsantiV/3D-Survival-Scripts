@@ -105,6 +105,15 @@ public class ItemPileInWorld : MonoBehaviour
         // Should recalculate pile Height
 
         // Suppose that item is already removed from itemPile
+
+        // If Pile is now empty, destroy whole GameObject
+
+        if (itemsPrefabs.Count == 0)
+        {
+            Destroy(gameObject); 
+            return;
+        }
+
         Destroy(itemToRemove.gameObject);
     }
 
@@ -120,5 +129,10 @@ public class ItemPileInWorld : MonoBehaviour
     public void RemoveLastItem()
     {
 
+    }
+
+    public void DestroyItemPile()
+    {
+        Destroy(gameObject);
     }
 }
