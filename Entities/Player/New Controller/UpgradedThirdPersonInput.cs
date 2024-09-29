@@ -198,7 +198,7 @@ namespace Invector.vCharacterController
                 cc.RightHandActionStart();
             }
 
-            if ((Input.GetKeyUp(rightHandActionInput) || cc.inputMagnitude > 0.01f) && cc.isLeftHandAction && canAction)
+            if ((Input.GetKeyUp(rightHandActionInput) || cc.inputMagnitude > 0.01f) && cc.isRightHandAction && canAction)
             {
                 cc.RightHandActionStop();
             }
