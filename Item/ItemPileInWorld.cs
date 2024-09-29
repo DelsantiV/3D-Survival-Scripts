@@ -10,6 +10,7 @@ public class ItemPileInWorld : MonoBehaviour
     private Dictionary<GeneralItem, ItemInWorld> itemsPrefabs = new();
     public List<GeneralItem> ItemsInPile {  get { return itemPile.ItemsInPile; } }
     private float pileHeight;
+    public bool isRigidBody;
     public float Weight
     {
         get { return itemPile.Weight; }
@@ -20,24 +21,26 @@ public class ItemPileInWorld : MonoBehaviour
         get { return itemPile.Bulk; }
     }
 
-    public void SpawnItemPile(ItemPile itemPile, Vector3 spawnPosition, bool applyRigidBody = true)
+    public void SpawnItemPile(ItemPile itemPile, Vector3 spawnPosition, bool isRigidBody = true)
     {
         this.itemPile = itemPile;
+        this.isRigidBody = isRigidBody;
         transform.position = spawnPosition;
         if (itemPile != null)
         {
             pileHeight = 0;
             foreach (GeneralItem item in itemPile.ItemsInPile)
             {
-                SpawnIndividualItem(item, applyRigidBody, pileHeight);
+                SpawnIndividualItem(item, isRigidBody, pileHeight);
                 pileHeight += 1;
             }
         }
     }
 
-    public void SpawnItemPile(ItemPile itemPile, Transform targetTransform, bool applyRigidBody = true)
+    public void SpawnItemPile(ItemPile itemPile, Transform targetTransform, bool isRigidBody = true)
     {
         this.itemPile = itemPile;
+        this.isRigidBody = isRigidBody;
         transform.SetParent(targetTransform);
         transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         if (itemPile != null)
@@ -45,13 +48,13 @@ public class ItemPileInWorld : MonoBehaviour
             float previousItemHeight = 0;
             foreach (GeneralItem item in itemPile.ItemsInPile)
             {
-                SpawnIndividualItem(item, applyRigidBody, out pileHeight, previousItemHeight);
+                SpawnIndividualItem(item, isRigidBody, out pileHeight, previousItemHeight);
                 previousItemHeight = pileHeight;
             }
         }
     }
 
-    private void SpawnIndividualItem(GeneralItem item, bool applyRigidBody, out float prefabHeight, float height = 0)
+    private void SpawnIndividualItem(GeneralItem item, bool isRigidBody, out float prefabHeight, float height = 0)
     {
         prefabHeight = 0;
         if (item != null)
@@ -64,13 +67,13 @@ public class ItemPileInWorld : MonoBehaviour
                 itemPrefab.transform.localPosition = Vector3.up * height;
                 ItemInWorld itemInWorld = itemPrefab.AddComponent<ItemInWorld>();
                 itemInWorld.item = item;
-                if (applyRigidBody) { itemPrefab.AddComponent<Rigidbody>(); }
+                if (isRigidBody) { itemPrefab.AddComponent<Rigidbody>(); }
                 else { prefabCollider.isTrigger = true;}
                 itemsPrefabs.Add(item, itemInWorld);
             }
         }
     }
-    private void SpawnIndividualItem(GeneralItem item, bool applyRigidBody, float height = 0)
+    private void SpawnIndividualItem(GeneralItem item, bool isRigidBody, float height = 0)
     {
         if (item != null)
         {
@@ -81,16 +84,16 @@ public class ItemPileInWorld : MonoBehaviour
                 itemPrefab.transform.localPosition = Vector3.up * height;
                 ItemInWorld itemInWorld = itemPrefab.AddComponent<ItemInWorld>();
                 itemInWorld.item = item;
-                if (applyRigidBody) { itemPrefab.AddComponent<Rigidbody>(); }
+                if (isRigidBody) { itemPrefab.AddComponent<Rigidbody>(); }
                 else { prefabCollider.isTrigger = true; }
                 itemsPrefabs.Add(item, itemInWorld);
             }
         }
     }
 
-    public void AddItem(GeneralItem item, bool applyRigidBody = false, bool applyHeight = true)
+    public void AddItem(GeneralItem item, bool applyHeight = true)
     {
-        SpawnIndividualItem(item, applyRigidBody, out pileHeight, applyHeight ? pileHeight : 0);
+        SpawnIndividualItem(item, isRigidBody, out pileHeight, applyHeight ? pileHeight : 0);
     }
 
     public void RemoveItem(GeneralItem item)
@@ -134,5 +137,16 @@ public class ItemPileInWorld : MonoBehaviour
     public void DestroyItemPile()
     {
         Destroy(gameObject);
+    }
+
+    public void FromHandToGround()
+    {
+        isRigidBody = true;
+        foreach (ItemInWorld itemPrefab in itemsPrefabs.Values)
+        {
+            GameObject itemGO = itemPrefab.gameObject;
+            itemGO.GetComponent<BoxCollider>().isTrigger = false;
+            itemGO.AddComponent<Rigidbody>();
+        }
     }
 }

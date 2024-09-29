@@ -97,7 +97,20 @@ public class HandsManager
         }
         else
         {
-            Debug.Log("No item to remove from this hand !");
+            Debug.Log("No item pile to remove from this hand !");
+        }
+    }
+
+    public void DropItemPileFromHand(Hand hand)
+    {
+        if (EquippedItemPileInHand(hand) != null)
+        {
+            Debug.Log("Removing " + EquippedItemPileInHand(hand).name);
+            EquippedItemPileInHand(hand).Drop();
+        }
+        else
+        {
+            Debug.Log("No item pile to remove from this hand !");
         }
     }
 
