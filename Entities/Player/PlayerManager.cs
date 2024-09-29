@@ -74,12 +74,13 @@ public class PlayerManager : MonoBehaviour, IDamageable
         //inventory = new InventoryManager(numberOfInventorySlots, inventoryUI);
         //craftingManager = new CraftingManager(craftingUI, inventory);
         itemDropper = transform.Find("Item Dropper");
-        PlayerStatus = new PlayerStatus(maxHealth, maxFatigue, maxCalories);
+        PlayerStatus = new PlayerStatus(this, maxHealth, maxFatigue, maxCalories);
         DigestiveSystem = new DigestiveSystem(PlayerStatus);
         playerLayer = LayerMask.GetMask("Player");
         playerHead = transform.Find("PlayerHead");
         InputManager = GetComponent<UpgradedThirdPersonInput>();
         AnimatorController = GetComponent<AnimatorController>();
+        PlayerController = GetComponent<UpgradedThirdPersonController>();
     }
 
     void Start()
@@ -111,6 +112,12 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         HandleInteractions();
         HandleKeyInputs();
+        
+        //Quick and dirty for testing : to change
+        if (!PlayerStatus.CanSprint)
+        {
+            SetWalkByDefault(true);
+        }
     }
 
     public bool hasSomeUIOpen()
@@ -184,6 +191,11 @@ public class PlayerManager : MonoBehaviour, IDamageable
         }
         */
 
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            ChangeWalkByDefault();
+        }
+
         InputManager.cameraLocked = hasSomeUIOpen();
         InputManager.canAction = !hasSomeUIOpen();
         InputManager.canMove = !hasSomeUIOpen();
@@ -191,6 +203,17 @@ public class PlayerManager : MonoBehaviour, IDamageable
         {
             InputManager.TryStopAllActions();
         }
+    }
+
+    public void SetWalkByDefault(bool walkByDefault)
+    {
+        PlayerController.freeSpeed.walkByDefault = walkByDefault;
+    }
+
+    public void ChangeWalkByDefault()
+    {
+        if (!PlayerStatus.CanSprint && PlayerController.freeSpeed.walkByDefault) { return;  }
+        PlayerController.freeSpeed.walkByDefault = !PlayerController.freeSpeed.walkByDefault;
     }
 
     public void SpawnItemFromPlayer(GeneralItem item, int amount = 1)

@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class PlayerStatus
 {
+    private readonly PlayerManager player;
+
     public float maxHealth;
     public float currentHealth;
     public float healthRegenPerSecond = 0.2f;
@@ -27,8 +29,25 @@ public class PlayerStatus
     public float maxCarriyngBulkPrefHand = 1f;
     public float maxCarriyngBulkOtherHand = 0.9f;
 
-    public PlayerStatus(float maxHealth, float maxFatigue, float maxCalories)
+    public float CurrentCarriedWeight
     {
+        get
+        {
+            return player.HandsInventory.CurrentTotalCarryingWeight;
+        }
+    }
+
+    public bool CanSprint
+    {
+        get
+        {
+            return CurrentCarriedWeight < 5;
+        }
+    }
+
+    public PlayerStatus(PlayerManager player, float maxHealth, float maxFatigue, float maxCalories)
+    {
+        this.player = player;
         this.maxHealth = maxHealth;
         this.maxFatigue = maxFatigue;
         this.maxCalories = maxCalories;

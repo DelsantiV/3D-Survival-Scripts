@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Build.Pipeline;
 using UnityEngine;
 using static HandsManager;
 
@@ -65,6 +66,13 @@ public class HandsInventory
         }
     }
 
+    private float CurrentCarryingWeightInHand(Hand hand)
+    {
+        ItemPile pileInHand = ItemPileInHand(hand);
+        if (pileInHand != null) { return pileInHand.Weight; }
+        return 0f;
+    }
+
     private float MaxCarryingWeight(Hand hand)
     {
         if (hand == prefHand) { return playerStatus.maxCarriyngWeightPrefHand; }
@@ -76,6 +84,22 @@ public class HandsInventory
         if (hand == prefHand) { return playerStatus.maxCarriyngBulkPrefHand; }
         else if (hand == otherHand) { return playerStatus.maxCarriyngBulkOtherHand; }
         return 0f;
+    }
+    public float CurrentTotalCarryingWeight
+    {
+        get
+        {
+            if (handsManager.CurrentHandMode == HandMode.single)
+            {
+                return CurrentCarryingWeightInHand(Hand.left) + CurrentCarryingWeightInHand(Hand.right);
+            }
+            else if (handsManager.CurrentHandMode == HandMode.both) 
+            {
+                return CurrentCarryingWeightInHand(Hand.both);
+            }
+
+            return 0f;
+        }
     }
 
     public HandsInventory(PlayerManager player)
@@ -108,7 +132,7 @@ public class HandsInventory
         return HandQuickSlot(hand).CurrentPileUI;
     }
 
-    public bool IsHandEmpty(Hand hand)
+public bool IsHandEmpty(Hand hand)
     {
         return HandQuickSlot(hand).IsEmpty;
     }
