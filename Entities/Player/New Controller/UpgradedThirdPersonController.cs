@@ -132,28 +132,28 @@ namespace Invector.vCharacterController
         }
 
 
-        public virtual void LeftHandActionStart()
+        public virtual void OtherHandActionStart()
         {
             animator.SetTrigger("Action");
-            isLeftHandAction = true;
+            isOtherHandAction = true;
         }
 
 
-        public virtual void LeftHandActionStop()
+        public virtual void OtherHandActionStop()
         {
             animator.SetTrigger("ActionStop");
-            isLeftHandAction = false;
+            isOtherHandAction = false;
         }
 
-        public virtual void RightHandActionStart() 
+        public virtual void PrefHandActionStart() 
         {
             animator.SetTrigger("Action");
-            isRightHandAction = true;
+            isPrefHandAction = true;
         }
-        public virtual void RightHandActionStop()
+        public virtual void PrefHandActionStop()
         {
             animator.SetTrigger("ActionStop");
-            isRightHandAction = false;
+            isPrefHandAction = false;
         }
 
         public virtual void StopMoving()

@@ -19,15 +19,16 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private TextMeshProUGUI interactionText;
     public PlayerStatus PlayerStatus { get; private set; }
     private Transform playerHead;
-    public HandsManager HandsManager {get; private set; }
     [SerializeField] private float maxHealth;
     [SerializeField] private float maxFatigue;
     [SerializeField] private float maxCalories;
+    public HandsManager HandsManager {get; private set; }
     [SerializeField] private string[] startingItems;
     [SerializeField] private GameObject rightHand;
     [SerializeField] private GameObject leftHand;
     public HandsManager.Hand prefHand = HandsManager.Hand.right;
     public HandsInventory HandsInventory { get; private set; }
+    public PlayerInputConfig PlayerInputConfig { get; private set; }
 
     private CanvasManager canvasManager;
 
@@ -76,6 +77,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
         itemDropper = transform.Find("Item Dropper");
         PlayerStatus = new PlayerStatus(this, maxHealth, maxFatigue, maxCalories);
         DigestiveSystem = new DigestiveSystem(PlayerStatus);
+        PlayerInputConfig = new();
         playerLayer = LayerMask.GetMask("Player");
         playerHead = transform.Find("PlayerHead");
         InputManager = GetComponent<UpgradedThirdPersonInput>();
@@ -140,7 +142,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
                 canvasManager.SetInteractionTextAndActivate(currentInteraction.ObjectName);
                 isInteracting = true;
 
-                if (Input.GetKeyDown(KeyCode.E))
+                if (Input.GetKeyDown(PlayerInputConfig.GetKeyCodeForControl(Controls.Collect)))
                 {
                     selectionTransform.GetComponent<ItemInWorld>().PickUpItem(Player);
                 }
@@ -191,9 +193,13 @@ public class PlayerManager : MonoBehaviour, IDamageable
         }
         */
 
-        if (Input.GetKeyDown(KeyCode.LeftControl))
+        if (Input.GetKeyDown(PlayerInputConfig.GetKeyCodeForControl(Controls.ChangeWalkMode)))
         {
             ChangeWalkByDefault();
+        }
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            PlayerInputConfig.SaveToJson();
         }
 
         InputManager.cameraLocked = hasSomeUIOpen();
@@ -212,7 +218,11 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     public void ChangeWalkByDefault()
     {
-        if (!PlayerStatus.CanSprint && PlayerController.freeSpeed.walkByDefault) { return;  }
+        if (!PlayerStatus.CanSprint && PlayerController.freeSpeed.walkByDefault) 
+        {
+            Debug.Log("Carriyng heavy weight ! Cannot sprint");
+            return;  
+        }
         PlayerController.freeSpeed.walkByDefault = !PlayerController.freeSpeed.walkByDefault;
     }
 

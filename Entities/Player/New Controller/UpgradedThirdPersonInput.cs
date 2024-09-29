@@ -9,12 +9,8 @@ namespace Invector.vCharacterController
         [Header("Controller Input")]
         public string horizontalInput = "Horizontal";
         public string verticallInput = "Vertical";
-        public KeyCode jumpInput = KeyCode.Space;
-        public KeyCode strafeInput = KeyCode.Tab;
-        public KeyCode sprintInput = KeyCode.LeftShift;
-        public KeyCode forageInput = KeyCode.C;
-        public KeyCode leftHandActionInput = KeyCode.Mouse0;
-        public KeyCode rightHandActionInput = KeyCode.Mouse1;
+
+        public KeyCode strafeInput;
 
         [Header("Camera Input")]
         public string rotateCameraXInput = "Mouse X";
@@ -27,6 +23,7 @@ namespace Invector.vCharacterController
         [HideInInspector] public bool canMove;
         [HideInInspector] public bool canAction;
         private PlayerManager player;
+        private PlayerInputConfig playerInputConfig;
 
 
         #endregion
@@ -36,6 +33,7 @@ namespace Invector.vCharacterController
             InitilizeController();
             InitializeTpCamera();
             player = GetComponent<PlayerManager>();
+            playerInputConfig = player.PlayerInputConfig;
         }
 
         protected virtual void FixedUpdate()
@@ -89,8 +87,13 @@ namespace Invector.vCharacterController
             StrafeInput();
             JumpInput();
             ForageResourcesInput();
-            LeftHandInput();
-            RightHandInput();
+            OtherHandInput();
+            PrefHandInput();
+        }
+
+        private KeyCode GetInputKey(Controls control)
+        {
+            return playerInputConfig.GetKeyCodeForControl(control);
         }
 
         public virtual void MoveInput()
@@ -146,9 +149,9 @@ namespace Invector.vCharacterController
 
         protected virtual void SprintInput()
         {
-            if (Input.GetKeyDown(sprintInput))
+            if (Input.GetKeyDown(GetInputKey(Controls.Sprint)))
                 cc.Sprint(true);
-            else if (Input.GetKeyUp(sprintInput))
+            else if (Input.GetKeyUp(GetInputKey(Controls.Sprint)))
                 cc.Sprint(false);
         }
 
@@ -166,48 +169,48 @@ namespace Invector.vCharacterController
         /// </summary>
         protected virtual void JumpInput()
         {
-            if (Input.GetKeyDown(jumpInput) && JumpConditions())
+            if (Input.GetKeyDown(GetInputKey(Controls.Jump)) && JumpConditions())
                 cc.Jump();
         }
 
         protected virtual void ForageResourcesInput()
         {
-            if (Input.GetKeyDown(forageInput) && !cc.isJumping)
+            if (Input.GetKeyDown(GetInputKey(Controls.Collect)) && !cc.isJumping)
             {
                 cc.Forage();
             }
         }
 
-        protected virtual void LeftHandInput() 
+        protected virtual void OtherHandInput() 
         { 
-            if (Input.GetKeyDown(leftHandActionInput) && !cc.isJumping && cc.inputMagnitude < 0.01f && canAction)
+            if (Input.GetKeyDown(GetInputKey(Controls.OtherHandAction)) && !cc.isJumping && cc.inputMagnitude < 0.01f && canAction)
             {
-                cc.LeftHandActionStart();
+                cc.OtherHandActionStart();
             }
 
-            if ((Input.GetKeyUp(leftHandActionInput) || cc.inputMagnitude > 0.01f) && cc.isLeftHandAction && canAction)
+            if ((Input.GetKeyUp(GetInputKey(Controls.OtherHandAction)) || cc.inputMagnitude > 0.01f) && cc.isOtherHandAction && canAction)
             {
-                cc.LeftHandActionStop();
+                cc.OtherHandActionStop();
             }
         }
 
-        protected virtual void RightHandInput()
+        protected virtual void PrefHandInput()
         {
-            if (Input.GetKeyDown(rightHandActionInput) && !cc.isJumping && cc.inputMagnitude < 0.01f && canAction)
+            if (Input.GetKeyDown(GetInputKey(Controls.PrefHandAction)) && !cc.isJumping && cc.inputMagnitude < 0.01f && canAction)
             {
-                cc.RightHandActionStart();
+                cc.PrefHandActionStart();
             }
 
-            if ((Input.GetKeyUp(rightHandActionInput) || cc.inputMagnitude > 0.01f) && cc.isRightHandAction && canAction)
+            if ((Input.GetKeyUp(GetInputKey(Controls.PrefHandAction)) || cc.inputMagnitude > 0.01f) && cc.isPrefHandAction && canAction)
             {
-                cc.RightHandActionStop();
+                cc.PrefHandActionStop();
             }
         }
 
         public virtual void TryStopAllActions()
         {
-            if (cc.isLeftHandAction) { cc.LeftHandActionStop(); }
-            if (cc.isRightHandAction) { cc.RightHandActionStop(); }
+            if (cc.isPrefHandAction) { cc.PrefHandActionStop(); }
+            if (cc.isOtherHandAction) { cc.OtherHandActionStop(); }
             cc.StopMoving();
         }
         #endregion

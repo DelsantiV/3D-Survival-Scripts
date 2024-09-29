@@ -4,10 +4,23 @@ using UnityEngine;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-public class PlayerInputConfig
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using Unity.IO.LowLevel.Unsafe;
+using System.IO;
+using System.Text;
+public class PlayerInputConfig : ISaveable
 {
 
     private List<ControlInput> controls;
+    private string InputConfigJsonPath = "PlayerInputConfig.json";
+
+    public PlayerInputConfig() 
+    {
+        controls = new List<ControlInput>();
+        AsyncOperationHandle<TextAsset> bindingsLoading = Addressables.LoadAssetAsync<TextAsset>(InputConfigJsonPath);
+        bindingsLoading.Completed += OnBindingsLoadingCompleted;
+    }
 
     public ControlInput GetControlFromKeyCode(KeyCode keyCode)
     {
@@ -17,6 +30,13 @@ public class PlayerInputConfig
     public ControlInput GetControlFromControlType(Controls controlType)
     {
         return controls.Find(cI => cI.controlType == controlType);
+    }
+
+    public KeyCode GetKeyCodeForControl(Controls controlType)
+    {
+        ControlInput controlInput = GetControlFromControlType(controlType);
+        if (controlInput != null) { return controlInput.keyCode; }
+        return KeyCode.None;
     }
 
     public void RegisterControlInput(Controls controlType, KeyCode keyCode, bool overwrite = true, bool hardcordOverwrite = false)
@@ -79,7 +99,7 @@ public class PlayerInputConfig
         }
     }
 
-    public void InitializeFromJSON(TextAsset jsonFile)
+    private void InitializeFromJSON(TextAsset jsonFile)
     {
         if (jsonFile != null)
         {
@@ -92,9 +112,42 @@ public class PlayerInputConfig
                     RegisterControlInput(control, keyCode);
                 }
             }
+            Debug.Log("Successfully loaded key bindings !");
         }
     }
-    
+
+    private void OnBindingsLoadingCompleted(AsyncOperationHandle<TextAsset> bindingsLoading)
+    {
+        if (bindingsLoading.Status == AsyncOperationStatus.Succeeded)
+        {
+            InitializeFromJSON(bindingsLoading.Result);
+        }
+        Addressables.Release(bindingsLoading);
+    }
+
+    public void SaveToJson()
+    {
+        string dataPath = Application.dataPath + "/Saves/";
+        if (!File.Exists(dataPath)) { Directory.CreateDirectory(dataPath); }
+        Dictionary<string, string> savedBindings = new();
+        foreach(ControlInput controlInput in controls)
+        {
+            savedBindings.TryAdd(controlInput.controlType.ToString(), controlInput.keyCode.ToString());
+        }
+        string json = JsonConvert.SerializeObject(savedBindings, Formatting.Indented);
+        File.WriteAllText(dataPath + InputConfigJsonPath, json);
+    }
+
+    public void Load()
+    {
+        string dataPath = Application.dataPath + "/Saves/";
+        if (File.Exists(dataPath + InputConfigJsonPath))
+        {
+            Dictionary<string, string> savedBindings = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(dataPath + InputConfigJsonPath));
+            AsyncOperationHandle<TextAsset> bindingsLoading = Addressables.LoadAssetAsync<TextAsset>(Application.dataPath + "/Saves/" + InputConfigJsonPath);
+            bindingsLoading.Completed += OnBindingsLoadingCompleted;
+        }
+    }
 }
 
 public class ControlInput
@@ -111,6 +164,11 @@ public class ControlInput
     {
         if (other.controlType == controlType && other.keyCode == keyCode) { return true; }
         return false;
+    }
+
+    public override string ToString()
+    {
+        return "Key " + keyCode.ToString() + " binded  to control " + controlType.ToString();
     }
 }
 

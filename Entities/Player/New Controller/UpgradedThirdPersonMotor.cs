@@ -82,8 +82,8 @@ namespace Invector.vCharacterController
         }
         internal bool isGrounded { get; set; }
         internal bool isSprinting { get; set; }
-        internal bool isLeftHandAction { get; set; }
-        internal bool isRightHandAction { get; set; }
+        internal bool isOtherHandAction { get; set; }
+        internal bool isPrefHandAction { get; set; }
         public bool stopMove { get; protected set; }
 
         internal float inputMagnitude;                      // sets the inputMagnitude to update the animations in the animator controller
