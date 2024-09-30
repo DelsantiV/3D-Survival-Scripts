@@ -3,52 +3,65 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CanvasManager : MonoBehaviour
 {
-    [SerializeField] private HealthBar healthBar;
-    [SerializeField] private CaloriesBar caloriesBar;
+    private HealthBar healthBar;
+    private CaloriesBar caloriesBar;
 
     private StatusBar[] allStatusBar;
+    private BasicUI statusBarArea;
 
-    [SerializeField] private QuickSlot leftHandQuickSlot;
-    [SerializeField] private QuickSlot rightHandQuickSlot;
-    [SerializeField] private QuickSlot bothHandQuickSlot;
-    [SerializeField] private BasicUI interactionInfoUI;
+    private QuickSlot leftHandQuickSlot;
+    private QuickSlot rightHandQuickSlot;
+    private QuickSlot bothHandQuickSlot;
+    private BasicUI interactionInfoUI;
 
-    [SerializeField] private BasicUI leftHandQuickSlotHolder;
-    [SerializeField] private BasicUI rightHandQuickSlotHolder;
-    [SerializeField] private BasicUI bothHandQuickSlotHolder;
-    [SerializeField] private BasicUI StatusBarArea;
+    private BasicUI leftHandQuickSlotHolder;
+    private BasicUI rightHandQuickSlotHolder;
+    private BasicUI bothHandQuickSlotHolder;
+    private QuickSlot[] allQuickSlots;
+
     public PlayerManager player { get; private set; }
 
     private TextMeshProUGUI interactionText;
 
+    public UnityEvent OnCanvasReady = new();
+
     public void InitializeCanvasManager(PlayerManager player)
     {
-        GetSubComponents();
         this.player = player;
-        player.SetCanvasManager(this);
-        player.OnPlayerReady.AddListener(InitializeComponents);
-        bothHandQuickSlotHolder.CloseUI();
-        interactionInfoUI.CloseUI();
+        GetSubComponents();
+        InitializeComponents();
+        Debug.Log("Canvas Manager Successfully Initialized !");
+    }
 
+    private void GetSubComponents()
+    {
+        statusBarArea = transform.Find("StatusBarArea").GetComponent<BasicUI>();
+        healthBar = transform.GetComponentInChildren<HealthBar>();
+        caloriesBar = transform.GetComponentInChildren<CaloriesBar>();
+        allStatusBar = new StatusBar[] { healthBar, caloriesBar };
+
+        interactionInfoUI = transform.Find("Interaction_info_UI").GetComponent<BasicUI>();
         interactionText = interactionInfoUI.GetComponent<TextMeshProUGUI>();
 
-        leftHandQuickSlot.SetPlayer(player);
-        rightHandQuickSlot.SetPlayer(player);
-        bothHandQuickSlot.SetPlayer(player);
+        leftHandQuickSlotHolder = transform.Find("Handslots/LeftHandSlotHolder").GetComponent<BasicUI>();
+        rightHandQuickSlotHolder = transform.Find("Handslots/RightHandSlotHolder").GetComponent<BasicUI>();
+        bothHandQuickSlotHolder = transform.Find("Handslots/BothHandSlotHolder").GetComponent<BasicUI>();
+
+        leftHandQuickSlot = transform.Find("Handslots/LeftHandSlotHolder/LeftHandSlot").GetComponent<QuickSlot>();
+        rightHandQuickSlot = transform.Find("Handslots/RightHandSlotHolder/RightHandSlot").GetComponent<QuickSlot>();
+        bothHandQuickSlot = transform.Find("Handslots/BothHandSlotHolder/BothHandSlot").GetComponent<QuickSlot>();
+        allQuickSlots = new QuickSlot[] { leftHandQuickSlot, rightHandQuickSlot, bothHandQuickSlot };
     }
 
-    public void GetSubComponents()
-    {
-        allStatusBar = new StatusBar[] { healthBar, caloriesBar};
-    }
 
-
-    public void InitializeComponents()
+    private void InitializeComponents()
     {
         foreach (StatusBar statusBar in allStatusBar) { statusBar.InitializeStatusBar(player); }
+        foreach (QuickSlot quickSlot in allQuickSlots) { quickSlot.SetPlayer(player); }
     }
 
     public void OpenBasicUi(BasicUI uiPanel)

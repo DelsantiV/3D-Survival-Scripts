@@ -7,14 +7,13 @@ using System;
 using Invector.vCharacterController;
 using UnityEditor.Animations;
 using UnityEngine.Events;
+using Unity.VisualScripting;
 
 
 public class PlayerManager : MonoBehaviour, IDamageable
 {
 
     #region Variables
-    public static PlayerManager Player { get; private set; }
-
     public DigestiveSystem DigestiveSystem { get; private set; }
     private TextMeshProUGUI interactionText;
     public PlayerStatus PlayerStatus { get; private set; }
@@ -27,6 +26,14 @@ public class PlayerManager : MonoBehaviour, IDamageable
     [SerializeField] private GameObject rightHand;
     [SerializeField] private GameObject leftHand;
     public HandsManager.Hand prefHand = HandsManager.Hand.right;
+    public HandsManager.HandMode CurrentHandMode
+    {
+        get
+        {
+            if (HandsManager == null) { return HandsManager.HandMode.none; }
+            return HandsManager.CurrentHandMode; 
+        }
+    }
     public HandsInventory HandsInventory { get; private set; }
     public PlayerInputConfig PlayerInputConfig { get; private set; }
 
@@ -36,6 +43,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         get
         {
+            if (canvasManager == null) { return null; }
             return canvasManager.GetHandQuickSlot(HandsManager.Hand.left);
         }
     }
@@ -43,6 +51,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         get
         {
+            if (canvasManager == null) { return null; }
             return canvasManager.GetHandQuickSlot(HandsManager.Hand.right);
         }
     }
@@ -50,6 +59,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         get
         {
+            if (canvasManager == null) { return null; }
             return canvasManager.GetHandQuickSlot(HandsManager.Hand.both);
         }
     }
@@ -60,53 +70,50 @@ public class PlayerManager : MonoBehaviour, IDamageable
     public UpgradedThirdPersonController PlayerController { get; private set; }
     public AnimatorController AnimatorController { get; private set; }
 
-    public UnityEvent OnPlayerReady = new();
-
-    //public event Action OnUIChange; // not implemented yet
+    public UnityEvent PlayerReady = new();
 
     [HideInInspector] public bool isInteracting;
 
     #endregion
 
 
-    private void Awake()
+    public void InitializePlayer()
     {
-        Player = this;
-        //inventory = new InventoryManager(numberOfInventorySlots, inventoryUI);
-        //craftingManager = new CraftingManager(craftingUI, inventory);
         itemDropper = transform.Find("Item Dropper");
         PlayerStatus = new PlayerStatus(this, maxHealth, maxFatigue, maxCalories);
         DigestiveSystem = new DigestiveSystem(PlayerStatus);
         PlayerInputConfig = new();
+        HandsManager = new HandsManager(leftHand, rightHand, prefHand);
         playerLayer = LayerMask.GetMask("Player");
         playerHead = transform.Find("PlayerHead");
         InputManager = GetComponent<UpgradedThirdPersonInput>();
         AnimatorController = GetComponent<AnimatorController>();
         PlayerController = GetComponent<UpgradedThirdPersonController>();
+
+        PlayerReady.AddListener(OnPlayerReady);
     }
 
     void Start()
     {
-        //interactionText = interaction_Info_UI.GetComponent<TextMeshProUGUI>();
-        //inventoryUI.CloseUI();
-        //craftingUI.CloseUI();
-
-        //foreach (InventoryItemInfos item in startingItems) { inventory.AddItemToInventory(item.itemSO, item.itemAmount); }
-        OnPlayerReady.Invoke();
         InputManager.cameraLocked = false;
         InputManager.canAction = true;
         InputManager.canMove = true;
-
-        //Test starting inventory :
-        ItemPile pile = new ItemPile(new List<string>(){"stone", "knapped_stone", "stone"});
-        HandsInventory.TryAddItemPileToNextHand(pile);
     }
 
     public void SetCanvasManager(CanvasManager canvasManager)
     {
         this.canvasManager = canvasManager;
-        HandsManager = new HandsManager(leftHand, rightHand, prefHand);
+        canvasManager.InitializeCanvasManager(this);
         HandsInventory = new HandsInventory(this);
+        canvasManager.SetHandModeUI(CurrentHandMode);
+    }
+
+    public void OnPlayerReady()
+    {
+        //Test starting inventory :
+        ItemPile pile = new ItemPile(new List<string>() { "stone", "knapped_stone", "stone" });
+        HandsInventory.TryAddItemPileToNextHand(pile);
+        Debug.Log("Player Ready !");
     }
 
 
@@ -144,7 +151,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
                 if (Input.GetKeyDown(PlayerInputConfig.GetKeyCodeForControl(Controls.Collect)))
                 {
-                    selectionTransform.GetComponent<ItemInWorld>().PickUpItem(Player);
+                    selectionTransform.GetComponent<ItemInWorld>().PickUpItem(this);
                 }
             }
             else
@@ -161,38 +168,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void HandleKeyInputs()
     {
-        /*
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-
-            if (!inventoryUI.IsOpen())
-            {
-                Debug.Log("Inventory opened !");
-                inventoryUI.OpenUI();
-            }
-            else
-            {
-                Debug.Log("Inventory closed !");
-                inventoryUI.CloseUI();
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            if (!canvasManager.craftingUI.IsOpen())
-            {
-                Debug.Log("Crafting panel opened !");
-                craftingUI.OpenUI();
-                craftingManager.UpdateInventoryList();
-            }
-            else
-            {
-                Debug.Log("Crafting panel closed !");
-                craftingUI.CloseUI();
-            }
-        }
-        */
-
         if (Input.GetKeyDown(PlayerInputConfig.GetKeyCodeForControl(Controls.ChangeWalkMode)))
         {
             ChangeWalkByDefault();
