@@ -270,6 +270,24 @@ public static class ItemPilesUtilities
     public static bool TryMergePiles(ItemPile itemPile1, ItemPile itemPile2, out ItemPile resultPile, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity)
     {
         resultPile = null;
+        if (itemPile1 == null && itemPile2 == null) 
+        { 
+            resultPile = null;
+            return false;
+        }
+
+        if (itemPile1 == null)
+        {
+            resultPile = itemPile2;
+            return true;
+        }
+
+        if (itemPile2 == null)
+        {
+            resultPile = itemPile1;
+            return true;
+        }
+
         if (itemPile1.Weight + itemPile2.Weight > maxWeight || itemPile1.Bulk + itemPile2.Bulk > maxBulk) { return false; } // If pile would be too heavy or too bulky, do not merge piles
         else
         {

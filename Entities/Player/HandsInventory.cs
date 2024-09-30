@@ -66,6 +66,15 @@ public class HandsInventory
         }
     }
 
+    private HandMode CurrentHandMode
+    {
+        get
+        {
+            if (handsManager == null) { return HandMode.none; }
+            return handsManager.CurrentHandMode;
+        }
+    }
+
     private float CurrentCarryingWeightInHand(Hand hand)
     {
         ItemPile pileInHand = ItemPileInHand(hand);
@@ -219,5 +228,15 @@ public class HandsInventory
         ItemPilesUtilities.TryMergePiles(ItemPileInHand(prefHand), ItemPileInHand(otherHand), out ItemPile bothHandPile, maxWeight: playerStatus.maxCarriyngWeightBothHands, maxBulk: playerStatus.maxCarriyngBulkBothHands);
         MakeBothHandsEmpty();
         AddItemPileToHand(Hand.both, bothHandPile);
+    }
+
+    public void SetHandModes(HandMode handMode)
+    {
+        if (CurrentHandMode == handMode) { return; }
+
+        if (CurrentHandMode == HandMode.single)
+        {
+            MergeBothHands();
+        }
     }
 }

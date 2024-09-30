@@ -214,6 +214,14 @@ namespace Invector.vCharacterController
             }
         }
 
+        protected virtual void ChangeHandModeInput()
+        {
+            if (Input.GetKeyDown(GetInputKey(Controls.SwitchHandMode)))
+            {
+                player.SwitchHandMode();
+            }
+        }
+
         protected virtual void LocomotionInputs()
         {
             MoveInput();
@@ -229,6 +237,7 @@ namespace Invector.vCharacterController
             ForageResourcesInput();
             OtherHandInput();
             PrefHandInput();
+            ChangeHandModeInput();
         }
 
         public virtual void TryStopAllActions()

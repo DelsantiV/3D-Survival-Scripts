@@ -235,12 +235,20 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     public bool TryCollectPile(ItemPileInWorld itemPileInWorld)
     {
-        return false;
+        return HandsInventory.TryAddItemPileToNextEmptyHand(itemPileInWorld.ItemPile);
     }
 
     public void SetHandMode(HandsManager.HandMode handMode)
     {
+        Debug.Log("Setting Hand Mode to " + handMode.ToString());
         canvasManager.SetHandModeUI(handMode);
+        HandsInventory.SetHandModes(handMode);
         HandsManager.SetHandModes(handMode);
+    }
+
+    public void SwitchHandMode()
+    {
+        if (HandsManager.CurrentHandMode == HandsManager.HandMode.single) { SetHandMode(HandsManager.HandMode.both); }
+        else if (HandsManager.CurrentHandMode == HandsManager.HandMode.both) { SetHandMode(HandsManager.HandMode.single); }
     }
 }
