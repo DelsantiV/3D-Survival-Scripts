@@ -6,30 +6,30 @@ using UnityEngine;
 
 public class ItemPileInWorld : MonoBehaviour
 {
-    private ItemPile itemPile;
+    public ItemPile ItemPile {get; private set;}
     private Dictionary<GeneralItem, ItemInWorld> itemsPrefabs = new();
-    public List<GeneralItem> ItemsInPile {  get { return itemPile.ItemsInPile; } }
+    public List<GeneralItem> ItemsInPile {  get { return ItemPile.ItemsInPile; } }
     private float pileHeight;
     public bool isRigidBody;
     public float Weight
     {
-        get { return itemPile.Weight; }
+        get { return ItemPile.Weight; }
     }
 
     public float Bulk
     {
-        get { return itemPile.Bulk; }
+        get { return ItemPile.Bulk; }
     }
 
     public void SpawnItemPile(ItemPile itemPile, Vector3 spawnPosition, bool isRigidBody = true)
     {
-        this.itemPile = itemPile;
+        this.ItemPile = itemPile;
         this.isRigidBody = isRigidBody;
         transform.position = spawnPosition;
         if (itemPile != null)
         {
             pileHeight = 0;
-            foreach (GeneralItem item in itemPile.ItemsInPile)
+            foreach (GeneralItem item in ItemPile.ItemsInPile)
             {
                 SpawnIndividualItem(item, isRigidBody, pileHeight);
                 pileHeight += 1;
@@ -39,14 +39,14 @@ public class ItemPileInWorld : MonoBehaviour
 
     public void SpawnItemPile(ItemPile itemPile, Transform targetTransform, bool isRigidBody = true)
     {
-        this.itemPile = itemPile;
+        this.ItemPile = itemPile;
         this.isRigidBody = isRigidBody;
         transform.SetParent(targetTransform);
         transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         if (itemPile != null)
         {
             float previousItemHeight = 0;
-            foreach (GeneralItem item in itemPile.ItemsInPile)
+            foreach (GeneralItem item in ItemPile.ItemsInPile)
             {
                 SpawnIndividualItem(item, isRigidBody, out pileHeight, previousItemHeight);
                 previousItemHeight = pileHeight;
@@ -101,7 +101,7 @@ public class ItemPileInWorld : MonoBehaviour
         ItemInWorld itemToRemove;
         if (!itemsPrefabs.TryGetValue(item, out itemToRemove))
         {
-            Debug.Log("Removing " + item.ItemName + " from pile " + itemPile.ToString() + " failed: no such item found");
+            Debug.Log("Removing " + item.ItemName + " from pile " + ItemPile.ToString() + " failed: no such item found");
             return;
         }
         itemsPrefabs.Remove(item);
@@ -124,7 +124,7 @@ public class ItemPileInWorld : MonoBehaviour
     {
         if (index < 0 || index >= itemsPrefabs.Count) 
         {
-            Debug.Log("Removing item number " + index + " from pile " + itemPile.ToString() + " failed: index out of range");
+            Debug.Log("Removing item number " + index + " from pile " + ItemPile.ToString() + " failed: index out of range");
             return; 
         }
         RemoveItem(itemsPrefabs.Keys.ToList()[index]);
