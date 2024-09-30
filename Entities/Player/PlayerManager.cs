@@ -168,10 +168,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void HandleKeyInputs()
     {
-        if (Input.GetKeyDown(PlayerInputConfig.GetKeyCodeForControl(Controls.ChangeWalkMode)))
-        {
-            ChangeWalkByDefault();
-        }
         if (Input.GetKeyDown(KeyCode.M))
         {
             PlayerInputConfig.SaveToJson();
@@ -189,16 +185,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
     public void SetWalkByDefault(bool walkByDefault)
     {
         PlayerController.freeSpeed.walkByDefault = walkByDefault;
-    }
-
-    public void ChangeWalkByDefault()
-    {
-        if (!PlayerStatus.CanSprint && PlayerController.freeSpeed.walkByDefault) 
-        {
-            Debug.Log("Carriyng heavy weight ! Cannot sprint");
-            return;  
-        }
-        PlayerController.freeSpeed.walkByDefault = !PlayerController.freeSpeed.walkByDefault;
     }
 
     public void SpawnItemFromPlayer(GeneralItem item, int amount = 1)

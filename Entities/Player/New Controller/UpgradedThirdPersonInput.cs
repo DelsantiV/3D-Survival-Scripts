@@ -81,14 +81,8 @@ namespace Invector.vCharacterController
 
         protected virtual void InputHandle()
         {
-            MoveInput();
-            CameraInput();
-            SprintInput();
-            StrafeInput();
-            JumpInput();
-            ForageResourcesInput();
-            OtherHandInput();
-            PrefHandInput();
+            LocomotionInputs();  // Handles inputs related to locomotion
+            ActionInputs();      // Handles inputs related to action
         }
 
         private KeyCode GetInputKey(Controls control)
@@ -205,6 +199,36 @@ namespace Invector.vCharacterController
             {
                 cc.PrefHandActionStop();
             }
+        }
+
+        protected virtual void WalkModeInput()
+        {
+            if (Input.GetKeyDown(GetInputKey(Controls.ChangeWalkMode)))
+            {
+                if (!player.PlayerStatus.CanSprint && cc.freeSpeed.walkByDefault)
+                {
+                    Debug.Log("Carriyng heavy weight ! Cannot sprint");
+                    return;
+                }
+                cc.freeSpeed.walkByDefault = !cc.freeSpeed.walkByDefault;
+            }
+        }
+
+        protected virtual void LocomotionInputs()
+        {
+            MoveInput();
+            CameraInput();
+            SprintInput();
+            StrafeInput();
+            WalkModeInput();
+        }
+
+        protected virtual void ActionInputs()
+        {
+            JumpInput();
+            ForageResourcesInput();
+            OtherHandInput();
+            PrefHandInput();
         }
 
         public virtual void TryStopAllActions()
