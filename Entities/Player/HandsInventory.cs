@@ -119,7 +119,7 @@ public class HandsInventory
         {
             case Hand.left: return leftHandQuickSlot;
             case Hand.right: return rightHandQuickSlot;
-            case Hand.both: return HandQuickSlot(prefHand);
+            case Hand.both: return bothHandQuickSlot;
         }
         return null;
     }
@@ -132,7 +132,7 @@ public class HandsInventory
         return HandQuickSlot(hand).CurrentPileUI;
     }
 
-public bool IsHandEmpty(Hand hand)
+    public bool IsHandEmpty(Hand hand)
     {
         return HandQuickSlot(hand).IsEmpty;
     }
