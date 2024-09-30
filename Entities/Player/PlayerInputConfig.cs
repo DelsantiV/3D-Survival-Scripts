@@ -18,8 +18,7 @@ public class PlayerInputConfig : ISaveable
     public PlayerInputConfig() 
     {
         controls = new List<ControlInput>();
-        AsyncOperationHandle<TextAsset> bindingsLoading = Addressables.LoadAssetAsync<TextAsset>(InputConfigJsonPath);
-        bindingsLoading.Completed += OnBindingsLoadingCompleted;
+        Load();
     }
 
     public ControlInput GetControlFromKeyCode(KeyCode keyCode)
@@ -104,16 +103,29 @@ public class PlayerInputConfig : ISaveable
         if (jsonFile != null)
         {
             JObject jsonParsedFile = JObject.Parse(jsonFile.text);
-            foreach (Controls control in Enum.GetValues(typeof(Controls)))
-            {
-                KeyCode keyCode = (KeyCode)Enum.Parse(typeof(KeyCode), jsonParsedFile[control.ToString()].ToString());
-                if (keyCode != KeyCode.None)
-                {
-                    RegisterControlInput(control, keyCode);
-                }
-            }
-            Debug.Log("Successfully loaded key bindings !");
+            CreateAllControlsFromJSON(jsonParsedFile);
         }
+    }
+    private void InitializeFromJSON(string jsonFile)
+    {
+        if (jsonFile != null)
+        {
+            JObject jsonParsedFile = JObject.Parse(jsonFile);
+            CreateAllControlsFromJSON(jsonParsedFile);
+        }
+    }
+
+    private void CreateAllControlsFromJSON(JObject jsonParsedFile)
+    {
+        foreach (Controls control in Enum.GetValues(typeof(Controls)))
+        {
+            KeyCode keyCode = (KeyCode)Enum.Parse(typeof(KeyCode), jsonParsedFile[control.ToString()].ToString());
+            if (keyCode != KeyCode.None)
+            {
+                RegisterControlInput(control, keyCode);
+            }
+        }
+        Debug.Log("Successfully loaded key bindings !");
     }
 
     private void OnBindingsLoadingCompleted(AsyncOperationHandle<TextAsset> bindingsLoading)
@@ -143,8 +155,12 @@ public class PlayerInputConfig : ISaveable
         string dataPath = Application.dataPath + "/Saves/";
         if (File.Exists(dataPath + InputConfigJsonPath))
         {
-            Dictionary<string, string> savedBindings = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(dataPath + InputConfigJsonPath));
-            AsyncOperationHandle<TextAsset> bindingsLoading = Addressables.LoadAssetAsync<TextAsset>(Application.dataPath + "/Saves/" + InputConfigJsonPath);
+            InitializeFromJSON(File.ReadAllText(dataPath + InputConfigJsonPath));
+        }
+
+        else
+        {
+            AsyncOperationHandle<TextAsset> bindingsLoading = Addressables.LoadAssetAsync<TextAsset>(InputConfigJsonPath);
             bindingsLoading.Completed += OnBindingsLoadingCompleted;
         }
     }
