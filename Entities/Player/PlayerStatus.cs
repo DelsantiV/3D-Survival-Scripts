@@ -23,11 +23,11 @@ public class PlayerStatus
 
     public float maxCarriyngWeightBothHands = 50f;
     public float maxCarriyngWeightPrefHand = 20f;
-    public float maxCarriyngWeightOtherHand = 15f;
+    public float maxCarriyngWeightOtherHand = 20f;
 
     public float maxCarriyngBulkBothHands = 3f;
     public float maxCarriyngBulkPrefHand = 1f;
-    public float maxCarriyngBulkOtherHand = 0.9f;
+    public float maxCarriyngBulkOtherHand = 1f;
 
     public float CurrentCarriedWeight
     {
