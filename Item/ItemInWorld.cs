@@ -31,7 +31,7 @@ public class ItemInWorld : MonoBehaviour
     public string ItemName { get { return item.ItemName; } }
     public string ObjectName { get { return ItemName + " [E to pick up]"; } }
     public float Weight { get { return item.Weight; } }
-    public float bulk { get { return item.Bulk; } }
+    public float Bulk { get { return item.Bulk; } }
 
     private void Start()
     {
