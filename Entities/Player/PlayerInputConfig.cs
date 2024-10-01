@@ -18,7 +18,7 @@ public class PlayerInputConfig : ISaveable
     public PlayerInputConfig() 
     {
         controls = new List<ControlInput>();
-        Load();
+        LoadFromJson();
     }
 
     public ControlInput GetControlFromKeyCode(KeyCode keyCode)
@@ -150,7 +150,7 @@ public class PlayerInputConfig : ISaveable
         File.WriteAllText(dataPath + InputConfigJsonPath, json);
     }
 
-    public void Load()
+    public void LoadFromJson()
     {
         string dataPath = Application.dataPath + "/Saves/";
         if (File.Exists(dataPath + InputConfigJsonPath))
