@@ -27,7 +27,7 @@ public class QuickSlot : ItemSlot
 
     public override void AddPile(ItemPile pile)
     {
-        if (CurrentPileUI == null)
+        if (CurrentPileUI == null && pile != null)
         {
             handsManager?.InstantiateItemPileInHand(pile, hand);
         }
