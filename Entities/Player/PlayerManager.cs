@@ -10,7 +10,7 @@ using UnityEngine.Events;
 using Unity.VisualScripting;
 
 
-public class PlayerManager : MonoBehaviour, IDamageable
+public class PlayerManager : MonoBehaviour, IDamageable, ISaveable
 {
 
     #region Variables
@@ -241,14 +241,26 @@ public class PlayerManager : MonoBehaviour, IDamageable
     public void SetHandMode(HandsManager.HandMode handMode)
     {
         Debug.Log("Setting Hand Mode to " + handMode.ToString());
-        canvasManager.SetHandModeUI(handMode);
-        HandsInventory.SetHandModes(handMode);
-        HandsManager.SetHandModes(handMode);
+        if (HandsInventory.TrySetHandModes(handMode))
+        {
+            canvasManager.SetHandModeUI(handMode);
+            HandsManager.SetHandModes(handMode);
+        }
     }
 
     public void SwitchHandMode()
     {
         if (HandsManager.CurrentHandMode == HandsManager.HandMode.single) { SetHandMode(HandsManager.HandMode.both); }
         else if (HandsManager.CurrentHandMode == HandsManager.HandMode.both) { SetHandMode(HandsManager.HandMode.single); }
+    }
+
+    public void SaveToJson()
+    {
+
+    }
+
+    public void LoadFromJson()
+    {
+
     }
 }
