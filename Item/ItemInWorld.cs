@@ -7,13 +7,15 @@ using UnityEngine;
 public class ItemInWorld : MonoBehaviour
 {
     public GeneralItem item;
+    public ItemPileInWorld itemPileInWorld;
     public void PickUpItem(PlayerManager player)
     {
         if (item != null && player.HandsInventory != null)
         {
             if (player.TryCollectItem(this))
             {
-                Destroy(gameObject);
+                if (itemPileInWorld != null) { itemPileInWorld.RemoveItem(item); }
+                else { Destroy(gameObject); }
                 Debug.Log("Picked up " + ItemName + "!");
             }
             else
@@ -31,7 +33,10 @@ public class ItemInWorld : MonoBehaviour
     public float Weight { get { return item.Weight; } }
     public float bulk { get { return item.Bulk; } }
 
-
+    private void Start()
+    {
+        itemPileInWorld = transform.root.GetComponent<ItemPileInWorld>();
+    }
     private void Update()
     {
         if (transform.position.y < -50) { Destroy(gameObject); }
