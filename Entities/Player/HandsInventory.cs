@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Build.Pipeline;
 using UnityEngine;
 using static HandsManager;
@@ -12,7 +13,6 @@ public class HandsInventory
     private readonly QuickSlot bothHandQuickSlot;
     private readonly HandsManager handsManager;
     private readonly PlayerStatus playerStatus;
-    private readonly Hand prefHand;
     private ItemPile RightHandPile
     {
         get
@@ -56,13 +56,19 @@ public class HandsInventory
         }
     }
 
+    private Hand prefHand
+    {
+        get
+        {
+            return handsManager.PrefHand;
+        }
+    }
+
     private Hand otherHand
     {
         get
         {
-            if (prefHand == Hand.left) { return Hand.right; }
-            else if (prefHand == Hand.right) { return Hand.left; }
-            return Hand.none;
+            return handsManager.OtherHand;
         }
     }
 
@@ -86,28 +92,22 @@ public class HandsInventory
     {
         if (hand == prefHand) { return playerStatus.maxCarriyngWeightPrefHand; }
         else if (hand == otherHand) { return playerStatus.maxCarriyngWeightOtherHand; }
+        else if (hand == Hand.both) { return playerStatus.maxCarriyngWeightBothHands; }
         return 0f;
     }
     private float MaxCarryingBulk(Hand hand)
     {
         if (hand == prefHand) { return playerStatus.maxCarriyngBulkPrefHand; }
         else if (hand == otherHand) { return playerStatus.maxCarriyngBulkOtherHand; }
+        else if (hand == Hand.both) { return playerStatus.maxCarriyngBulkBothHands; }
         return 0f;
     }
     public float CurrentTotalCarryingWeight
     {
         get
         {
-            if (handsManager.CurrentHandMode == HandMode.single)
-            {
-                return CurrentCarryingWeightInHand(Hand.left) + CurrentCarryingWeightInHand(Hand.right);
-            }
-            else if (handsManager.CurrentHandMode == HandMode.both) 
-            {
-                return CurrentCarryingWeightInHand(Hand.both);
-            }
-
-            return 0f;
+            if (handsManager.ActiveHands.Count == 0) { return 0f; }
+            return handsManager.ActiveHands.Sum(hand => CurrentCarryingWeightInHand(hand));
         }
     }
 
@@ -119,18 +119,18 @@ public class HandsInventory
         bothHandQuickSlot = player.BothHandQuickSlot;
         handsManager = player.HandsManager;
         playerStatus = player.PlayerStatus;
-        prefHand = player.prefHand;
     }
+
 
     public QuickSlot HandQuickSlot(Hand hand)
     {
-        switch (hand)
+        return hand switch
         {
-            case Hand.left: return leftHandQuickSlot;
-            case Hand.right: return rightHandQuickSlot;
-            case Hand.both: return bothHandQuickSlot;
-        }
-        return null;
+            Hand.left => leftHandQuickSlot,
+            Hand.right => rightHandQuickSlot,
+            Hand.both => bothHandQuickSlot,
+            _ => null,
+        };
     }
     private ItemPile ItemPileInHand(Hand hand)
     {
@@ -148,8 +148,10 @@ public class HandsInventory
 
     public Hand GetNextEmptyHand()
     {
-        if (IsHandEmpty(prefHand)) { return prefHand; }
-        else if (IsHandEmpty(otherHand)) { return otherHand; }
+        foreach (Hand hand in handsManager.ActiveHands)
+        {
+            if (IsHandEmpty(hand)) { return hand; }
+        }
         return Hand.none;
     }
 
@@ -170,11 +172,15 @@ public class HandsInventory
 
     public bool TryAddItemPileToNextHand(ItemPile pile)
     {
-        if (TryAddItemPileToHand(pile, prefHand)) { return true; }
-        else { return TryAddItemPileToHand(pile, otherHand); }
+        foreach (Hand hand in handsManager.ActiveHands)
+        {
+            if (TryAddItemPileToHand(pile, hand)) { return true; }
+        }
+        return false;
     }
     public bool TryAddItemPileToHand(ItemPile pile, Hand hand)
     {
+        Debug.Log("Trying to add pile to hand " + hand);
         if (!IsHandEmpty(hand)) { return ItemPileInHand(hand).TryMergePile(pile, MaxCarryingWeight(hand), MaxCarryingBulk(hand)); }
         else
         {
@@ -185,23 +191,11 @@ public class HandsInventory
 
     public bool TryAddItemToHand(GeneralItem item, Hand hand)
     {
-        ItemPile itemPileInHand = ItemPileInHand(hand);
-        Debug.Log("Trying to add "+ item.ItemName + " (weight: " + item.Weight + ", bulk: " + item.Bulk + ") to " + hand.ToString() + " hand ");
-        if (itemPileInHand == null) { return TryAddItemPileToHand(new ItemPile(item), hand); }
-        else 
-        { 
-            if (ItemPileInHand(hand).TryAddItemToPile(item, MaxCarryingWeight(hand), MaxCarryingBulk(hand)))
-            {
-                handsManager.AddItemToEquippedPileInHand(item, hand);
-                return true;
-            }
-            return false;
-        }
+        return TryAddItemPileToHand(new ItemPile(item), hand);
     }
     public bool TryAddItemToNextHand(GeneralItem item)
     {
-        if (TryAddItemToHand(item, prefHand)) { return true; }
-        else { return TryAddItemToHand(item, otherHand); }
+        return TryAddItemPileToNextHand(new ItemPile(item));
     }
 
     public void MakeHandEmpty(Hand hand)
@@ -211,15 +205,7 @@ public class HandsInventory
 
     public void MakeBothHandsEmpty()
     {
-        if (handsManager.CurrentHandMode == HandMode.single)
-        {
-            MakeHandEmpty(prefHand);
-            MakeHandEmpty(otherHand);
-        }
-        else
-        {
-            MakeHandEmpty(Hand.both);
-        }
+        foreach (Hand hand in handsManager.ActiveHands) { MakeHandEmpty(hand); }
     }
 
     private void MergeBothHands()
@@ -228,15 +214,45 @@ public class HandsInventory
         ItemPilesUtilities.TryMergePiles(ItemPileInHand(prefHand), ItemPileInHand(otherHand), out ItemPile bothHandPile, maxWeight: playerStatus.maxCarriyngWeightBothHands, maxBulk: playerStatus.maxCarriyngBulkBothHands);
         MakeBothHandsEmpty();
         AddItemPileToHand(Hand.both, bothHandPile);
+        Debug.Log(bothHandPile.ToString());
     }
 
-    public void SetHandModes(HandMode handMode)
+    private bool TrySplitHands()
     {
-        if (CurrentHandMode == handMode) { return; }
+        if (IsHandEmpty(Hand.both)) { return true; }
 
-        if (CurrentHandMode == HandMode.single)
+        List<ItemPile> splittedPile = ItemPileInHand(Hand.both).SplitItemPile(
+            out ItemPile rejectedPile, 
+            maxNumberOfPiles: 2, 
+            maxWeight: MaxCarryingWeight(prefHand), 
+            maxBulk: MaxCarryingBulk(prefHand), 
+            ItemPilesUtilities.SplitMethod.Both);
+
+        if (rejectedPile.NumberOfItemsInPile > 0) { return false; }
+
+        else 
         {
-            MergeBothHands();
+            MakeBothHandsEmpty();
+            if (splittedPile.Count > 0) { AddItemPileToHand(prefHand, splittedPile[0]); }
+            if (splittedPile.Count > 1) { AddItemPileToHand(otherHand, splittedPile[1]); }
+            return true; 
+        }
+    }
+
+    public bool TrySetHandModes(HandMode handMode)
+    {
+        if (CurrentHandMode == handMode) { return true; }
+
+        switch (handMode)
+        {
+            case HandMode.single:
+                return TrySplitHands();
+
+            case HandMode.both:
+                MergeBothHands();
+                return true;
+
+            default: return false;
         }
     }
 }
