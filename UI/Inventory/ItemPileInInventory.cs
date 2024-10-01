@@ -8,8 +8,6 @@ using UnityEngine.UI;
 
 public class ItemPileInInventory : Dragable, IPointerDownHandler
 {
-    public int amountOfItem;
-    protected TextMeshProUGUI amountText;
     protected Canvas canvas;
     //protected GameObject itemInfoTemplate;
     protected GameObject itemInfoGO;
