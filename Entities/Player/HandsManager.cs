@@ -7,7 +7,20 @@ public class HandsManager
 {
     private readonly GameObject rightHand;
     private readonly GameObject leftHand;
-    private Hand prefHand;
+    public Hand PrefHand;
+
+    public Hand OtherHand
+    {
+        get
+        {
+            return PrefHand switch
+            {
+                Hand.right => Hand.left,
+                Hand.left => Hand.right,
+                _ => Hand.none,
+            };
+        }
+    }
 
     public HandMode CurrentHandMode { get; private set; }
 
@@ -16,7 +29,7 @@ public class HandsManager
     {
         this.leftHand = leftHand;
         this.rightHand = rightHand;
-        this.prefHand = prefHand;
+        this.PrefHand = prefHand;
 
         CurrentHandMode = HandMode.single;
     }
@@ -36,13 +49,26 @@ public class HandsManager
         none
     }
 
+    public List<Hand> ActiveHands
+    {
+        get
+        {
+            return CurrentHandMode switch
+            {
+                (HandMode.both) => new List<Hand>() { Hand.both },
+                (HandMode.single) => new List<Hand>() { PrefHand, OtherHand },
+                _ => new List<Hand>(),
+            };
+        }
+    }
+
     public GameObject HandGO(Hand hand)
     {
         switch (hand)
         {
             case Hand.left: return leftHand;
             case Hand.right: return rightHand;
-            case Hand.both: return HandGO(prefHand);
+            case Hand.both: return HandGO(PrefHand);
         }
         return null;
     }
@@ -52,7 +78,7 @@ public class HandsManager
         {
             case Hand.left: return leftHand.transform;
             case Hand.right: return rightHand.transform;
-            case Hand.both: return HandTransform(prefHand);
+            case Hand.both: return HandTransform(PrefHand);
         }
         return null;
     }
@@ -84,6 +110,7 @@ public class HandsManager
 
     public void InstantiateItemPileInHand(ItemPile pile, Hand hand)
     {
+        if (pile.NumberOfItemsInPile == 0) { return; }
         ItemPileInWorld equippedPile = pile.SpawnInHands(HandTransform(hand));
         equippedPile.AddComponent<EquippedItem>();
     }
