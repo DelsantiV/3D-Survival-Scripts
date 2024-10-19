@@ -88,24 +88,29 @@ public class HandsManager
         return HandTransform(hand).gameObject.GetComponentInChildren<EquippedItem>();
     }
 
-    public ItemPileInWorld EqquippedPileInHand(Hand hand)
+    public ItemPileInWorld EquippedPileInHand(Hand hand)
     {
         return HandTransform(hand).gameObject.GetComponentInChildren<ItemPileInWorld>();
     }
 
     public void AddItemToEquippedPileInHand(GeneralItem item, Hand hand)
     {
-        EqquippedPileInHand(hand).AddItem(item);
+        EquippedPileInHand(hand).AddItem(item);
     }
 
     public void RemoveItemToEquippedPileInHand(GeneralItem item, Hand hand)
     {
-        EqquippedPileInHand(hand).RemoveItem(item);
+        EquippedPileInHand(hand).RemoveItem(item);
     }
 
     public void RemoveItemToEquippedPileInHand(int index, Hand hand)
     {
-        EqquippedPileInHand(hand).RemoveItem(index);
+        EquippedPileInHand(hand).RemoveItem(index);
+    }
+
+    public void ChangePileOfHand(Hand fromHand, Hand toHand)
+    {
+        EquippedItemPileInHand(fromHand).ChangeParent(HandTransform(toHand));
     }
 
     public void InstantiateItemPileInHand(ItemPile pile, Hand hand)
