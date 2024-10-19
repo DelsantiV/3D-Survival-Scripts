@@ -161,6 +161,7 @@ public class ItemPile
     private void AddItemToPile(GeneralItem item)
     {
         ItemsInPile.Add(item);
+        if (IsInWorld) { itemPileInWorld.AddItem(item); }
         OnPileChanged?.Invoke();
     }
 

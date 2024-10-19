@@ -20,7 +20,18 @@ public class EquippedItem : MonoBehaviour
     public void Drop()
     {
         transform.parent = null;
-        itemsInWorld.FromHandToGround();
+        itemsInWorld.AddRigidBodyToItems();
+    }
+
+    public void ChangeParent(Transform transform, bool worldPositionStays = false)
+    {
+        if (transform.parent == null)
+        {
+            Drop();
+            return;
+        }
+
+        transform.SetParent(transform, worldPositionStays);
     }
 
     public void Use()

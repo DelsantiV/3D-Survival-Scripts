@@ -208,6 +208,13 @@ public class HandsInventory
         foreach (Hand hand in handsManager.ActiveHands) { MakeHandEmpty(hand); }
     }
 
+    public void ChangePileOfHand(Hand fromHand, Hand toHand)
+    {
+        if (IsHandEmpty(fromHand)) { return; }
+
+        if (IsHandEmpty(toHand)) { }
+    }
+
     private void MergeBothHands()
     {
         // Get pile in left hand and pile in right hand. Merge them and affect them to "both" hands

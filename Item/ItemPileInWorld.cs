@@ -45,11 +45,10 @@ public class ItemPileInWorld : MonoBehaviour
         transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         if (itemPile != null)
         {
-            float previousItemHeight = 0;
             foreach (GeneralItem item in ItemPile.ItemsInPile)
             {
-                SpawnIndividualItem(item, isRigidBody, out pileHeight, previousItemHeight);
-                previousItemHeight = pileHeight;
+                SpawnIndividualItem(item, isRigidBody, out float previousItemHeight, pileHeight);
+                pileHeight += previousItemHeight;
             }
         }
     }
@@ -96,6 +95,15 @@ public class ItemPileInWorld : MonoBehaviour
         SpawnIndividualItem(item, isRigidBody, out pileHeight, applyHeight ? pileHeight : 0);
     }
 
+    public void MergePile(ItemPile pileToMerge, bool applyHeight = true)
+    {
+        foreach (GeneralItem item in pileToMerge.ItemsInPile)
+        {
+            SpawnIndividualItem(item, isRigidBody, out float previousItemHeight, applyHeight ? pileHeight : 0);
+            if (applyHeight) { pileHeight += previousItemHeight; }
+        }
+    }
+
     public void RemoveItem(GeneralItem item)
     {
         ItemInWorld itemToRemove;
@@ -139,8 +147,9 @@ public class ItemPileInWorld : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void FromHandToGround()
+    public void AddRigidBodyToItems()
     {
+        if (isRigidBody) { return; }
         isRigidBody = true;
         foreach (ItemInWorld itemPrefab in itemsPrefabs.Values)
         {
