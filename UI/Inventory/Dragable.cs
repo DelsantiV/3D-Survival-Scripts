@@ -58,7 +58,4 @@ public class Dragable : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true;
     }
-
-
-
 }
