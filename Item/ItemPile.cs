@@ -97,11 +97,11 @@ public class ItemPile
         }
     }
 
-    private ItemPileInWorld itemPileInWorld;
+    public ItemPileInWorld ItemPileInWorld { get; private set; }
 
     public bool IsInWorld
     {
-        get { return itemPileInWorld != null; }
+        get { return ItemPileInWorld != null; }
     }
 
     private ItemPileInInventory itemPileUI;
@@ -161,7 +161,7 @@ public class ItemPile
     private void AddItemToPile(GeneralItem item)
     {
         ItemsInPile.Add(item);
-        if (IsInWorld) { itemPileInWorld.AddItem(item); }
+        if (IsInWorld) { ItemPileInWorld.AddItem(item); }
         OnPileChanged?.Invoke();
     }
 
@@ -221,7 +221,7 @@ public class ItemPile
         ItemsInPile = newItemsInPile;
         if (IsInWorld)
         {
-            itemPileInWorld.MergePile(pileToMerge);
+            ItemPileInWorld.MergePile(pileToMerge);
         }
         OnPileChanged?.Invoke();
     }
@@ -321,31 +321,30 @@ public class ItemPile
     public ItemPileInWorld SpawnInWorld(Vector3 spawnPosition)
     {
         Debug.Log("Spawning item pile : " + ToString());
-        itemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
-        itemPileInWorld.SpawnItemPile(this, spawnPosition);
-        return itemPileInWorld;
+        ItemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
+        ItemPileInWorld.SpawnItemPile(this, spawnPosition);
+        return ItemPileInWorld;
     }
     public ItemPileInWorld SpawnInWorld(Transform targetTransform)
     {
         Debug.Log("Spawning item pile : " + ToString());
-        itemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
-        itemPileInWorld.SpawnItemPile(this, targetTransform);
-        return itemPileInWorld;
+        ItemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
+        ItemPileInWorld.SpawnItemPile(this, targetTransform);
+        return ItemPileInWorld;
     }
 
     public ItemPileInWorld SpawnInHands(Transform hand)
     {
         Debug.Log("Spawning item pile : " + ToString());
-        itemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
-        itemPileInWorld.SpawnItemPile(this, hand, false);
-        return itemPileInWorld;
+        ItemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
+        ItemPileInWorld.SpawnItemPile(this, hand, false);
+        return ItemPileInWorld;
     }
 
     public void DestroyItemPileInWorld()
     {
-        if (IsInWorld) { itemPileInWorld.DestroyItemPile(); }
+        if (IsInWorld) { ItemPileInWorld.DestroyItemPile(); }
     }
-
 
     public void Action(PlayerManager player)
     {

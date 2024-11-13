@@ -158,4 +158,9 @@ public class ItemPileInWorld : MonoBehaviour
             itemGO.AddComponent<Rigidbody>();
         }
     }
+
+    public void ChangeParent(Transform newParent)
+    {
+        transform.SetParent(newParent, false);
+    }
 }

@@ -229,4 +229,12 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
             Debug.Log("Could not equip item, no empty hand found !");
         }
     }
+
+    public void ChangeSlot(ItemSlot newSlot)
+    {
+        Debug.Log("Moving pile " + ItemPile.ToString() + " from " + slot.ToString() + " to " + newSlot);
+        //slot.RemovePile(shouldDestroy: false);
+        newSlot.SetItemPileToSlot(this);
+        if (newSlot is QuickSlot) { (newSlot as QuickSlot).ParentPileToHand(ItemPile); }
+    }
 }

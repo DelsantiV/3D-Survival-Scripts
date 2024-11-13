@@ -120,11 +120,26 @@ public class HandsManager
         equippedPile.AddComponent<EquippedItem>();
     }
 
+    public void ParentPileToHand(ItemPileInWorld pileInWorld, Hand hand)
+    {
+        if (pileInWorld != null)
+        {
+            pileInWorld.ChangeParent(HandTransform(hand));
+        }
+    }
+    public void ParentPileToHand(ItemPile pile, Hand hand)
+    {
+        if (pile.IsInWorld)
+        {
+            ParentPileToHand(pile.ItemPileInWorld, hand);
+        }
+    }
+
     public void RemoveItemPileFromHand(Hand hand)
     {
         if (EquippedItemPileInHand(hand) != null)
         {
-            Debug.Log("Removing " + EquippedItemPileInHand(hand).name);
+            Debug.Log("Removing physical pile from hand " + EquippedItemPileInHand(hand).name);
             EquippedItemPileInHand(hand).Remove();
         }
         else

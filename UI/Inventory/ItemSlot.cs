@@ -64,7 +64,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
             ItemPileInInventory itemBeingDrag = itemBeingDragGO.GetComponent<ItemPileInInventory>();
             if (itemBeingDrag.slot != this)
             {
-                AddPile(itemBeingDrag);
+                itemBeingDrag.ChangeSlot(this);
             }
         }
     }
@@ -114,13 +114,13 @@ public class ItemSlot : MonoBehaviour, IDropHandler
         Debug.Log("Destroying pile " + CurrentPile.ToString() + " from slot " + name);
         Destroy(CurrentPileUI.gameObject);
     }
-    public virtual void RemovePile()
+    public virtual void RemovePile(bool shouldDestroy = true)
     {
         if (CurrentPileUI != null)
         {
             Debug.Log("Removing item " + CurrentPile.ToString() + " from slot" + name);
             CurrentPileUI.CloseItemInfo();
-            Destroy(CurrentPileUI.gameObject);
+            if (shouldDestroy) { DestroyItem(); }
         }
         else
         {
