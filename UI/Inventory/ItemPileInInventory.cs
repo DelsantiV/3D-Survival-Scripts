@@ -13,6 +13,7 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
     protected GameObject itemInfoGO;
     protected GameObject inventoryGO;
     protected bool isOutsideBounds;
+    protected int numberOfSlotsLeftOnIcon;
 
     public ItemPile ItemPile { get; private set; }
 
@@ -155,6 +156,7 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
                 i++;
             }
         }
+        numberOfSlotsLeftOnIcon = numberOfColumns - i;
         imageTemplateGO.SetActive(false);
     }
 
@@ -163,22 +165,44 @@ public class ItemPileInInventory : Dragable, IPointerDownHandler
         for (int childIndex = transform.childCount - 1; childIndex > 0; childIndex--) { Destroy(transform.GetChild(childIndex).gameObject); }
     }
 
+    /// <summary>
+    /// Clears the icon and recreate one based on the ItemPile linked to this ItemPileInInventory.
+    /// Better to use AddItemsToIcon when possible.
+    /// </summary>
     public void UpdatePileIcon()
     {
-        //Quick and dirty for now, would need improvement (do not clear whole Icon when same size)
         ClearIcon();
         CreatePileIcon();
     }
 
+    /// <summary>
+    /// Add new items to the pile icon
+    /// </summary>
+    /// <param name="itemsToAdd"></param>
+    public void AddItemsToIcon(ItemPile itemsToAdd)
+    {
+        if (itemsToAdd != null)
+        {
+            if(itemsToAdd.NumberOfItemsInPile <= numberOfSlotsLeftOnIcon)
+            {
+                UpdatePileIcon();
+            }
+            else
+            {
+                UpdatePileIcon();
+            }
+        }
+    }
+
     private void DropPile()
     {
-        if (slot is QuickSlot)
+        if (slot is QuickSlot) // For now, all available slots are quickslots
         {
             player.HandsManager.DropItemPileFromHand((slot as QuickSlot).hand);
         }
         else
         {
-            player.SpawnPileFromPlayer(ItemPile);
+
         }
         Destroy(gameObject);
         Debug.Log("Dropped item");
