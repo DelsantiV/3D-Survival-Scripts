@@ -201,6 +201,10 @@ public class ItemPile
         }
     }
 
+    /// <summary>
+    /// Merge the given pile with this pile, adding all itelms of the given pile to this pile
+    /// </summary>
+    /// <param name="pileToMerge" The item pile to merge with></param>
     private void MergePiles(ItemPile pileToMerge)
     {
         if (pileToMerge.NumberOfItemsInPile == 0) { return; }
@@ -215,6 +219,10 @@ public class ItemPile
         newItemsInPile.AddRange(ItemsInPile);
         newItemsInPile.AddRange(pileToMerge.ItemsInPile);
         ItemsInPile = newItemsInPile;
+        if (IsInWorld)
+        {
+            itemPileInWorld.MergePile(pileToMerge);
+        }
         OnPileChanged?.Invoke();
     }
 
