@@ -155,9 +155,9 @@ public class HandsInventory
         return Hand.none;
     }
 
-    private void AddItemPileToHand(Hand hand, ItemPile pile)
+    private bool TryAddItemPileToHand(Hand hand, ItemPile pile)
     {
-        HandQuickSlot(hand).AddPile(pile);
+        return HandQuickSlot(hand).TryAddPile(pile);
     }
 
     public bool TryAddItemPileToNextEmptyHand(ItemPile pile)
@@ -184,8 +184,7 @@ public class HandsInventory
         if (!IsHandEmpty(hand)) { return ItemPileInHand(hand).TryMergePile(pile, MaxCarryingWeight(hand), MaxCarryingBulk(hand)); }
         else
         {
-            AddItemPileToHand(hand, pile);
-            return true;
+            return TryAddItemPileToHand(hand, pile);
         }
     }
 
@@ -220,7 +219,7 @@ public class HandsInventory
         // Get pile in left hand and pile in right hand. Merge them and affect them to "both" hands
         ItemPilesUtilities.TryMergePiles(ItemPileInHand(prefHand), ItemPileInHand(otherHand), out ItemPile bothHandPile, maxWeight: playerStatus.maxCarriyngWeightBothHands, maxBulk: playerStatus.maxCarriyngBulkBothHands);
         MakeBothHandsEmpty();
-        AddItemPileToHand(Hand.both, bothHandPile);
+        TryAddItemPileToHand(Hand.both, bothHandPile);
         Debug.Log(bothHandPile.ToString());
     }
 
@@ -240,8 +239,8 @@ public class HandsInventory
         else 
         {
             MakeBothHandsEmpty();
-            if (splittedPile.Count > 0) { AddItemPileToHand(prefHand, splittedPile[0]); }
-            if (splittedPile.Count > 1) { AddItemPileToHand(otherHand, splittedPile[1]); }
+            if (splittedPile.Count > 0) { return TryAddItemPileToHand(prefHand, splittedPile[0]); }
+            if (splittedPile.Count > 1) {  return TryAddItemPileToHand(otherHand, splittedPile[1]); }
             return true; 
         }
     }

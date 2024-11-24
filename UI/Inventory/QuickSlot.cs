@@ -25,28 +25,17 @@ public class QuickSlot : ItemSlot
         }
     }
 
-    public override void AddPile(ItemPile pile)
+    public override bool TryAddPile(ItemPile pile)
     {
-        Debug.Log("Hello");
         if (CurrentPileUI == null && pile != null)
         {
             Debug.Log("Spawning pile in hand");
-            handsManager?.InstantiateItemPileInHand(pile, hand);
+            bool success = base.TryAddPile(pile);
+            if (success) { handsManager?.InstantiateItemPileInHand(pile, hand); }
+            return success;
         }
-        base.AddPile(pile);
-        // Needs to be improved: do not instantiate item if could not add -> TryAddPile structure
-    }
 
-
-    public override void AddPile(ItemPileInInventory pileUI)
-    {
-        Debug.Log("Hello");
-        if (CurrentPileUI == null && pileUI.ItemPile != null)
-        {
-            Debug.Log("Spawning pile in hand");
-            handsManager?.InstantiateItemPileInHand(pileUI.ItemPile, hand);
-        }
-        base.AddPile(pileUI);
+        return base.TryAddPile(pile);
         // Needs to be improved: do not instantiate item if could not add -> TryAddPile structure
     }
 

@@ -64,12 +64,21 @@ public class ItemSlot : MonoBehaviour, IDropHandler
             ItemPileInInventory itemBeingDrag = itemBeingDragGO.GetComponent<ItemPileInInventory>();
             if (itemBeingDrag.slot != this)
             {
-                itemBeingDrag.ChangeSlot(this);
+                if (IsEmpty) { itemBeingDrag.ChangeSlot(this); }
+                else
+                {
+                    ItemSlot previousSlot = itemBeingDrag.slot; //Ne fonctionne pas pour le moment --> à débugger !
+                    if (!TryAddPile(itemBeingDrag.ItemPile)) 
+                    {
+                        Debug.Log("Was not able to add pile to existing one");
+                    }
+                    else { previousSlot.RemovePile(); }
+                }
             }
         }
     }
 
-    public virtual void AddPile(ItemPile pile)
+    public virtual bool TryAddPile(ItemPile pile)
     {
         if (pile != null)
         {
@@ -78,35 +87,21 @@ public class ItemSlot : MonoBehaviour, IDropHandler
             {
                 Debug.Log("Trying to add pile " + pile + " to slot " + name + ", which is empty");
                 pile.SetItemPileToSlot(this);
+                return true;
             }
 
             //if there is a pile already, try to merge pile
             else
             {
                 Debug.Log("Trying to add item " + pile + " to slot " + name + ", containing " + CurrentPile.ToString());
+                return CurrentPile.TryMergePile(pile); // Handle the case where piles cannot be merged
             }
         }
-        else { Debug.Log("Trying to add null item"); }
-    }
-
-    public virtual void AddPile(ItemPileInInventory pileUI)
-    {
-        if (pileUI != null)
-        {
-            //if there is no pile already in the slot then set our pile.
-            if (IsEmpty)
-            {
-                Debug.Log("Trying to add pile " + pileUI.ItemPile.ToString() + " to slot " + name + ", which is empty");
-                SetItemPileToSlot(pileUI);
-            }
-
-            //if there is a pile already, try to merge pile
-            else
-            {
-                Debug.Log("Trying to add item " + pileUI.ItemPile.ToString() + " to slot " + name + ", containing " + CurrentPile.ToString());
-            }
+        else 
+        { 
+            Debug.Log("Trying to add null item"); 
+            return false;
         }
-        else { Debug.Log("Trying to add null item"); }
     }
 
     public virtual void DestroyItem()
