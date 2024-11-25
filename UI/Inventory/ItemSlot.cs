@@ -67,18 +67,22 @@ public class ItemSlot : MonoBehaviour, IDropHandler
                 if (IsEmpty) { itemBeingDrag.ChangeSlot(this); }
                 else
                 {
-                    ItemSlot previousSlot = itemBeingDrag.slot; //Ne fonctionne pas pour le moment --> à débugger !
+                    ItemSlot previousSlot = itemBeingDrag.slot; 
                     if (!TryAddPile(itemBeingDrag.ItemPile)) 
                     {
                         Debug.Log("Was not able to add pile to existing one");
                     }
-                    else { previousSlot.RemovePile(); }
+                    else 
+                    { 
+                        Destroy(itemBeingDragGO);
+                        if (previousSlot is QuickSlot) { (previousSlot as QuickSlot).RemovePileFromHand(); } // pas ouf, à améliorer par la suite
+                    } 
                 }
             }
         }
     }
 
-    public virtual bool TryAddPile(ItemPile pile)
+    public virtual bool TryAddPile(ItemPile pile, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity)
     {
         if (pile != null)
         {
@@ -94,7 +98,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
             else
             {
                 Debug.Log("Trying to add item " + pile + " to slot " + name + ", containing " + CurrentPile.ToString());
-                return CurrentPile.TryMergePile(pile); // Handle the case where piles cannot be merged
+                return CurrentPile.TryMergePile(pile, maxWeight, maxBulk); // Handle the case where piles cannot be merged
             }
         }
         else 

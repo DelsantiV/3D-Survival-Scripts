@@ -88,14 +88,14 @@ public class HandsInventory
         return 0f;
     }
 
-    private float MaxCarryingWeight(Hand hand)
+    public float MaxCarryingWeight(Hand hand)
     {
         if (hand == prefHand) { return playerStatus.maxCarriyngWeightPrefHand; }
         else if (hand == otherHand) { return playerStatus.maxCarriyngWeightOtherHand; }
         else if (hand == Hand.both) { return playerStatus.maxCarriyngWeightBothHands; }
         return 0f;
     }
-    private float MaxCarryingBulk(Hand hand)
+    public float MaxCarryingBulk(Hand hand)
     {
         if (hand == prefHand) { return playerStatus.maxCarriyngBulkPrefHand; }
         else if (hand == otherHand) { return playerStatus.maxCarriyngBulkOtherHand; }
@@ -155,11 +155,6 @@ public class HandsInventory
         return Hand.none;
     }
 
-    private bool TryAddItemPileToHand(Hand hand, ItemPile pile)
-    {
-        return HandQuickSlot(hand).TryAddPile(pile);
-    }
-
     public bool TryAddItemPileToNextEmptyHand(ItemPile pile)
     {
         Hand nextEmptyHand = GetNextEmptyHand();
@@ -184,7 +179,7 @@ public class HandsInventory
         if (!IsHandEmpty(hand)) { return ItemPileInHand(hand).TryMergePile(pile, MaxCarryingWeight(hand), MaxCarryingBulk(hand)); }
         else
         {
-            return TryAddItemPileToHand(hand, pile);
+            return HandQuickSlot(hand).TryAddPile(pile, MaxCarryingWeight(hand), MaxCarryingBulk(hand));
         }
     }
 
@@ -219,7 +214,7 @@ public class HandsInventory
         // Get pile in left hand and pile in right hand. Merge them and affect them to "both" hands
         ItemPilesUtilities.TryMergePiles(ItemPileInHand(prefHand), ItemPileInHand(otherHand), out ItemPile bothHandPile, maxWeight: playerStatus.maxCarriyngWeightBothHands, maxBulk: playerStatus.maxCarriyngBulkBothHands);
         MakeBothHandsEmpty();
-        TryAddItemPileToHand(Hand.both, bothHandPile);
+        TryAddItemPileToHand(bothHandPile, Hand.both);
         Debug.Log(bothHandPile.ToString());
     }
 
@@ -239,8 +234,8 @@ public class HandsInventory
         else 
         {
             MakeBothHandsEmpty();
-            if (splittedPile.Count > 0) { return TryAddItemPileToHand(prefHand, splittedPile[0]); }
-            if (splittedPile.Count > 1) {  return TryAddItemPileToHand(otherHand, splittedPile[1]); }
+            if (splittedPile.Count > 0) { return TryAddItemPileToHand(splittedPile[0], prefHand); }
+            if (splittedPile.Count > 1) {  return TryAddItemPileToHand(splittedPile[1], otherHand); }
             return true; 
         }
     }

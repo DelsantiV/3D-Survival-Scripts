@@ -193,6 +193,7 @@ public class ItemPile
     /// <returns>True if the pile was merged, false otherwise</returns>
     public bool TryMergePile(ItemPile pileToMerge, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity) 
     {
+        Debug.Log("Max weight: " + maxWeight.ToString() + "\n Merged piles weight: " + (pileToMerge.Weight + this.Weight).ToString());
         if (pileToMerge.Weight + this.Weight > maxWeight || pileToMerge.Bulk + this.Bulk > maxBulk) { return false; } // If pile would be too heavy or too bulky, do not merge piles
         else
         {

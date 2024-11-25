@@ -25,25 +25,44 @@ public class QuickSlot : ItemSlot
         }
     }
 
-    public override bool TryAddPile(ItemPile pile)
+    public float MaxCarryingWeight
     {
+        get
+        {
+            return inventoryManager.MaxCarryingWeight(hand);
+        }
+    }
+    public float MaxCarryingBulk
+    {
+        get
+        {
+            return inventoryManager.MaxCarryingBulk(hand);
+        }
+    }
+
+    public override bool TryAddPile(ItemPile pile, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity)
+    {
+        if (maxWeight == Mathf.Infinity) {maxWeight = MaxCarryingWeight; }
+        if (maxBulk == Mathf.Infinity) { maxBulk = MaxCarryingBulk; }
         if (CurrentPileUI == null && pile != null)
         {
             Debug.Log("Spawning pile in hand");
-            bool success = base.TryAddPile(pile);
+            bool success = base.TryAddPile(pile, maxWeight, maxBulk);
             if (success) { handsManager?.InstantiateItemPileInHand(pile, hand); }
             return success;
         }
 
-        return base.TryAddPile(pile);
-        // Needs to be improved: do not instantiate item if could not add -> TryAddPile structure
+        return base.TryAddPile(pile, maxWeight, maxBulk);
     }
+
 
     public override void RemovePile(bool shouldDestroy = true)
     {
         base.RemovePile(shouldDestroy);
-        handsManager?.RemoveItemPileFromHand(hand);
+        RemovePileFromHand();
     }
+
+    public void RemovePileFromHand() => handsManager?.RemoveItemPileFromHand(hand); 
 
     public void ParentPileToHand(ItemPile pile) 
     {
