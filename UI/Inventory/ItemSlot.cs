@@ -75,7 +75,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
                     else 
                     { 
                         Destroy(itemBeingDragGO);
-                        if (previousSlot is QuickSlot) { (previousSlot as QuickSlot).RemovePileFromHand(); } // pas ouf, à améliorer par la suite
+                        previousSlot.RemovePile(); // vérifier que ça marche
                     } 
                 }
             }
