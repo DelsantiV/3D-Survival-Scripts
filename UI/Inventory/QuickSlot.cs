@@ -58,13 +58,16 @@ namespace GoTF.Content
         }
 
 
-        public override void RemovePile(bool shouldDestroy = true)
+        public override void RemovePile(bool shouldDestroy = true, bool shouldDropItems = false)
         {
             base.RemovePile(shouldDestroy);
-            RemovePileFromHand();
+            RemovePileFromHand(shouldDropItems);
         }
 
-        public void RemovePileFromHand() => handsManager?.RemoveItemPileFromHand(hand);
+        public void RemovePileFromHand(bool shouldDropItems)
+        {
+            handsManager?.RemoveItemPileFromHand(hand, shouldDropItems: shouldDropItems);
+        }
 
         public void ParentPileToHand(ItemPile pile)
         {

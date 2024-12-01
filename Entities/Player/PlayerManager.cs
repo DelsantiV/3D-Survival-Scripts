@@ -250,6 +250,15 @@ namespace GoTF.Content
             }
         }
 
+        public void ForceHandMode(HandsManager.HandMode handMode)
+        {
+            Debug.Log("Forcing Hand Mode to " + handMode.ToString());
+            HandsInventory.ForceHandMode(handMode);
+            canvasManager.SetHandModeUI(handMode);
+            HandsManager.SetHandModes(handMode);
+            
+        }
+
         public void SwitchHandMode()
         {
             if (HandsManager.CurrentHandMode == HandsManager.HandMode.single) { SetHandMode(HandsManager.HandMode.both); }

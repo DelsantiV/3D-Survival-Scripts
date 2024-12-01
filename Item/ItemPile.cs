@@ -43,6 +43,11 @@ namespace GoTF.Content
             }
         }
 
+        public bool IsEmpty
+        {
+            get { return  ItemsInPile.Count == 0;}
+        }
+
         ///<summary>
         ///
         /// </summary>

@@ -137,25 +137,13 @@ namespace GoTF.Content
             }
         }
 
-        public void RemoveItemPileFromHand(Hand hand)
+        public void RemoveItemPileFromHand(Hand hand, bool shouldDropItems = false)
         {
             if (EquippedItemPileInHand(hand) != null)
             {
                 Debug.Log("Removing physical pile from hand " + EquippedItemPileInHand(hand).name);
-                EquippedItemPileInHand(hand).Remove();
-            }
-            else
-            {
-                Debug.Log("No item pile to remove from this hand !");
-            }
-        }
-
-        public void DropItemPileFromHand(Hand hand)
-        {
-            if (EquippedItemPileInHand(hand) != null)
-            {
-                Debug.Log("Removing " + EquippedItemPileInHand(hand).name);
-                EquippedItemPileInHand(hand).Drop();
+                if (shouldDropItems) { EquippedItemPileInHand(hand).Drop(); }
+                else { EquippedItemPileInHand(hand).Remove(); }
             }
             else
             {

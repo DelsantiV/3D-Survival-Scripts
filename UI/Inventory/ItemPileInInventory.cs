@@ -201,7 +201,7 @@ namespace GoTF.Content
         {
             if (slot is QuickSlot) // For now, all available slots are quickslots
             {
-                player.HandsManager.DropItemPileFromHand((slot as QuickSlot).hand);
+                player.HandsManager.RemoveItemPileFromHand((slot as QuickSlot).hand, shouldDropItems:true);
             }
             else
             {

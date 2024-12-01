@@ -230,14 +230,34 @@ namespace GoTF.Content
                 maxBulk: MaxCarryingBulk(prefHand),
                 ItemPilesUtilities.SplitMethod.Both);
 
-            if (rejectedPile.NumberOfItemsInPile > 0) { return false; }
+            if (rejectedPile.NumberOfItemsInPile > 0) 
+            {
+                Debug.Log("Cannot split hands : both hands piles is too heavy or too bulky");
+                return false; 
+            }
 
             else
             {
                 MakeBothHandsEmpty();
-                if (splittedPile.Count > 0) { return TryAddItemPileToHand(splittedPile[0], prefHand); }
-                if (splittedPile.Count > 1) { return TryAddItemPileToHand(splittedPile[1], otherHand); }
+                if (splittedPile.Count > 1) { TryAddItemPileToHand(splittedPile[1], otherHand); }
+                if (splittedPile.Count > 0) { TryAddItemPileToHand(splittedPile[0], prefHand); }
                 return true;
+            }
+        }
+
+        public void ForceSplitHands()
+        {
+            if (IsHandEmpty(Hand.both)) { return; }
+
+            ItemPile prefHandPile = ItemPileInHand(Hand.both).TakePartOfPile(maxWeight: MaxCarryingWeight(prefHand), maxBulk: MaxCarryingBulk(prefHand));
+            if (!prefHandPile.IsEmpty) { TryAddItemPileToHand(prefHandPile, prefHand); }
+            ItemPile otherHandPile = ItemPileInHand(Hand.both).TakePartOfPile(maxWeight: MaxCarryingWeight(prefHand), maxBulk: MaxCarryingBulk(prefHand));
+            if (!otherHandPile.IsEmpty) { TryAddItemPileToHand(otherHandPile, otherHand); }
+
+            if (!ItemPileInHand(Hand.both).IsEmpty) 
+            { 
+                handsManager.RemoveItemPileFromHand(Hand.both, shouldDropItems:true);
+                MakeBothHandsEmpty();
             }
         }
 
@@ -255,6 +275,24 @@ namespace GoTF.Content
                     return true;
 
                 default: return false;
+            }
+        }
+
+        public void ForceHandMode(HandMode handMode)
+        {
+            if (CurrentHandMode == handMode) { return; }
+
+            switch (handMode)
+            {
+                case HandMode.single:
+                    ForceSplitHands();
+                    return;
+
+                case HandMode.both:
+                    MergeBothHands();
+                    return;
+
+                default: return ;
             }
         }
     }

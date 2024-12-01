@@ -114,7 +114,7 @@ namespace GoTF.Content
             Debug.Log("Destroying pile " + CurrentPile.ToString() + " from slot " + name);
             Destroy(CurrentPileUI.gameObject);
         }
-        public virtual void RemovePile(bool shouldDestroy = true)
+        public virtual void RemovePile(bool shouldDestroy = true, bool shouldDropItems = false)
         {
             if (CurrentPileUI != null)
             {
