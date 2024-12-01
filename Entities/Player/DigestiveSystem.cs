@@ -2,90 +2,93 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DigestiveSystem
+namespace GoTF.Content
 {
-    public List<FoodItem> containedFood;
-    public FoodItem foodBeingDigested;
-    private float currentDigestionProgress;
-    private PlayerStatus playerStatus;
-
-
-    public void InitializeDigestiveSystem(PlayerStatus playerStatus)
+    public class DigestiveSystem
     {
-        CustomTickSystem.OnLargeTick += DigestFood;
-        this.playerStatus = playerStatus;
-        containedFood = new List<FoodItem>();
-    }
-
-    public DigestiveSystem(PlayerStatus playerStatus, List<FoodItem> containedFood)
-    {
-        InitializeDigestiveSystem(playerStatus);
-        this.containedFood = containedFood;
-    }
-
-    public DigestiveSystem(PlayerStatus playerStatus) 
-    {
-        InitializeDigestiveSystem(playerStatus);
-    }
+        public List<FoodItem> containedFood;
+        public FoodItem foodBeingDigested;
+        private float currentDigestionProgress;
+        private PlayerStatus playerStatus;
 
 
-    public void AddFoodToDigestiveSystem(FoodItem foodItem)
-    {
-        containedFood.Add(foodItem);
-        // Maybe try to add at the end of liste so digestion is simpler
-    }
-
-    public bool TryAddFoodToDigestiveSystem(FoodItem foodItem)
-    {
-        if (IsFull()) { return false; }
-        else 
+        public void InitializeDigestiveSystem(PlayerStatus playerStatus)
         {
-            AddFoodToDigestiveSystem(foodItem);
-            return true; 
+            CustomTickSystem.OnLargeTick += DigestFood;
+            this.playerStatus = playerStatus;
+            containedFood = new List<FoodItem>();
         }
-    }
 
-    public bool IsFull()
-    {
-        return containedFood.Count > 5;
-    }
-
-    public bool IsDigesting()
-    {
-        return foodBeingDigested != null;
-    }
-
-    public void DigestFood()
-    {
-        if (foodBeingDigested == null) 
+        public DigestiveSystem(PlayerStatus playerStatus, List<FoodItem> containedFood)
         {
-            if (containedFood.Count > 0)
-            {
-                foodBeingDigested = containedFood[containedFood.Count - 1];
-                playerStatus.isDigesting = true;
-            }
+            InitializeDigestiveSystem(playerStatus);
+            this.containedFood = containedFood;
+        }
+
+        public DigestiveSystem(PlayerStatus playerStatus)
+        {
+            InitializeDigestiveSystem(playerStatus);
+        }
+
+
+        public void AddFoodToDigestiveSystem(FoodItem foodItem)
+        {
+            containedFood.Add(foodItem);
+            // Maybe try to add at the end of liste so digestion is simpler
+        }
+
+        public bool TryAddFoodToDigestiveSystem(FoodItem foodItem)
+        {
+            if (IsFull()) { return false; }
             else
             {
-                return;
+                AddFoodToDigestiveSystem(foodItem);
+                return true;
             }
         }
-        
-        playerStatus.currentCalories += foodBeingDigested.caloriesAmount / foodBeingDigested.timeToDigest;
 
-        currentDigestionProgress += 1/foodBeingDigested.timeToDigest;
-        if (currentDigestionProgress >= 1)
+        public bool IsFull()
         {
-            containedFood.RemoveAt(containedFood.Count - 1);
-            if (containedFood.Count > 0)
+            return containedFood.Count > 5;
+        }
+
+        public bool IsDigesting()
+        {
+            return foodBeingDigested != null;
+        }
+
+        public void DigestFood()
+        {
+            if (foodBeingDigested == null)
             {
-                foodBeingDigested = containedFood[containedFood.Count - 1];
+                if (containedFood.Count > 0)
+                {
+                    foodBeingDigested = containedFood[containedFood.Count - 1];
+                    playerStatus.isDigesting = true;
+                }
+                else
+                {
+                    return;
+                }
             }
-            else
+
+            playerStatus.currentCalories += foodBeingDigested.caloriesAmount / foodBeingDigested.timeToDigest;
+
+            currentDigestionProgress += 1 / foodBeingDigested.timeToDigest;
+            if (currentDigestionProgress >= 1)
             {
-                foodBeingDigested = null;
-                playerStatus.isDigesting = false;
+                containedFood.RemoveAt(containedFood.Count - 1);
+                if (containedFood.Count > 0)
+                {
+                    foodBeingDigested = containedFood[containedFood.Count - 1];
+                }
+                else
+                {
+                    foodBeingDigested = null;
+                    playerStatus.isDigesting = false;
+                }
+                currentDigestionProgress = 0;
             }
-            currentDigestionProgress = 0;
         }
     }
 }

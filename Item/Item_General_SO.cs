@@ -5,72 +5,76 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using GoTF.GameLoading;
 
-[CreateAssetMenu(menuName = "ScriptableObjects/ItemBaseData")]
-public class Item_General_SO : ScriptableObject
+namespace GoTF.Content
 {
-
-    new public string name;
-    public string icon_path;
-    public string prefab_path;
-    public string item_info;
-    public string item_class;
-    public float weight;
-    public float bulk;
-
-    public string classProperties;
-
-    public Sprite iconInInventory;
-    public GameObject itemPrefab;
-
-
-    public void Initialize()
+    [CreateAssetMenu(menuName = "ScriptableObjects/ItemBaseData")]
+    public class Item_General_SO : ScriptableObject
     {
-        LoadIcon();
-        LoadPrefab();
-    }
 
-    public override string ToString()
-    {
-        return name + " ("+item_class+")";
-    }
+        new public string name;
+        public string icon_path;
+        public string prefab_path;
+        public string item_info;
+        public string item_class;
+        public float weight;
+        public float bulk;
 
-    public void LoadIcon()
-    {
-        if (ItemLoader.allIconsLocations.Contains("Assets/Data/Icons/" + icon_path))
+        public string classProperties;
+
+        public Sprite iconInInventory;
+        public GameObject itemPrefab;
+
+
+        public void Initialize()
         {
-            AsyncOperationHandle<Sprite> spriteLoadOpHandle = Addressables.LoadAssetAsync<Sprite>("Icons/" + icon_path);
-            spriteLoadOpHandle.Completed += delegate { OnLoadIconComplete(spriteLoadOpHandle); };
+            LoadIcon();
+            LoadPrefab();
         }
-    }
 
-    private void OnLoadIconComplete(AsyncOperationHandle<Sprite> spriteLoadOpHandle)
-    {
-        if (spriteLoadOpHandle.Status == AsyncOperationStatus.Succeeded)
+        public override string ToString()
         {
-            iconInInventory = spriteLoadOpHandle.Result;
+            return name + " (" + item_class + ")";
         }
-    }
 
-    public void LoadPrefab()
-    {
-        if (ItemLoader.allPrefabsLocations.Contains("Assets/Data/Prefabs/" + prefab_path))
+        public void LoadIcon()
         {
-            AsyncOperationHandle<GameObject> prefabLoadOpHandle = Addressables.LoadAssetAsync<GameObject>("Prefabs/" + prefab_path);
-            prefabLoadOpHandle.Completed += delegate { OnLoadPrefabComplete(prefabLoadOpHandle); };
+            if (ItemLoader.allIconsLocations.Contains("Assets/Data/Icons/" + icon_path))
+            {
+                AsyncOperationHandle<Sprite> spriteLoadOpHandle = Addressables.LoadAssetAsync<Sprite>("Icons/" + icon_path);
+                spriteLoadOpHandle.Completed += delegate { OnLoadIconComplete(spriteLoadOpHandle); };
+            }
         }
-        else
-        {
-            Debug.Log("No prefab found for " + name);
-        }
-    }
 
-    private void OnLoadPrefabComplete(AsyncOperationHandle<GameObject> prefabLoadOpHandle)
-    {
-        if (prefabLoadOpHandle.Status == AsyncOperationStatus.Succeeded)
+        private void OnLoadIconComplete(AsyncOperationHandle<Sprite> spriteLoadOpHandle)
         {
-            itemPrefab = prefabLoadOpHandle.Result;
+            if (spriteLoadOpHandle.Status == AsyncOperationStatus.Succeeded)
+            {
+                iconInInventory = spriteLoadOpHandle.Result;
+            }
         }
-    }
 
+        public void LoadPrefab()
+        {
+            if (ItemLoader.allPrefabsLocations.Contains("Assets/Data/Prefabs/" + prefab_path))
+            {
+                AsyncOperationHandle<GameObject> prefabLoadOpHandle = Addressables.LoadAssetAsync<GameObject>("Prefabs/" + prefab_path);
+                prefabLoadOpHandle.Completed += delegate { OnLoadPrefabComplete(prefabLoadOpHandle); };
+            }
+            else
+            {
+                Debug.Log("No prefab found for " + name);
+            }
+        }
+
+        private void OnLoadPrefabComplete(AsyncOperationHandle<GameObject> prefabLoadOpHandle)
+        {
+            if (prefabLoadOpHandle.Status == AsyncOperationStatus.Succeeded)
+            {
+                itemPrefab = prefabLoadOpHandle.Result;
+            }
+        }
+
+    }
 }

@@ -4,11 +4,14 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HealthBar : StatusBar
+namespace GoTF.Content
 {
-    public override void UpdateValues()
+    public class HealthBar : StatusBar
     {
-        maxAmount = status.maxHealth;
-        currentAmount = status.currentHealth;
+        public override void UpdateValues()
+        {
+            maxAmount = status.maxHealth;
+            currentAmount = status.currentHealth;
+        }
     }
 }

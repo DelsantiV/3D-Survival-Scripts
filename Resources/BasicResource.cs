@@ -2,23 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BasicResource : MonoBehaviour, IDamageable
+namespace GoTF.Content
 {
-    private float maxLife;
-    private float currentLife;
-
-    // Update is called once per frame
-    public void TakeDamage(float damage, DamageSource damageSource)
+    public class BasicResource : MonoBehaviour, IDamageable
     {
-        currentLife -= damage;
-        if (currentLife < 0) 
+        private float maxLife;
+        private float currentLife;
+
+        // Update is called once per frame
+        public void TakeDamage(float damage, DamageSource damageSource)
         {
-            DestroyResource();
+            currentLife -= damage;
+            if (currentLife < 0)
+            {
+                DestroyResource();
+            }
         }
-    }
 
-    public void DestroyResource()
-    {
+        public void DestroyResource()
+        {
 
+        }
     }
 }

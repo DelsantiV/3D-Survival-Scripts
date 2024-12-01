@@ -2,21 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class InventoryItemInfos
+namespace GoTF.Content
 {
-    public GeneralItem item;
-    public int itemAmount;
-    //public bool canSpoil;
-
-    public InventoryItemInfos()
+    [System.Serializable]
+    public class InventoryItemInfos
     {
-    }
+        public GeneralItem item;
+        public int itemAmount;
+        //public bool canSpoil;
 
-    public InventoryItemInfos(GeneralItem item, int itemAmount)
-    {
-        this.item = item;
-        this.itemAmount = itemAmount;
-    }
+        public InventoryItemInfos()
+        {
+        }
 
+        public InventoryItemInfos(GeneralItem item, int itemAmount)
+        {
+            this.item = item;
+            this.itemAmount = itemAmount;
+        }
+    }
 }

@@ -2,25 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InteractableObject : MonoBehaviour
+namespace GoTF.Content
 {
-    public string objectName;
-    public bool isPickableItem;
-    private string displayedName;
-
-    private void Start()
+    public class InteractableObject : MonoBehaviour
     {
-        if (isPickableItem) { displayedName = objectName + " [E to pick up]"; }
-        else { displayedName = objectName; }
-    }
+        public string objectName;
+        public bool isPickableItem;
+        private string displayedName;
 
-    public string GetObjectName()
-    {
-        return objectName;
-    }
+        private void Start()
+        {
+            if (isPickableItem) { displayedName = objectName + " [E to pick up]"; }
+            else { displayedName = objectName; }
+        }
 
-    public string DisplayedObjectName() 
-    { 
-        return displayedName; 
+        public string GetObjectName()
+        {
+            return objectName;
+        }
+
+        public string DisplayedObjectName()
+        {
+            return displayedName;
+        }
     }
 }

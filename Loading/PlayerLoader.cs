@@ -3,62 +3,66 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using GoTF.Content;
 
-public class PlayerLoader
+namespace GoTF.GameLoading
 {
-    private string playerPrefabAddress = "Prefabs/Player/Player.Prefab";
-    private string canvasPrefabAddress = "Prefabs/Player/Canvas.Prefab";
-    private string cameraPrefabAddress = "Prefabs/Player/PlayerCamera.Prefab";
-    private List<string> keys;
-    private Vector3 spawnPoint = Vector3.zero;
-    private AsyncOperationHandle<GameObject> m_PlayerLoadOpHandle;
-    private AsyncOperationHandle<GameObject> m_CanvasLoadOpHandle;
-
-    public PlayerLoader(Vector3 SpawnPoint)
+    public class PlayerLoader
     {
-        this.spawnPoint = SpawnPoint;
-    }
+        private string playerPrefabAddress = "Prefabs/Player/Player.Prefab";
+        private string canvasPrefabAddress = "Prefabs/Player/Canvas.Prefab";
+        private string cameraPrefabAddress = "Prefabs/Player/PlayerCamera.Prefab";
+        private List<string> keys;
+        private Vector3 spawnPoint = Vector3.zero;
+        private AsyncOperationHandle<GameObject> m_PlayerLoadOpHandle;
+        private AsyncOperationHandle<GameObject> m_CanvasLoadOpHandle;
 
-    public void LoadPlayer()
-    {
-        keys = new List<string>() { playerPrefabAddress, canvasPrefabAddress, cameraPrefabAddress };
-
-        m_PlayerLoadOpHandle = Addressables.LoadAssetAsync<GameObject>(playerPrefabAddress);
-        m_PlayerLoadOpHandle.Completed += OnPlayerLoaded;
-    }
-
-    private void OnPlayerLoaded(AsyncOperationHandle<GameObject> m_PlayerLoadOpHandle)
-    {
-        if (m_PlayerLoadOpHandle.Status == AsyncOperationStatus.Succeeded)
+        public PlayerLoader(Vector3 SpawnPoint)
         {
-            m_CanvasLoadOpHandle = Addressables.LoadAssetAsync<GameObject>(canvasPrefabAddress);
-            m_CanvasLoadOpHandle.Completed += delegate { OnCanvasLoaded(m_CanvasLoadOpHandle, m_PlayerLoadOpHandle); };
+            this.spawnPoint = SpawnPoint;
         }
-    }
 
-    private void OnCanvasLoaded(AsyncOperationHandle<GameObject> m_CanvasLoadOpHandle, AsyncOperationHandle<GameObject> m_PlayerLoadOpHandle)
-    {
-        if (m_CanvasLoadOpHandle.Status == AsyncOperationStatus.Succeeded)
+        public void LoadPlayer()
         {
-            Debug.Log("Spawning Player...");
-            SpawnPlayer(m_PlayerLoadOpHandle.Result, m_CanvasLoadOpHandle.Result);
-            LoadPlayerData();
+            keys = new List<string>() { playerPrefabAddress, canvasPrefabAddress, cameraPrefabAddress };
+
+            m_PlayerLoadOpHandle = Addressables.LoadAssetAsync<GameObject>(playerPrefabAddress);
+            m_PlayerLoadOpHandle.Completed += OnPlayerLoaded;
         }
-    }
 
-    private void SpawnPlayer(GameObject playerPrefab, GameObject canvasPrefab)
-    {
-        PlayerManager player = Object.Instantiate(playerPrefab, spawnPoint, Quaternion.identity).GetComponent<PlayerManager>();
-        CanvasManager canvas = Object.Instantiate(canvasPrefab).GetComponent<CanvasManager>();
-        player.InitializePlayer();
-        player.SetCanvasManager(canvas);
-        player.PlayerReady.Invoke();
+        private void OnPlayerLoaded(AsyncOperationHandle<GameObject> m_PlayerLoadOpHandle)
+        {
+            if (m_PlayerLoadOpHandle.Status == AsyncOperationStatus.Succeeded)
+            {
+                m_CanvasLoadOpHandle = Addressables.LoadAssetAsync<GameObject>(canvasPrefabAddress);
+                m_CanvasLoadOpHandle.Completed += delegate { OnCanvasLoaded(m_CanvasLoadOpHandle, m_PlayerLoadOpHandle); };
+            }
+        }
 
-        Camera.main.GetComponent<vThirdPersonCameraUpgraded>().target = player.transform;
-    }
+        private void OnCanvasLoaded(AsyncOperationHandle<GameObject> m_CanvasLoadOpHandle, AsyncOperationHandle<GameObject> m_PlayerLoadOpHandle)
+        {
+            if (m_CanvasLoadOpHandle.Status == AsyncOperationStatus.Succeeded)
+            {
+                Debug.Log("Spawning Player...");
+                SpawnPlayer(m_PlayerLoadOpHandle.Result, m_CanvasLoadOpHandle.Result);
+                LoadPlayerData();
+            }
+        }
 
-    private void LoadPlayerData()
-    {
+        private void SpawnPlayer(GameObject playerPrefab, GameObject canvasPrefab)
+        {
+            PlayerManager player = Object.Instantiate(playerPrefab, spawnPoint, Quaternion.identity).GetComponent<PlayerManager>();
+            CanvasManager canvas = Object.Instantiate(canvasPrefab).GetComponent<CanvasManager>();
+            player.InitializePlayer();
+            player.SetCanvasManager(canvas);
+            player.PlayerReady.Invoke();
 
+            Camera.main.GetComponent<vThirdPersonCameraUpgraded>().target = player.transform;
+        }
+
+        private void LoadPlayerData()
+        {
+
+        }
     }
 }

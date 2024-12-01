@@ -6,131 +6,133 @@ using UnityEngine.UI;
 using System;
 
 
-
-public class ItemSlot : MonoBehaviour, IDropHandler
+namespace GoTF.Content
 {
+    public class ItemSlot : MonoBehaviour, IDropHandler
+    {
 
-    [HideInInspector] public PlayerManager Player {get; private set;}
+        [HideInInspector] public PlayerManager Player { get; private set; }
 
-    public ItemPileInInventory CurrentPileUI 
-    { 
-        get
+        public ItemPileInInventory CurrentPileUI
         {
-            if (transform.childCount > 0)
+            get
             {
-                return transform.GetChild(0).GetComponent<ItemPileInInventory>();
-            }
-
-            return null;
-        }
-    }
-    public ItemPile CurrentPile
-    {
-        get
-        {
-            if (CurrentPileUI == null) { return null; }
-            else { return CurrentPileUI.ItemPile; }
-        }
-    }
-
-
-    public virtual bool IsEmpty
-    {
-        get
-        {
-            if (CurrentPileUI == null)
-            {
-                return true;
-            }
-            return false;
-        }
-    }
-
-    public virtual bool IsHoldingSingleItem
-    {
-        get { return (CurrentPileUI.ItemPile.IsPileUniqueItem); }
-    }
-
-    public void SetPlayer(PlayerManager player)
-    {
-        Player = player;
-    }
-
-    public virtual void OnDrop(PointerEventData eventData)
-    {
-        GameObject itemBeingDragGO = eventData.pointerDrag;
-        if (itemBeingDragGO != null)
-        {
-            ItemPileInInventory itemBeingDrag = itemBeingDragGO.GetComponent<ItemPileInInventory>();
-            if (itemBeingDrag.slot != this)
-            {
-                if (IsEmpty) { itemBeingDrag.ChangeSlot(this); }
-                else
+                if (transform.childCount > 0)
                 {
-                    ItemSlot previousSlot = itemBeingDrag.slot; 
-                    if (!TryAddPile(itemBeingDrag.ItemPile)) 
+                    return transform.GetChild(0).GetComponent<ItemPileInInventory>();
+                }
+
+                return null;
+            }
+        }
+        public ItemPile CurrentPile
+        {
+            get
+            {
+                if (CurrentPileUI == null) { return null; }
+                else { return CurrentPileUI.ItemPile; }
+            }
+        }
+
+
+        public virtual bool IsEmpty
+        {
+            get
+            {
+                if (CurrentPileUI == null)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        public virtual bool IsHoldingSingleItem
+        {
+            get { return (CurrentPileUI.ItemPile.IsPileUniqueItem); }
+        }
+
+        public void SetPlayer(PlayerManager player)
+        {
+            Player = player;
+        }
+
+        public virtual void OnDrop(PointerEventData eventData)
+        {
+            GameObject itemBeingDragGO = eventData.pointerDrag;
+            if (itemBeingDragGO != null)
+            {
+                ItemPileInInventory itemBeingDrag = itemBeingDragGO.GetComponent<ItemPileInInventory>();
+                if (itemBeingDrag.slot != this)
+                {
+                    if (IsEmpty) { itemBeingDrag.ChangeSlot(this); }
+                    else
                     {
-                        Debug.Log("Was not able to add pile to existing one");
+                        ItemSlot previousSlot = itemBeingDrag.slot;
+                        if (!TryAddPile(itemBeingDrag.ItemPile))
+                        {
+                            Debug.Log("Was not able to add pile to existing one");
+                        }
+                        else
+                        {
+                            Destroy(itemBeingDragGO);
+                            previousSlot.RemovePile(); // vérifier que ça marche
+                        }
                     }
-                    else 
-                    { 
-                        Destroy(itemBeingDragGO);
-                        previousSlot.RemovePile(); // vérifier que ça marche
-                    } 
                 }
             }
         }
-    }
 
-    public virtual bool TryAddPile(ItemPile pile, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity)
-    {
-        if (pile != null)
+        public virtual bool TryAddPile(ItemPile pile, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity)
         {
-            //if there is no pile already in the slot then set our pile.
-            if (IsEmpty)
+            if (pile != null)
             {
-                Debug.Log("Trying to add pile " + pile + " to slot " + name + ", which is empty");
-                pile.SetItemPileToSlot(this);
-                return true;
-            }
+                //if there is no pile already in the slot then set our pile.
+                if (IsEmpty)
+                {
+                    Debug.Log("Trying to add pile " + pile + " to slot " + name + ", which is empty");
+                    pile.SetItemPileToSlot(this);
+                    return true;
+                }
 
-            //if there is a pile already, try to merge pile
+                //if there is a pile already, try to merge pile
+                else
+                {
+                    Debug.Log("Trying to add item " + pile + " to slot " + name + ", containing " + CurrentPile.ToString());
+                    return CurrentPile.TryMergePile(pile, maxWeight, maxBulk); // Handle the case where piles cannot be merged
+                }
+            }
             else
             {
-                Debug.Log("Trying to add item " + pile + " to slot " + name + ", containing " + CurrentPile.ToString());
-                return CurrentPile.TryMergePile(pile, maxWeight, maxBulk); // Handle the case where piles cannot be merged
+                Debug.Log("Trying to add null item");
+                return false;
             }
         }
-        else 
-        { 
-            Debug.Log("Trying to add null item"); 
-            return false;
-        }
-    }
 
-    public virtual void DestroyItem()
-    {
-        Debug.Log("Destroying pile " + CurrentPile.ToString() + " from slot " + name);
-        Destroy(CurrentPileUI.gameObject);
-    }
-    public virtual void RemovePile(bool shouldDestroy = true)
-    {
-        if (CurrentPileUI != null)
+        public virtual void DestroyItem()
         {
-            Debug.Log("Removing item " + CurrentPile.ToString() + " from slot" + name);
-            CurrentPileUI.CloseItemInfo();
-            if (shouldDestroy) { DestroyItem(); }
+            Debug.Log("Destroying pile " + CurrentPile.ToString() + " from slot " + name);
+            Destroy(CurrentPileUI.gameObject);
         }
-        else
+        public virtual void RemovePile(bool shouldDestroy = true)
         {
-            Debug.Log("Tried removing item from slot " + name + ", but this slot was empty !");
+            if (CurrentPileUI != null)
+            {
+                Debug.Log("Removing item " + CurrentPile.ToString() + " from slot" + name);
+                CurrentPileUI.CloseItemInfo();
+                if (shouldDestroy) { DestroyItem(); }
+            }
+            else
+            {
+                Debug.Log("Tried removing item from slot " + name + ", but this slot was empty !");
+            }
         }
-    }
 
-    public virtual void SetItemPileToSlot(ItemPileInInventory pileUI)
-    {
-        pileUI.transform.SetParent(transform, false);
-        pileUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-        pileUI.RefreshSlot();
+        public virtual void SetItemPileToSlot(ItemPileInInventory pileUI)
+        {
+            pileUI.transform.SetParent(transform, false);
+            pileUI.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+            pileUI.RefreshSlot();
+        }
     }
 }

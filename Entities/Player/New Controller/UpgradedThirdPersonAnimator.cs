@@ -1,7 +1,7 @@
 ﻿
 using UnityEngine;
 
-namespace Invector.vCharacterController
+namespace GoTF.Content
 {
     public class UpgradedThirdPersonAnimator : UpgradedThirdPersonMotor
     {

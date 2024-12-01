@@ -1,6 +1,9 @@
-public interface ISaveable
+namespace GoTF.GameLoading
 {
-    public void SaveToJson();
+    public interface ISaveable
+    {
+        public void SaveToJson();
 
-    public void LoadFromJson();
+        public void LoadFromJson();
+    }
 }

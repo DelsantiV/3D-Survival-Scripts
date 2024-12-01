@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class WeaponItem : GeneralItem
+namespace GoTF.Content
 {
-    public WeaponItem(Item_General_SO itemSO) : base(itemSO)
+    public class WeaponItem : GeneralItem
     {
+        public WeaponItem(Item_General_SO itemSO) : base(itemSO)
+        {
 
+        }
     }
 }

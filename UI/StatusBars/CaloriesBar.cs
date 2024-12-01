@@ -4,11 +4,14 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CaloriesBar : StatusBar
+namespace GoTF.Content
 {
-    public override void UpdateValues()
+    public class CaloriesBar : StatusBar
     {
-        maxAmount = status.maxCalories;
-        currentAmount = status.currentCalories;
+        public override void UpdateValues()
+        {
+            maxAmount = status.maxCalories;
+            currentAmount = status.currentCalories;
+        }
     }
 }

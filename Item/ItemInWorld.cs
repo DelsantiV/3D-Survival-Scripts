@@ -4,41 +4,44 @@ using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
 
-public class ItemInWorld : MonoBehaviour
+namespace GoTF.Content
 {
-    public GeneralItem item;
-    public ItemPileInWorld itemPileInWorld;
-    public void PickUpItem(PlayerManager player)
+    public class ItemInWorld : MonoBehaviour
     {
-        if (item != null && player.HandsInventory != null)
+        public GeneralItem item;
+        public ItemPileInWorld itemPileInWorld;
+        public void PickUpItem(PlayerManager player)
         {
-            if (player.TryCollectItem(this))
+            if (item != null && player.HandsInventory != null)
             {
-                if (itemPileInWorld != null) { itemPileInWorld.RemoveItem(item); }
-                else { Destroy(gameObject); }
-                Debug.Log("Picked up " + ItemName + "!");
+                if (player.TryCollectItem(this))
+                {
+                    if (itemPileInWorld != null) { itemPileInWorld.RemoveItem(item); }
+                    else { Destroy(gameObject); }
+                    Debug.Log("Picked up " + ItemName + "!");
+                }
+                else
+                {
+                    Debug.Log("Cannot collect " + ItemName + " !");
+                }
             }
-            else
-            {
-                Debug.Log("Cannot collect " + ItemName + " !");
-            }
+            else { Debug.Log("Problemos"); }
         }
-        else { Debug.Log("Problemos"); }
-    }
 
-    public GameObject ItemPrefab { get { return item.ItemPrefab; } }
-    public Sprite ItemSprite { get { return item.ItemSprite; } }
-    public string ItemName { get { return item.ItemName; } }
-    public string ObjectName { get { return ItemName + " [E to pick up]"; } }
-    public float Weight { get { return item.Weight; } }
-    public float Bulk { get { return item.Bulk; } }
+        public GameObject ItemPrefab { get { return item.ItemPrefab; } }
+        public Sprite ItemSprite { get { return item.ItemSprite; } }
+        public string ItemName { get { return item.ItemName; } }
+        public string ObjectName { get { return ItemName + " [E to pick up]"; } }
+        public float Weight { get { return item.Weight; } }
+        public float Bulk { get { return item.Bulk; } }
 
-    private void Start()
-    {
-        itemPileInWorld = transform.root.GetComponent<ItemPileInWorld>();
-    }
-    private void Update()
-    {
-        if (transform.position.y < -50) { Destroy(gameObject); }
+        private void Start()
+        {
+            itemPileInWorld = transform.root.GetComponent<ItemPileInWorld>();
+        }
+        private void Update()
+        {
+            if (transform.position.y < -50) { Destroy(gameObject); }
+        }
     }
 }
