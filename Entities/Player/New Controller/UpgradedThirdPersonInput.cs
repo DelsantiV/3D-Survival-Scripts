@@ -69,7 +69,7 @@ namespace GoTF.Content
         {
             if (tpCamera == null)
             {
-                tpCamera = FindObjectOfType<vThirdPersonCameraUpgraded>();
+                tpCamera = FindFirstObjectByType<vThirdPersonCameraUpgraded>();
                 if (tpCamera == null)
                     return;
                 if (tpCamera)
