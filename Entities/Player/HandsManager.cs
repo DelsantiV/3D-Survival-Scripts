@@ -83,7 +83,7 @@ namespace GoTF.Content
             {
                 case Hand.left: return leftHand.transform;
                 case Hand.right: return rightHand.transform;
-                case Hand.both: return HandTransform(PrefHand);
+                case Hand.both: return bothHand.transform;
             }
             return null;
         }
