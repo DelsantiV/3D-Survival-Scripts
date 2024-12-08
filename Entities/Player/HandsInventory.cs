@@ -249,15 +249,17 @@ namespace GoTF.Content
         {
             if (IsHandEmpty(Hand.both)) { return; }
 
-            ItemPile prefHandPile = ItemPileInHand(Hand.both).TakePartOfPile(maxWeight: MaxCarryingWeight(prefHand), maxBulk: MaxCarryingBulk(prefHand));
+            ItemPile prefHandPile = ItemPileInHand(Hand.both).TakePartOfPile(maxWeight: MaxCarryingWeight(prefHand), maxBulk: MaxCarryingBulk(prefHand), removeFromOriginalPile:true);
             if (!prefHandPile.IsEmpty) { TryAddItemPileToHand(prefHandPile, prefHand); }
-            ItemPile otherHandPile = ItemPileInHand(Hand.both).TakePartOfPile(maxWeight: MaxCarryingWeight(prefHand), maxBulk: MaxCarryingBulk(prefHand));
+            ItemPile otherHandPile = ItemPileInHand(Hand.both).TakePartOfPile(maxWeight: MaxCarryingWeight(prefHand), maxBulk: MaxCarryingBulk(prefHand), removeFromOriginalPile: true);
+            Debug.Log(otherHandPile.ToString());
             if (!otherHandPile.IsEmpty) { TryAddItemPileToHand(otherHandPile, otherHand); }
 
+            Debug.Log("After splitting, " + ItemPileInHand(Hand.both) + " needs to be dropped");
             if (!ItemPileInHand(Hand.both).IsEmpty) 
             { 
                 handsManager.RemoveItemPileFromHand(Hand.both, shouldDropItems:true);
-                MakeBothHandsEmpty();
+                //MakeBothHandsEmpty();
             }
         }
 
