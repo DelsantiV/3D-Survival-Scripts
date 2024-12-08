@@ -9,6 +9,7 @@ namespace GoTF.Content
     {
         private readonly GameObject rightHand;
         private readonly GameObject leftHand;
+        private readonly GameObject bothHand;
         public Hand PrefHand;
 
         public Hand OtherHand
@@ -27,11 +28,13 @@ namespace GoTF.Content
         public HandMode CurrentHandMode { get; private set; }
 
 
-        public HandsManager(GameObject leftHand, GameObject rightHand, Hand prefHand)
+        public HandsManager(GameObject leftHand, GameObject rightHand, Hand prefHand = Hand.right, GameObject bothHand = null)
         {
             this.leftHand = leftHand;
             this.rightHand = rightHand;
             this.PrefHand = prefHand;
+            if (bothHand != null) this.bothHand = bothHand;
+            else this.bothHand = HandGO(prefHand);
 
             CurrentHandMode = HandMode.single;
         }
@@ -70,7 +73,7 @@ namespace GoTF.Content
             {
                 case Hand.left: return leftHand;
                 case Hand.right: return rightHand;
-                case Hand.both: return HandGO(PrefHand);
+                case Hand.both: return bothHand;
             }
             return null;
         }
