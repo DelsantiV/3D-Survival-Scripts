@@ -82,7 +82,7 @@ namespace GoTF.Content
             }
         }
 
-        public GeneralItem ItemInPile(int index)
+        public GeneralItem GetItemInPile(int index)
         {
             if (ItemsInPile == null) { return null; }
             if (index < 0 || index > ItemsInPile.Count) { return null; }
@@ -160,6 +160,8 @@ namespace GoTF.Content
         {
             ItemsInPile = itemNamesList.ConvertAll(itemName => ItemManager.GetItemByName(itemName)); ;
         }
+
+        public void DestroyPile() { ItemsInPile.Clear(); }
 
 
         /// <summary>
@@ -315,12 +317,12 @@ namespace GoTF.Content
         {
             ItemPile itemPilePart = new ItemPile();
 
+            if (IsEmpty) { return itemPilePart; } 
+
             //If Pile is small enough considering the parameters, return whole pile
             if (Weight < maxWeight && Bulk < maxBulk && NumberOfItemsInPile < maxNumberOfItems && NumberOfDifferentItemsInPile < maxNumberOfDifferentItems)
             {
-                itemPilePart = this;
-                if (removeFromOriginalPile) { ItemsInPile = null; }
-                return itemPilePart;
+                return this;
             }
 
             int numberOfDifferentItems = 0;
@@ -330,13 +332,13 @@ namespace GoTF.Content
                 if (itemPilePart.NumberOfItemsInPile < maxNumberOfItems && itemPilePart.Weight + item.Weight < maxWeight && itemPilePart.Bulk + item.Bulk < maxBulk && numberOfDifferentItems < maxNumberOfDifferentItems)
                 {
                     itemPilePart.AddItemToPile(item);
-                    if (removeFromOriginalPile) { RemoveItemFromPile(item); }
                 }
                 else { numberOfDifferentItems--; }
 
                 // Return part of pile if max number of items or max number of different items is reached
                 if (itemPilePart.NumberOfItemsInPile == maxNumberOfItems || numberOfDifferentItems == maxNumberOfDifferentItems) { return itemPilePart; }
             }
+            if (removeFromOriginalPile && itemPilePart.NumberOfItemsInPile > 0) { foreach(GeneralItem item in itemPilePart.ItemsInPile) { RemoveItemFromPile(item); } }
             return itemPilePart;
         }
 
