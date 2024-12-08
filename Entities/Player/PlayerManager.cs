@@ -160,13 +160,15 @@ namespace GoTF.Content
                 }
                 else
                 {
-                    //canvasManager.SetInteractionUIActive(false);
+                    //Needs optimization (is called every frame)
+                    canvasManager.SetInteractionUIActive(false);
                 }
 
             }
             else
             {
-                //canvasManager.SetInteractionUIActive(false);
+                //Needs optimization
+                canvasManager.SetInteractionUIActive(false);
             }
         }
 
