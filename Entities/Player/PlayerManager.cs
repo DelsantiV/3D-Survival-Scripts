@@ -27,6 +27,7 @@ namespace GoTF.Content
         [SerializeField] private string[] startingItems;
         [SerializeField] private GameObject rightHand;
         [SerializeField] private GameObject leftHand;
+        [SerializeField] private GameObject bothHand;
         public HandsManager.Hand prefHand = HandsManager.Hand.right;
         public HandsManager.HandMode CurrentHandMode
         {
@@ -70,7 +71,7 @@ namespace GoTF.Content
         private LayerMask playerLayer;
         public UpgradedThirdPersonInput InputManager { get; private set; }
         public UpgradedThirdPersonController PlayerController { get; private set; }
-        public AnimatorController AnimatorController { get; private set; }
+        public Animator AnimatorController { get; private set; }
 
         public UnityEvent PlayerReady = new();
 
@@ -85,12 +86,13 @@ namespace GoTF.Content
             PlayerStatus = new PlayerStatus(this, maxHealth, maxFatigue, maxCalories);
             DigestiveSystem = new DigestiveSystem(PlayerStatus);
             PlayerInputConfig = new();
-            HandsManager = new HandsManager(leftHand, rightHand, prefHand);
+            HandsManager = new HandsManager(leftHand, rightHand, prefHand:prefHand, bothHand:bothHand);
             playerLayer = LayerMask.GetMask("Player");
             playerHead = transform.Find("PlayerHead");
             InputManager = GetComponent<UpgradedThirdPersonInput>();
-            AnimatorController = GetComponent<AnimatorController>();
+            AnimatorController = GetComponent<Animator>();
             PlayerController = GetComponent<UpgradedThirdPersonController>();
+            PlayerController.isHoldingBoth = (CurrentHandMode == HandsManager.HandMode.both);
 
             PlayerReady.AddListener(OnPlayerReady);
         }
@@ -158,13 +160,13 @@ namespace GoTF.Content
                 }
                 else
                 {
-                    canvasManager.SetInteractionUIActive(false);
+                    //canvasManager.SetInteractionUIActive(false);
                 }
 
             }
             else
             {
-                canvasManager.SetInteractionUIActive(false);
+                //canvasManager.SetInteractionUIActive(false);
             }
         }
 
@@ -240,16 +242,18 @@ namespace GoTF.Content
             return HandsInventory.TryAddItemPileToNextEmptyHand(itemPileInWorld.ItemPile);
         }
 
-        public void SetHandMode(HandsManager.HandMode handMode)
+        public bool TrySetHandMode(HandsManager.HandMode handMode)
         {
-            Debug.Log("Setting Hand Mode to " + handMode.ToString());
-            if (HandsInventory.TrySetHandModes(handMode))
+           if (HandsInventory.TrySetHandModes(handMode))
             {
                 canvasManager.SetHandModeUI(handMode);
                 HandsManager.SetHandModes(handMode);
+                return true;
             }
+            return false;
         }
 
+        // Ne fonctionne pas (HandsInventory.ForceHandMode ne fonctionne pas pour le moment)
         public void ForceHandMode(HandsManager.HandMode handMode)
         {
             Debug.Log("Forcing Hand Mode to " + handMode.ToString());
@@ -259,10 +263,11 @@ namespace GoTF.Content
             
         }
 
-        public void SwitchHandMode()
+        public bool TrySwitchHandMode()
         {
-            if (HandsManager.CurrentHandMode == HandsManager.HandMode.single) { SetHandMode(HandsManager.HandMode.both); }
-            else if (HandsManager.CurrentHandMode == HandsManager.HandMode.both) { SetHandMode(HandsManager.HandMode.single); }
+            if (HandsManager.CurrentHandMode == HandsManager.HandMode.single) { return TrySetHandMode(HandsManager.HandMode.both); }
+            else if (HandsManager.CurrentHandMode == HandsManager.HandMode.both) { return TrySetHandMode(HandsManager.HandMode.single); }
+            return false;
         }
 
         public void SaveToJson()

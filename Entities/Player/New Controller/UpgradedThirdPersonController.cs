@@ -161,5 +161,10 @@ namespace GoTF.Content
             stopMove = true;
             lockMovement = true;
         }
+
+        public virtual void SwitchHandMode()
+        {
+            isHoldingBoth = !isHoldingBoth;
+        }
     }
 }

@@ -219,7 +219,7 @@ namespace GoTF.Content
         {
             if (Input.GetKeyDown(GetInputKey(Controls.SwitchHandMode)))
             {
-                player.SwitchHandMode();
+                if (player.TrySwitchHandMode()) { cc.SwitchHandMode(); }
             }
         }
 

@@ -84,6 +84,7 @@ namespace GoTF.Content
         internal bool isSprinting { get; set; }
         internal bool isOtherHandAction { get; set; }
         internal bool isPrefHandAction { get; set; }
+        internal bool isHoldingBoth { get; set; }
         public bool stopMove { get; protected set; }
 
         internal float inputMagnitude;                      // sets the inputMagnitude to update the animations in the animator controller
@@ -104,8 +105,9 @@ namespace GoTF.Content
         internal Vector3 colliderCenter;                    // storage the center of the capsule collider info                
         internal Vector3 inputSmooth;                       // generate smooth input based on the inputSmooth value       
         internal Vector3 moveDirection;                     // used to know the direction you're moving 
-        internal TerrainGrid terrainGrid;
-        [HideInInspector] public GridCell currentGridCell { get; protected set; }
+        internal int holdingLayerIndex;                     // the index of the holding animation layer
+        internal TerrainGrid terrainGrid;                   
+        [HideInInspector] public GridCell currentGridCell { get; protected set; } //used to now the current position in the terrain grid
 
         #endregion
 
@@ -113,6 +115,7 @@ namespace GoTF.Content
         {
             animator = GetComponent<Animator>();
             animator.updateMode = AnimatorUpdateMode.Fixed;
+            holdingLayerIndex = animator.GetLayerIndex("Holding");
 
             // slides the character through walls and edges
             frictionPhysics = new PhysicsMaterial();
@@ -150,6 +153,7 @@ namespace GoTF.Content
 
             // terrain grid data
             terrainGrid = Terrain.activeTerrain.GetComponent<TerrainGrid>();
+            Debug.Log(terrainGrid);
             currentGridCell = terrainGrid.GetGridCell(transform.position);
         }
 

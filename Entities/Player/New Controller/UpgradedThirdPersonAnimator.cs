@@ -33,6 +33,7 @@ namespace GoTF.Content
             }
 
             animator.SetFloat(UpgradedAnimatorParameters.InputMagnitude, stopMove ? 0f : inputMagnitude, isStrafing ? strafeSpeed.animationSmooth : freeSpeed.animationSmooth, Time.deltaTime);
+            animator.SetLayerWeight(1, isHoldingBoth ? 1f : 0f);
         }
 
         public virtual void SetAnimatorMoveSpeed(vMovementSpeed speed)
