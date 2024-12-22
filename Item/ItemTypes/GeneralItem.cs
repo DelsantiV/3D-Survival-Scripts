@@ -1,13 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace GoTF.Content
 {
-    public class GeneralItem
+    public abstract class GeneralItem
     {
         public Item_General_SO ItemSO { get; protected set; }
 
@@ -27,29 +25,16 @@ namespace GoTF.Content
         /// </summary>
         public float Bulk { get { return ItemSO.bulk; } }
 
+        public GeneralItem()
+        {
 
-        public GeneralItem(Item_General_SO itemSO)
+        }
+
+        public virtual void Initialize(Item_General_SO itemSO)
         {
             ItemSO = itemSO;
         }
 
-        public virtual void UseItem(PlayerManager player, ItemPileInInventory pileUI)
-        {
-
-        }
-
-        public virtual void EquipItem()
-        {
-
-        }
-        public virtual void SpawnInWorld(Vector3 spawnPosition)
-        {
-
-        }
-
-        public void Action(PlayerManager player)
-        {
-
-        }
+        public abstract void UseItem(PlayerManager player, ItemPileInInventory pileUI);
     }
 }
