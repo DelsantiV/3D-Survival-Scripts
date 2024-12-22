@@ -72,9 +72,9 @@ namespace GoTF.Content
                 }
             }
 
-            playerStatus.currentCalories += foodBeingDigested.caloriesAmount / foodBeingDigested.timeToDigest;
+            playerStatus.currentCalories += foodBeingDigested.nutritionProperties.calories / foodBeingDigested.nutritionProperties.timeToDigest;
 
-            currentDigestionProgress += 1 / foodBeingDigested.timeToDigest;
+            currentDigestionProgress += 1 / foodBeingDigested.nutritionProperties.timeToDigest;
             if (currentDigestionProgress >= 1)
             {
                 containedFood.RemoveAt(containedFood.Count - 1);
