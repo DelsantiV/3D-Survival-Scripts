@@ -40,5 +40,12 @@ namespace GoTF.Content
         {
 
         }
+
+        public struct DamageProporties
+        {
+            public int tier;
+            public float amount;
+            public DamageSource source;
+        }
     }
 }
