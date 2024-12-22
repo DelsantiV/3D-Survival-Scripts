@@ -18,6 +18,7 @@ namespace GoTF.GameLoading
     public class ItemLoader
     {
         private Dictionary<string, Item_General_SO> allItemsSOByName;
+        private Dictionary<string, GeneralItem> allItemsByName;
         public static UnityEvent Ready;
         public static List<string> allPrefabsLocations;
         public static List<string> allIconsLocations;
@@ -33,6 +34,7 @@ namespace GoTF.GameLoading
             Ready = new UnityEvent();
             allItemsSOByName = new();
             allItemTypes = new();
+            allItemsByName = new();
         }
 
         public IEnumerator LoadItems()
@@ -92,13 +94,17 @@ namespace GoTF.GameLoading
 
         private void LoadItemFromJObject(JObject jsonParsedFile)
         {
-            Item_General_SO itemBaseData = (Item_General_SO)ScriptableObject.CreateInstance(typeof(Item_General_SO));
+            Item_General_SO itemBaseData = (Item_General_SO) ScriptableObject.CreateInstance(typeof(Item_General_SO));
             //Debug.Log(jsonParsedFile["baseinfos"].ToString());
             JsonConvert.PopulateObject(jsonParsedFile["baseinfos"].ToString(), itemBaseData);
             itemBaseData.Initialize();
             itemBaseData.classProperties = jsonParsedFile["class_properties"].ToString();
             Debug.Log("Loaded " + itemBaseData.name + " from class " + itemBaseData.item_class);   
             allItemsSOByName.TryAdd(itemBaseData.name, itemBaseData);
+            allItemTypes.TryGetValue(itemBaseData.item_class_name, out Type itemType);
+            var item = (GeneralItem) Activator.CreateInstance(itemType);
+            item.Initialize(itemBaseData);
+            allItemsByName.TryAdd(itemBaseData.name, item);
         }
     }
 }
