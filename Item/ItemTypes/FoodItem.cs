@@ -8,21 +8,23 @@ namespace GoTF.Content
 {
     public class FoodItem : GeneralItem
     {
-        public float caloriesAmount = 1000f;
-        public float timeToDigest = 10f;
-
-        ItemProperties.NutritionProperties nutritionProperties;
+        public ItemProperties.NutritionProperties nutritionProperties;
 
         public FoodItem()
         {
-            JObject jsonParsedFile = JObject.Parse(ItemSO.classProperties);
-            JsonConvert.PopulateObject(jsonParsedFile["nutrition_properties"].ToString(), nutritionProperties);
+            
         }
 
         public override void Initialize(Item_General_SO itemSO)
         {
             base.Initialize(itemSO);
-
+            JObject jsonParsedFile = JObject.Parse(ItemSO.classProperties);
+            if (jsonParsedFile != null) {
+                if (jsonParsedFile["nutrition_properties"] != null)
+                {
+                    nutritionProperties = JsonConvert.DeserializeObject<ItemProperties.NutritionProperties>(jsonParsedFile["nutrition_properties"].ToString());
+                }
+            }
         }
 
         public override void UseItem(PlayerManager player, ItemPileInInventory pileUI)
