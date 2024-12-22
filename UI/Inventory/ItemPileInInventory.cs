@@ -11,6 +11,8 @@ namespace GoTF.Content
     public class ItemPileInInventory : Dragable, IPointerDownHandler
     {
         protected Canvas canvas;
+        protected CanvasManager canvasManager;
+        protected PileMenu pileMenu;
         //protected GameObject itemInfoTemplate;
         protected GameObject itemInfoGO;
         protected GameObject inventoryGO;
@@ -28,9 +30,11 @@ namespace GoTF.Content
             base.Initialize();
             this.player = player;
             canvas = FindFirstObjectByType<Canvas>();
+            canvasManager = canvas.GetComponent<CanvasManager>();
             //itemInfoTemplate = Resources.Load<GameObject>("UI/ItemInfoTemplate"); // Replace with Addressables ?
             inventoryGO = transform.parent.gameObject;
             isOutsideBounds = false;
+            pileMenu = null;
             RefreshSlot();
         }
 
@@ -50,7 +54,7 @@ namespace GoTF.Content
         public override void OnBeginDrag(PointerEventData eventData)
         {
             base.OnBeginDrag(eventData);
-            CloseItemInfo();
+            ClosePileInfo();
         }
         public override void OnDrag(PointerEventData eventData)
         {
@@ -90,41 +94,26 @@ namespace GoTF.Content
         {
             if (activeItem != this)
             {
-                if (activeItem != null) { activeItem.CloseItemInfo(); }
+                if (activeItem != null) { activeItem.ClosePileInfo(); }
                 activeItem = this;
             }
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                OpenItemInfo();
+                OpenPileInfo();
             }
         }
 
-        protected virtual void OpenItemInfo()
+        protected virtual void OpenPileInfo()
         {
-            if (itemInfoGO == null && slot is not QuickSlot)
-            {
-                /*
-                itemInfoGO = Instantiate(itemInfoTemplate, canvas.transform);
-                itemInfoGO.transform.Find("ItemNameText").GetComponent<TextMeshProUGUI>().SetText(ItemSO.name);
-
-                itemInfoGO.transform.Find("ItemInfoText").GetComponent<TextMeshProUGUI>().SetText(ItemSO.item_info);
-                itemInfoGO.transform.Find("DropButton").GetComponent<Button>().onClick.AddListener(DropItem);
-
-                GameObject useButtonGO = itemInfoGO.transform.Find("UseButton").gameObject;
-                useButtonGO.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Equip";
-                useButtonGO.SetActive(true);
-                Button useButton = useButtonGO.GetComponent<Button>();
-                useButton.onClick.AddListener(EquipItemInNextEmptyHand);
-                */
-                Debug.Log("Should show Info");
-            }
+            if (pileMenu == null) { pileMenu = canvasManager.OpenPileMenu(this, rectTransform.anchoredPosition); }
+            pileMenu.OpenUI();
         }
 
-        public virtual void CloseItemInfo()
+        public virtual void ClosePileInfo()
         {
-            if (itemInfoGO != null)
+            if (pileMenu != null)
             {
-                Destroy(itemInfoGO);
+                if (pileMenu.IsOpen()) { pileMenu.CloseUI(); }
             }
         }
 
@@ -197,7 +186,7 @@ namespace GoTF.Content
             }
         }
 
-        private void DropPile()
+        public void DropPile()
         {
             if (slot is QuickSlot) // For now, all available slots are quickslots
             {
@@ -209,12 +198,12 @@ namespace GoTF.Content
             }
             Destroy(gameObject);
             Debug.Log("Dropped item");
-            CloseItemInfo();
+            ClosePileInfo();
         }
 
         private void UsePile()
         {
-            if (ItemPile.IsPileUniqueItem) { ItemPile.FirstItemInPile.Action(player); }
+            if (ItemPile.IsPileUniqueItem) { ItemPile.FirstItemInPile.UseItem(player, this); }
             else { }
         }
 

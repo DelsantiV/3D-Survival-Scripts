@@ -25,6 +25,8 @@ namespace GoTF.Content
         private BasicUI bothHandQuickSlotHolder;
         private QuickSlot[] allQuickSlots;
 
+        private PileMenu pileMenuTemplate;
+
         public PlayerManager player { get; private set; }
 
         private TextMeshProUGUI interactionText;
@@ -57,6 +59,8 @@ namespace GoTF.Content
             rightHandQuickSlot = transform.Find("Handslots/RightHandSlotHolder/RightHandSlot").GetComponent<QuickSlot>();
             bothHandQuickSlot = transform.Find("Handslots/BothHandSlotHolder/BothHandSlot").GetComponent<QuickSlot>();
             allQuickSlots = new QuickSlot[] { leftHandQuickSlot, rightHandQuickSlot, bothHandQuickSlot };
+
+            pileMenuTemplate = transform.Find("PileMenuTemplate").GetComponent<PileMenu>();
         }
 
 
@@ -125,6 +129,16 @@ namespace GoTF.Content
                         return;
                     }
             }
+        }
+
+        public PileMenu OpenPileMenu(ItemPileInInventory pileInInventory, Vector2 positionInUI)
+        {
+            PileMenu pileMenu = Instantiate(pileMenuTemplate);
+            pileMenu.SetActive(true);
+            pileMenu.transform.SetParent(transform, false);
+            pileMenu.SetPosition(positionInUI);
+            pileMenu.SetPile(pileInInventory);
+            return pileMenu;
         }
     }
 }

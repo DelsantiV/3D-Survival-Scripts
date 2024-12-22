@@ -119,7 +119,7 @@ namespace GoTF.Content
             if (CurrentPileUI != null)
             {
                 Debug.Log("Removing item " + CurrentPile.ToString() + " from slot" + name);
-                CurrentPileUI.CloseItemInfo();
+                CurrentPileUI.ClosePileInfo();
                 if (shouldDestroy) { DestroyItem(); }
             }
             else
