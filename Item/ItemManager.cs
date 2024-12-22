@@ -95,9 +95,9 @@ namespace GoTF.Content
 
         public static GeneralItem GenerateItemfromItemSO(Item_General_SO itemSO)
         {
-            //var item = Activator.CreateInstance(asm.GetType(itemSO.item_class));
-            //(item as GeneralItem).ItemSO = itemSO;
-            return new GeneralItem(itemSO);
+            var item = (GeneralItem) Activator.CreateInstance(itemSO.item_class);
+            item.Initialize(itemSO);
+            return item;
         }
         public static GeneralItem GetItemByName(string itemName)
         {

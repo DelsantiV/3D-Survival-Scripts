@@ -22,18 +22,24 @@ namespace GoTF.GameLoading
         public static List<string> allPrefabsLocations;
         public static List<string> allIconsLocations;
         public static string[] allItemNames;
+        public static Dictionary<string, Type> allItemTypes;
         private List<string> itemsJsonKeys = new List<string>() { "JSON", "Items" };
         private List<string> itemsPrefabsKeys = new List<string>() { "Prefabs", "Items" };
         private List<string> itemsIconsKeys = new List<string>() { "Icons", "Items" };
+        private static readonly Assembly asm = Assembly.GetAssembly(typeof(GeneralItem));
 
         public ItemLoader()
         {
             Ready = new UnityEvent();
             allItemsSOByName = new();
+            allItemTypes = new();
         }
 
         public IEnumerator LoadItems()
         {
+            Task ItemClassesRegistering = new Task(RegisterItemClasses());
+            Debug.Log("OK");
+            yield return ItemClassesRegistering;
 
             Debug.Log("Start retrieving items prefabs locations...");
             AsyncOperationHandle<IList<IResourceLocation>> allPrefabsLocationsLoading = Addressables.LoadResourceLocationsAsync(itemsPrefabsKeys, Addressables.MergeMode.Intersection, typeof(GameObject));
@@ -61,59 +67,18 @@ namespace GoTF.GameLoading
             Addressables.Release(itemsLoading);
         }
 
+        public IEnumerator RegisterItemClasses()
+        {
+            //var result = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(GeneralItem))).ToList(); // Get all item classes
+            allItemTypes.Add("Weapon", typeof(WeaponItem));
+            allItemTypes.Add("Food", typeof(FoodItem));
+            yield return allItemTypes;
+        }
+
         public void FireAssetsReady(bool manual)
         {
             Ready.Invoke();
         }
-
-        /* Old way of loading items
-        public IEnumerator LoadItemsJSONFromMemory()
-        {
-            Debug.Log("Start retrieving items json locations...");
-            AsyncOperationHandle<IList<IResourceLocation>> itemsJsonLocations = Addressables.LoadResourceLocationsAsync(itemsJsonKeys, Addressables.MergeMode.Intersection, typeof(TextAsset)) ;
-            yield return itemsJsonLocations;
-            Debug.Log(itemsJsonLocations.Status.ToString());
-            Debug.Log(itemsJsonLocations.Result.Count + " items found in assets");
-
-            Debug.Log("Start retrieving items prefabs locations...");
-            AsyncOperationHandle<IList<IResourceLocation>> allPrefabsLocationsLoading = Addressables.LoadResourceLocationsAsync("Prefabs", typeof(GameObject));
-            yield return allPrefabsLocationsLoading;
-            Debug.Log(allPrefabsLocationsLoading.Status.ToString());
-            allPrefabsLocations = allPrefabsLocationsLoading.Result.ToList().ConvertAll(address => address.ToString());
-            Debug.Log(allPrefabsLocationsLoading.Result.Count + " prefabs found in assets");
-
-            Debug.Log("Start retrieving items icons locations...");
-            AsyncOperationHandle<IList<IResourceLocation>> allIconsLocationsLoading = Addressables.LoadResourceLocationsAsync("Icons", typeof(Sprite));
-            yield return allIconsLocationsLoading;
-            Debug.Log(allIconsLocationsLoading.Status.ToString());
-            allIconsLocations = allIconsLocationsLoading.Result.ToList().ConvertAll(address => address.ToString());
-            Debug.Log(allIconsLocations.Count + " icons found in assets");
-
-            var loadOpsBasic = new List<AsyncOperationHandle>(itemsJsonLocations.Result.Count);
-            foreach (IResourceLocation loc in itemsJsonLocations.Result)
-            {
-                AsyncOperationHandle<TextAsset> jsonFileHandle = Addressables.LoadAssetAsync<TextAsset>(loc);
-                jsonFileHandle.Completed += OnItemJsonDataLoaded;
-                loadOpsBasic.Add(jsonFileHandle);
-            }
-            yield return Addressables.ResourceManager.CreateGenericGroupOperation(loadOpsBasic, true);
-            allItemNames = allItems.Keys.ToArray();
-            ItemManager.InitializeItemManager(allItems, allItemsSO);
-            foreach (string prefabLoc in allPrefabsLocations)
-            {
-                Debug.Log(prefabLoc);
-            }
-            Ready.Invoke();
-        }
-
-        private void OnItemJsonDataLoaded(AsyncOperationHandle<TextAsset> jsonFileHandle)
-        {
-            if (jsonFileHandle.Status == AsyncOperationStatus.Succeeded)
-            {
-                CreateItem(jsonFileHandle.Result);
-            }
-        }
-        */
 
         private void CreateItem(TextAsset jsonFile)
         {
@@ -128,12 +93,12 @@ namespace GoTF.GameLoading
         private void LoadItemFromJObject(JObject jsonParsedFile)
         {
             Item_General_SO itemBaseData = (Item_General_SO)ScriptableObject.CreateInstance(typeof(Item_General_SO));
-            Debug.Log(jsonParsedFile["baseinfos"].ToString());
+            //Debug.Log(jsonParsedFile["baseinfos"].ToString());
             JsonConvert.PopulateObject(jsonParsedFile["baseinfos"].ToString(), itemBaseData);
             itemBaseData.Initialize();
             itemBaseData.classProperties = jsonParsedFile["class_properties"].ToString();
-            Debug.Log("Loaded " + itemBaseData.name + " from class " + itemBaseData.item_class);
-            allItemsSOByName.Add(itemBaseData.name, itemBaseData);
+            Debug.Log("Loaded " + itemBaseData.name + " from class " + itemBaseData.item_class);   
+            allItemsSOByName.TryAdd(itemBaseData.name, itemBaseData);
         }
     }
 }

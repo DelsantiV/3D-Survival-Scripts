@@ -17,7 +17,7 @@ namespace GoTF.Content
         public string icon_path;
         public string prefab_path;
         public string item_info;
-        public string item_class;
+        public string item_class_name;
         public float weight;
         public float bulk;
 
@@ -25,17 +25,31 @@ namespace GoTF.Content
 
         public Sprite iconInInventory;
         public GameObject itemPrefab;
+        public Type item_class;
 
 
         public void Initialize()
         {
             LoadIcon();
             LoadPrefab();
+            GetClass();
         }
 
         public override string ToString()
         {
-            return name + " (" + item_class + ")";
+            return name + " (" + item_class_name + ")";
+        }
+
+        public void GetClass()
+        {
+            if (ItemLoader.allItemTypes.TryGetValue(item_class_name, out item_class))
+            {
+
+            }
+            else
+            {
+                Debug.Log("Failed finding class " + item_class + " for item " + name);
+            }
         }
 
         public void LoadIcon()

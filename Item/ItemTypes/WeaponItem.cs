@@ -7,7 +7,18 @@ namespace GoTF.Content
 {
     public class WeaponItem : GeneralItem
     {
-        public WeaponItem(Item_General_SO itemSO) : base(itemSO)
+        public WeaponItem()
+        {
+
+        }
+
+        public override void Initialize(Item_General_SO itemSO)
+        {
+            base.Initialize(itemSO);
+
+        }
+
+        public override void UseItem(PlayerManager player, ItemPileInInventory itemPileInInventory)
         {
 
         }
