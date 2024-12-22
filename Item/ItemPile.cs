@@ -410,7 +410,8 @@ namespace GoTF.Content
         }
 
         public override string ToString()
-        {
+        { 
+            if (this == null) { return "Null Pile"; }
             if (NumberOfItemsInPile == 0) { return "Empty Pile"; }
             string pileName = "";
             foreach (Item_General_SO itemSO in ItemsSOInPile) { pileName = pileName + ", " + itemSO.name; }
