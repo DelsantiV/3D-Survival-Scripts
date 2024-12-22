@@ -215,8 +215,11 @@ namespace GoTF.Content
             // Get pile in left hand and pile in right hand. Merge them and affect them to "both" hands
             ItemPilesUtilities.TryMergePiles(ItemPileInHand(prefHand), ItemPileInHand(otherHand), out ItemPile bothHandPile, maxWeight: playerStatus.maxCarriyngWeightBothHands, maxBulk: playerStatus.maxCarriyngBulkBothHands);
             MakeBothHandsEmpty();
-            TryAddItemPileToHand(bothHandPile, Hand.both);
-            Debug.Log(bothHandPile.ToString());
+            if (bothHandPile != null)
+            {
+                TryAddItemPileToHand(bothHandPile, Hand.both);
+                Debug.Log(bothHandPile.ToString());
+            }
         }
 
         private bool TrySplitHands()
