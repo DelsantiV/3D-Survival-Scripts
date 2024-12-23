@@ -3,12 +3,13 @@ using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GoTF.Content.ItemProperties;
 
 namespace GoTF.Content
 {
     public class FoodItem : GeneralItem
     {
-        public ItemProperties.NutritionProperties nutritionProperties;
+        public NutritionProperties NutritionProperties {get; private set;}
 
         public FoodItem()
         {
@@ -22,7 +23,7 @@ namespace GoTF.Content
             if (jsonParsedFile != null) {
                 if (jsonParsedFile["nutrition_properties"] != null)
                 {
-                    nutritionProperties = JsonConvert.DeserializeObject<ItemProperties.NutritionProperties>(jsonParsedFile["nutrition_properties"].ToString());
+                    NutritionProperties = JsonConvert.DeserializeObject<NutritionProperties>(jsonParsedFile["nutrition_properties"].ToString());
                 }
             }
         }
