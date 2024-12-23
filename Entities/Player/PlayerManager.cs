@@ -29,6 +29,7 @@ namespace GoTF.Content
         [SerializeField] private GameObject leftHand;
         [SerializeField] private GameObject bothHand;
         public HandsManager.Hand prefHand = HandsManager.Hand.right;
+        public HandsManager.Hand otherHand;
         public HandsManager.HandMode CurrentHandMode
         {
             get
@@ -76,6 +77,7 @@ namespace GoTF.Content
         public UnityEvent PlayerReady = new();
 
         [HideInInspector] public bool isInteracting;
+        [HideInInspector] public bool isReadyForAction;
 
         #endregion
 
@@ -87,6 +89,7 @@ namespace GoTF.Content
             DigestiveSystem = new DigestiveSystem(PlayerStatus);
             PlayerInputConfig = new();
             HandsManager = new HandsManager(leftHand, rightHand, prefHand:prefHand, bothHand:bothHand);
+            otherHand = HandsManager.OtherHand;
             playerLayer = LayerMask.GetMask("Player");
             playerHead = transform.Find("PlayerHead");
             InputManager = GetComponent<UpgradedThirdPersonInput>();
@@ -100,8 +103,8 @@ namespace GoTF.Content
         void Start()
         {
             InputManager.cameraLocked = false;
-            InputManager.canAction = true;
             InputManager.canMove = true;
+            isReadyForAction = true;
         }
 
         public void SetCanvasManager(CanvasManager canvasManager)
@@ -131,12 +134,6 @@ namespace GoTF.Content
             {
                 SetWalkByDefault(true);
             }
-        }
-
-        public bool hasSomeUIOpen()
-        {
-            //return (inventoryUI.IsOpen() || craftingUI.IsOpen());
-            return false;
         }
 
         private void HandleInteractions()
@@ -177,14 +174,6 @@ namespace GoTF.Content
             if (Input.GetKeyDown(KeyCode.M))
             {
                 PlayerInputConfig.SaveToJson();
-            }
-
-            InputManager.cameraLocked = hasSomeUIOpen();
-            InputManager.canAction = !hasSomeUIOpen();
-            InputManager.canMove = !hasSomeUIOpen();
-            if (hasSomeUIOpen())
-            {
-                InputManager.TryStopAllActions();
             }
         }
 
@@ -270,6 +259,11 @@ namespace GoTF.Content
             if (HandsManager.CurrentHandMode == HandsManager.HandMode.single) { return TrySetHandMode(HandsManager.HandMode.both); }
             else if (HandsManager.CurrentHandMode == HandsManager.HandMode.both) { return TrySetHandMode(HandsManager.HandMode.single); }
             return false;
+        }
+
+        public void SetItemAnimationID(int ID)
+        {
+            PlayerController.SetItemActionID(ID);
         }
 
         public void SaveToJson()
