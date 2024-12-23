@@ -62,6 +62,7 @@ namespace GoTF.Content
         internal Rigidbody _rigidbody;                                                      // access the Rigidbody component
         internal PhysicsMaterial frictionPhysics, maxFrictionPhysics, slippyPhysics;         // create PhysicMaterial for the Rigidbody
         internal CapsuleCollider _capsuleCollider;                                          // access CapsuleCollider information
+        internal PlayerManager playerManager;
 
         #endregion
 
@@ -84,8 +85,10 @@ namespace GoTF.Content
         internal bool isSprinting { get; set; }
         internal bool isOtherHandAction { get; set; }
         internal bool isPrefHandAction { get; set; }
+        internal bool isAnyHandAction { get { return isOtherHandAction ||  isPrefHandAction; } }
         internal bool isHoldingBoth { get; set; }
         public bool stopMove { get; protected set; }
+        internal int currentItemActionID { get; set; }
 
         internal float inputMagnitude;                      // sets the inputMagnitude to update the animations in the animator controller
         internal float verticalSpeed;                       // set the verticalSpeed based on the verticalInput
@@ -105,17 +108,26 @@ namespace GoTF.Content
         internal Vector3 colliderCenter;                    // storage the center of the capsule collider info                
         internal Vector3 inputSmooth;                       // generate smooth input based on the inputSmooth value       
         internal Vector3 moveDirection;                     // used to know the direction you're moving 
-        internal int holdingLayerIndex;                     // the index of the holding animation layer
-        internal TerrainGrid terrainGrid;                   
+        internal int bothHandsOverrideLayerIndex;           // the index of the both hands override animation layer
+        internal int prefHandOverrideLayerIndex;            // the index of the pref hand override animation layer
+        internal int otherHandOverrideLayerIndex;           // the index of the other hand override animation layer
+        internal int upperBodyOverrideLayerIndex;           // the index of the upper body override animation layer
+        internal TerrainGrid terrainGrid;                   // the terrain grid in the world                  
         [HideInInspector] public GridCell currentGridCell { get; protected set; } //used to now the current position in the terrain grid
 
         #endregion
 
         public void Init()
         {
+            playerManager = GetComponent<PlayerManager>();
+
             animator = GetComponent<Animator>();
             animator.updateMode = AnimatorUpdateMode.Fixed;
-            holdingLayerIndex = animator.GetLayerIndex("Holding");
+            bothHandsOverrideLayerIndex = GetHandLayer(HandsManager.Hand.both);
+            prefHandOverrideLayerIndex = GetHandLayer(playerManager.prefHand);
+            otherHandOverrideLayerIndex = GetHandLayer(playerManager.otherHand);
+            upperBodyOverrideLayerIndex = animator.GetLayerIndex("UpperBodyOverride");
+            currentItemActionID = 0;
 
             // slides the character through walls and edges
             frictionPhysics = new PhysicsMaterial();
@@ -155,6 +167,16 @@ namespace GoTF.Content
             terrainGrid = Terrain.activeTerrain.GetComponent<TerrainGrid>();
             Debug.Log(terrainGrid);
             currentGridCell = terrainGrid.GetGridCell(transform.position);
+        }
+
+        public virtual int GetHandLayer(HandsManager.Hand hand)
+        {
+            switch (hand) {
+                case HandsManager.Hand.left: return animator.GetLayerIndex("LeftHandOverride");
+                case HandsManager.Hand.right: return animator.GetLayerIndex("RightHandOverride");
+                case HandsManager.Hand.both: return animator.GetLayerIndex("BothHandsOverride");
+            }
+            return -1;
         }
 
         public virtual void UpdateMotor()

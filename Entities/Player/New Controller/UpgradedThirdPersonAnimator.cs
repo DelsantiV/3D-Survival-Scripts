@@ -33,7 +33,6 @@ namespace GoTF.Content
             }
 
             animator.SetFloat(UpgradedAnimatorParameters.InputMagnitude, stopMove ? 0f : inputMagnitude, isStrafing ? strafeSpeed.animationSmooth : freeSpeed.animationSmooth, Time.deltaTime);
-            animator.SetLayerWeight(1, isHoldingBoth ? 1f : 0f);
         }
 
         public virtual void SetAnimatorMoveSpeed(vMovementSpeed speed)
@@ -49,6 +48,17 @@ namespace GoTF.Content
             else
                 inputMagnitude = Mathf.Clamp(isSprinting ? newInput.magnitude + 0.5f : newInput.magnitude, 0, isSprinting ? sprintSpeed : runningSpeed);
         }
+
+        public virtual void UpdateAnimatorActions()
+        {
+            animator.SetInteger(UpgradedAnimatorParameters.ItemActionID, currentItemActionID);
+            animator.SetBool(UpgradedAnimatorParameters.IsAction, isAnyHandAction);
+            animator.SetBool(UpgradedAnimatorParameters.IsActionLeft, isOtherHandAction);
+            animator.SetBool(UpgradedAnimatorParameters.IsActionRight, isPrefHandAction);
+            animator.SetBool(UpgradedAnimatorParameters.IsHoldingBoth, isHoldingBoth);
+
+            animator.SetLayerWeight(upperBodyOverrideLayerIndex, (isAnyHandAction || isHoldingBoth) ? 1f : 0f);
+        }
     }
 
     public static partial class UpgradedAnimatorParameters
@@ -60,7 +70,10 @@ namespace GoTF.Content
         public static int IsStrafing = Animator.StringToHash("IsStrafing");
         public static int IsSprinting = Animator.StringToHash("IsSprinting");
         public static int GroundDistance = Animator.StringToHash("GroundDistance");
-        public static int InputActionStart = Animator.StringToHash("Action");
-        public static int InputActionStop = Animator.StringToHash("ActionStop");
+        public static int IsHoldingBoth = Animator.StringToHash("isHoldingBoth");
+        public static int IsActionLeft = Animator.StringToHash("isActionLeft");
+        public static int IsActionRight = Animator.StringToHash("isActionRight");
+        public static int IsAction = Animator.StringToHash("isAction");
+        public static int ItemActionID = Animator.StringToHash("ItemActionID");
     }
 }

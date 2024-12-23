@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using GoTF.Config;
+using UnityEngine.Events;
 
 namespace GoTF.Content
 {
@@ -22,7 +23,14 @@ namespace GoTF.Content
         [HideInInspector] public Camera cameraMain;
         [HideInInspector] public bool cameraLocked = false;
         [HideInInspector] public bool canMove;
-        [HideInInspector] public bool canAction;
+        [HideInInspector]
+        public bool CanAction
+        {
+            get 
+            {
+                return player.isReadyForAction && cc.isGrounded && !cc.isSprinting && !cc.isHoldingBoth;
+            }
+        }
         private PlayerManager player;
         private PlayerInputConfig playerInputConfig;
 
@@ -60,7 +68,6 @@ namespace GoTF.Content
         protected virtual void InitilizeController()
         {
             cc = GetComponent<UpgradedThirdPersonController>();
-
             if (cc != null)
                 cc.Init();
         }
@@ -86,7 +93,7 @@ namespace GoTF.Content
             ActionInputs();      // Handles inputs related to action
         }
 
-        private KeyCode GetInputKey(Controls control)
+        protected KeyCode GetInputKey(Controls control)
         {
             return playerInputConfig.GetKeyCodeForControl(control);
         }
@@ -156,7 +163,7 @@ namespace GoTF.Content
         /// <returns></returns>
         protected virtual bool JumpConditions()
         {
-            return cc.isGrounded && cc.GroundAngle() < cc.slopeLimit && !cc.isJumping && !cc.stopMove && canAction;
+            return cc.isGrounded && cc.GroundAngle() < cc.slopeLimit && !cc.stopMove && player.isReadyForAction;
         }
 
         /// <summary>
@@ -167,10 +174,12 @@ namespace GoTF.Content
             if (Input.GetKeyDown(GetInputKey(Controls.Jump)) && JumpConditions())
                 cc.Jump();
         }
-
+        /// <summary>
+        /// Input to trigger resource forage
+        /// </summary>
         protected virtual void ForageResourcesInput()
         {
-            if (Input.GetKeyDown(GetInputKey(Controls.Collect)) && !cc.isJumping)
+            if (Input.GetKeyDown(GetInputKey(Controls.Collect)))
             {
                 cc.Forage();
             }
@@ -178,29 +187,36 @@ namespace GoTF.Content
 
         protected virtual void OtherHandInput() 
         { 
-            if (Input.GetKeyDown(GetInputKey(Controls.OtherHandAction)) && !cc.isJumping && cc.inputMagnitude < 0.01f && canAction)
+            if (Input.GetKey(GetInputKey(Controls.OtherHandAction)) && !cc.isAnyHandAction)
             {
-                cc.OtherHandActionStart();
+                cc.HandleHandAction(player.otherHand);
             }
+        }
 
-            if ((Input.GetKeyUp(GetInputKey(Controls.OtherHandAction)) || cc.inputMagnitude > 0.01f) && cc.isOtherHandAction && canAction)
+        protected virtual void CheckStopOtherHandAction()
+        {
+            if (cc.isOtherHandAction)
             {
-                cc.OtherHandActionStop();
+                if (!CanAction || Input.GetKeyUp(GetInputKey(Controls.OtherHandAction))) { cc.HandleHandAction(player.otherHand, false); }
             }
         }
 
         protected virtual void PrefHandInput()
         {
-            if (Input.GetKeyDown(GetInputKey(Controls.PrefHandAction)) && !cc.isJumping && cc.inputMagnitude < 0.01f && canAction)
+            if (Input.GetKey(GetInputKey(Controls.PrefHandAction)) && !cc.isAnyHandAction)
             {
-                cc.PrefHandActionStart();
-            }
-
-            if ((Input.GetKeyUp(GetInputKey(Controls.PrefHandAction)) || cc.inputMagnitude > 0.01f) && cc.isPrefHandAction && canAction)
-            {
-                cc.PrefHandActionStop();
+                cc.HandleHandAction(player.prefHand);
             }
         }
+
+        protected virtual void CheckStopPrefHandAction()
+        {
+            if (cc.isPrefHandAction)
+            {
+                if (!CanAction || Input.GetKeyUp(GetInputKey(Controls.PrefHandAction))) { cc.HandleHandAction(player.prefHand, false); }
+            }
+        }
+
 
         protected virtual void WalkModeInput()
         {
@@ -235,17 +251,22 @@ namespace GoTF.Content
         protected virtual void ActionInputs()
         {
             JumpInput();
-            ForageResourcesInput();
-            OtherHandInput();
-            PrefHandInput();
+            Debug.Log("CanAction :" + CanAction);
+            Debug.Log("IsAction : " + cc.isAnyHandAction);
+            if (CanAction)
+            {
+                OtherHandInput();
+                PrefHandInput();
+                ForageResourcesInput();
+            }
+            CheckStopPrefHandAction();
+            CheckStopOtherHandAction();
             ChangeHandModeInput();
         }
 
         public virtual void TryStopAllActions()
         {
-            if (cc.isPrefHandAction) { cc.PrefHandActionStop(); }
-            if (cc.isOtherHandAction) { cc.OtherHandActionStop(); }
-            cc.StopMoving();
+            cc.StopActionsAndMovement();
         }
         #endregion
     }

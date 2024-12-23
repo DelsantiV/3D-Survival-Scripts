@@ -114,6 +114,7 @@ namespace GoTF.Content
 
         public virtual void Jump()
         {
+            StopBothHandsAction();
             // trigger jump behaviour
             jumpCounter = jumpTimer;
             isJumping = true;
@@ -131,29 +132,27 @@ namespace GoTF.Content
             Debug.Log("Cleaning Grass !");
         }
 
-
-        public virtual void OtherHandActionStart()
+        public virtual void HandleHandAction(HandsManager.Hand hand, bool shouldDoAction = true)
         {
-            animator.SetTrigger("Action");
-            isOtherHandAction = true;
+            if (hand == playerManager.prefHand) 
+            { 
+                isPrefHandAction = shouldDoAction;
+            }
+
+            if (hand == playerManager.otherHand)
+            {
+                isOtherHandAction = shouldDoAction;
+            }
+
+            Debug.Log("Set Action to " + shouldDoAction + " for hand " + hand.ToString());
+
+            UpdateAnimatorActions();
         }
 
-
-        public virtual void OtherHandActionStop()
+        public virtual void StopBothHandsAction()
         {
-            animator.SetTrigger("ActionStop");
-            isOtherHandAction = false;
-        }
-
-        public virtual void PrefHandActionStart() 
-        {
-            animator.SetTrigger("Action");
-            isPrefHandAction = true;
-        }
-        public virtual void PrefHandActionStop()
-        {
-            animator.SetTrigger("ActionStop");
-            isPrefHandAction = false;
+            if (isPrefHandAction) { HandleHandAction(playerManager.prefHand, false); }
+            if (isOtherHandAction) { HandleHandAction(playerManager.otherHand, false); }
         }
 
         public virtual void StopMoving()
@@ -162,9 +161,22 @@ namespace GoTF.Content
             lockMovement = true;
         }
 
+        public virtual void StopActionsAndMovement()
+        {
+            StopBothHandsAction();
+            StopMoving();
+        }
+
         public virtual void SwitchHandMode()
         {
             isHoldingBoth = !isHoldingBoth;
+            UpdateAnimatorActions();
+        }
+
+        public virtual void SetItemActionID(int ID)
+        {
+            currentItemActionID = ID;
+            UpdateAnimatorActions();
         }
     }
 }
