@@ -33,7 +33,9 @@ namespace GoTF.Content
 
         public struct MeleeWeaponProperties
         {
-
+            public int damageTier;
+            public float damageAmount;
+            public string animator_path;
         }
 
         public struct ThrowableProperties
@@ -41,7 +43,7 @@ namespace GoTF.Content
 
         }
 
-        public struct DamageProporties
+        public struct DamageProperties
         {
             public int tier;
             public float amount;
