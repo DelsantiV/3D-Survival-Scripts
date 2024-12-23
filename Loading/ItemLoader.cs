@@ -40,7 +40,6 @@ namespace GoTF.GameLoading
         public IEnumerator LoadItems()
         {
             Task ItemClassesRegistering = new Task(RegisterItemClasses());
-            Debug.Log("OK");
             yield return ItemClassesRegistering;
 
             Debug.Log("Start retrieving items prefabs locations...");
