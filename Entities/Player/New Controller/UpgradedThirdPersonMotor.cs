@@ -88,6 +88,7 @@ namespace GoTF.Content
         internal bool isAnyHandAction { get { return isOtherHandAction ||  isPrefHandAction; } }
         internal bool isHoldingBoth { get; set; }
         public bool stopMove { get; protected set; }
+        internal bool canMove { get; set;}
         internal int currentItemActionID { get; set; }
 
         internal float inputMagnitude;                      // sets the inputMagnitude to update the animations in the animator controller
@@ -120,7 +121,6 @@ namespace GoTF.Content
         public void Init()
         {
             playerManager = GetComponent<PlayerManager>();
-
             animator = GetComponent<Animator>();
             animator.updateMode = AnimatorUpdateMode.Fixed;
             bothHandsOverrideLayerIndex = GetHandLayer(HandsManager.Hand.both);

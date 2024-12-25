@@ -178,5 +178,12 @@ namespace GoTF.Content
             currentItemActionID = ID;
             UpdateAnimatorActions();
         }
+
+        public override void Die()
+        {
+            base.Die();
+            StopActionsAndMovement();
+            lockMovement = true;
+        }
     }
 }

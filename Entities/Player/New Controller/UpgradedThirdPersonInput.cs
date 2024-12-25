@@ -31,6 +31,21 @@ namespace GoTF.Content
                 return player.isReadyForAction && cc.isGrounded && !cc.isSprinting && !cc.isHoldingBoth;
             }
         }
+
+        public bool CanActionPrefHand
+        {
+            get
+            {
+                return cc.isGrounded && !cc.isSprinting && !cc.isHoldingBoth;
+            }
+        }
+        public bool CanActionOtherHand
+        {
+            get
+            {
+                return cc.isGrounded && !cc.isSprinting && !cc.isHoldingBoth;
+            }
+        }
         private PlayerManager player;
         private PlayerInputConfig playerInputConfig;
 
