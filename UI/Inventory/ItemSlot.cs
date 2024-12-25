@@ -63,20 +63,23 @@ namespace GoTF.Content
             if (itemBeingDragGO != null)
             {
                 ItemPileInInventory itemBeingDrag = itemBeingDragGO.GetComponent<ItemPileInInventory>();
-                if (itemBeingDrag.slot != this)
+                if (itemBeingDrag.slot != null)
                 {
-                    if (IsEmpty) { itemBeingDrag.ChangeSlot(this); }
-                    else
+                    if (itemBeingDrag.slot != this)
                     {
-                        ItemSlot previousSlot = itemBeingDrag.slot;
-                        if (!TryAddPile(itemBeingDrag.ItemPile))
-                        {
-                            Debug.Log("Was not able to add pile to existing one");
-                        }
+                        if (IsEmpty) { itemBeingDrag.ChangeSlot(this); }
                         else
                         {
-                            Destroy(itemBeingDragGO);
-                            previousSlot.RemovePile(); // vérifier que ça marche
+                            ItemSlot previousSlot = itemBeingDrag.slot;
+                            if (!TryAddPile(itemBeingDrag.ItemPile))
+                            {
+                                Debug.Log("Was not able to add pile to existing one");
+                            }
+                            else
+                            {
+                                Destroy(itemBeingDragGO);
+                                previousSlot.RemovePile(); // vérifier que ça marche
+                            }
                         }
                     }
                 }
