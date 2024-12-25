@@ -51,13 +51,24 @@ namespace GoTF.Content
 
         public virtual void UpdateAnimatorActions()
         {
-            animator.SetInteger(UpgradedAnimatorParameters.ItemActionID, currentItemActionID);
+            UpdateHandsAnimationID();
             animator.SetBool(UpgradedAnimatorParameters.IsAction, isAnyHandAction);
             animator.SetBool(UpgradedAnimatorParameters.IsActionLeft, isOtherHandAction);
             animator.SetBool(UpgradedAnimatorParameters.IsActionRight, isPrefHandAction);
             animator.SetBool(UpgradedAnimatorParameters.IsHoldingBoth, isHoldingBoth);
 
             animator.SetLayerWeight(upperBodyOverrideLayerIndex, (isAnyHandAction || isHoldingBoth) ? 1f : 0f);
+        }
+
+        public virtual void UpdateHandsAnimationID()
+        {
+            Debug.Log("Animation ID : " + playerManager.GetItemAnimationID(HandsManager.Hand.right));
+            animator.SetInteger(UpgradedAnimatorParameters.ItemActionID, playerManager.GetItemAnimationID(HandsManager.Hand.right));
+        }
+
+        public virtual void Die()
+        {
+            animator.SetTrigger(UpgradedAnimatorParameters.DeathTrigger);
         }
     }
 
@@ -75,5 +86,6 @@ namespace GoTF.Content
         public static int IsActionRight = Animator.StringToHash("isActionRight");
         public static int IsAction = Animator.StringToHash("isAction");
         public static int ItemActionID = Animator.StringToHash("ItemActionID");
+        public static int DeathTrigger = Animator.StringToHash("Death");
     }
 }

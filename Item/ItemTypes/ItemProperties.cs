@@ -35,7 +35,7 @@ namespace GoTF.Content
         {
             public int damageTier;
             public float damageAmount;
-            public string animator_path;
+            public int animationID;
         }
 
         public struct ThrowableProperties

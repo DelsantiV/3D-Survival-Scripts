@@ -25,6 +25,8 @@ namespace GoTF.Content
         /// </summary>
         public float Bulk { get { return ItemSO.bulk; } }
 
+        public int animationID;
+
         public GeneralItem()
         {
 

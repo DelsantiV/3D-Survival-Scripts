@@ -118,7 +118,7 @@ namespace GoTF.Content
         public void OnPlayerReady()
         {
             //Test starting inventory :
-            ItemPile pile = new ItemPile(new List<string>() { "stone", "knapped_stone", "stone" });
+            ItemPile pile = new ItemPile(new List<string>() { "axe_stone" });
             HandsInventory.TryAddItemPileToNextHand(pile);
             Debug.Log("Player Ready !");
         }
@@ -200,9 +200,9 @@ namespace GoTF.Content
         {
             pile.SpawnInWorld(itemDropper.position);
         }
-        //public GeneralInventoryUI GetInventoryUI() { return inventoryUI; }
         public void Die()
         {
+            PlayerController.Die();
             Debug.Log("You died !");
         }
 
@@ -261,9 +261,9 @@ namespace GoTF.Content
             return false;
         }
 
-        public void SetItemAnimationID(int ID)
+        public int GetItemAnimationID(HandsManager.Hand hand)
         {
-            PlayerController.SetItemActionID(ID);
+            return HandsManager.AnimationID(hand);
         }
 
         public void SaveToJson()

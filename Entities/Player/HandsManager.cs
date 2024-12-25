@@ -93,6 +93,13 @@ namespace GoTF.Content
             return HandTransform(hand).gameObject.GetComponentInChildren<EquippedItem>();
         }
 
+        public int AnimationID(Hand hand)
+        {
+            EquippedItem itemInHand = EquippedItemPileInHand(hand);
+            if (itemInHand != null) return EquippedItemPileInHand(hand).AnimationID;
+            else return 0;
+        }
+
         public ItemPileInWorld EquippedPileInHand(Hand hand)
         {
             return HandTransform(hand).gameObject.GetComponentInChildren<ItemPileInWorld>();

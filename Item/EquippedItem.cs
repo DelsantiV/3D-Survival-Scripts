@@ -6,12 +6,31 @@ namespace GoTF.Content
 {
     public class EquippedItem : MonoBehaviour
     {
-        public ItemPile ItemPile { get; private set; }
-        public ItemPileInWorld itemsInWorld { get; private set; }
+        public ItemPileInWorld ItemsInWorld
+        {
+            get
+            {
+                return GetComponent<ItemPileInWorld>();
+            }
+        }
+        public ItemPile ItemPile
+        {
+            get
+            {
+                return ItemsInWorld.ItemPile;
+            }
+        }
+        public int AnimationID
+        {
+            get 
+            {
+                if (ItemPile == null) return 0;
+                else return ItemPile.AnimationID; 
+            }
+        }
 
         private void Awake()
         {
-            itemsInWorld = GetComponent<ItemPileInWorld>();
         }
         public void Remove()
         {
@@ -21,7 +40,7 @@ namespace GoTF.Content
         public void Drop()
         {
             transform.parent = null;
-            itemsInWorld.AddRigidBodyToItems();
+            ItemsInWorld.AddRigidBodyToItems();
         }
 
         public void ChangeParent(Transform transform, bool worldPositionStays = false)

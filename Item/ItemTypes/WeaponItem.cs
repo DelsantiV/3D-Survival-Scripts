@@ -27,10 +27,7 @@ namespace GoTF.Content
                 if (jsonParsedFile["weapon_properties"] != null)
                 {
                     WeaponProperties = JsonConvert.DeserializeObject<MeleeWeaponProperties>(jsonParsedFile["weapon_properties"].ToString());
-                    if (WeaponProperties.animator_path != null) 
-                    {
-                        //Load AnimatorOverrideController from Addressables (should find a way to wait for it to finish befire launching game ?)
-                    }
+                    animationID = WeaponProperties.animationID;
                 }
             }
         }

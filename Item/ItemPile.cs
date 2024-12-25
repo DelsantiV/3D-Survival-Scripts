@@ -42,7 +42,9 @@ namespace GoTF.Content
                 else return ItemsInPile.Count;
             }
         }
-
+        /// <summary>
+        /// Wether the pile is empty (contains 0 item) or not
+        /// </summary>
         public bool IsEmpty
         {
             get { return  ItemsInPile.Count == 0;}
@@ -130,6 +132,15 @@ namespace GoTF.Content
         }
 
         public UnityEvent OnPileChanged = new UnityEvent();
+
+        public int AnimationID
+        {
+            get
+            {
+                if (IsPileUniqueItem) { return FirstItemInPile.animationID; }
+                else return 0;
+            }
+        }
 
         public ItemPile()
         {
