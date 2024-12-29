@@ -206,9 +206,9 @@ namespace GoTF.Content
             Debug.Log("You died !");
         }
 
-        public void TakeDamage(float damageAmount, DamageSource damageSource)
+        public void TakeDamage(ItemProperties.DamageProperties damageProperties)
         {
-            PlayerStatus.currentHealth -= damageAmount;
+            PlayerStatus.currentHealth -= damageProperties.amount;
             if (PlayerStatus.currentHealth < 0) { Die(); };
 
         }

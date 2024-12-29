@@ -4,25 +4,24 @@ using UnityEngine;
 
 namespace GoTF.Content
 {
-    public class BasicResource : MonoBehaviour, IDamageable
+    public abstract class BasicResource : MonoBehaviour, IDamageable
     {
-        [SerializeField] private float maxLife;
-        private float currentLife;
+        [SerializeField] internal float maxLife;
+        internal float currentLife;
 
-        // Update is called once per frame
-        public void TakeDamage(float damage, DamageSource damageSource)
+        public virtual void TakeDamage(ItemProperties.DamageProperties damageProperties)
         {
-            Debug.Log(gameObject.name + " was hit !");
-            currentLife -= damage;
-            if (currentLife < 0)
+            if (CheckToolTierAndType(damageProperties))
             {
-                DestroyResource();
+                Debug.Log(gameObject.name + " was hit !");
+                currentLife -= damageProperties.amount;
+                if (currentLife < 0)
+                {
+                    DestroyResource();
+                }
             }
         }
-
-        public void DestroyResource()
-        {
-
-        }
+        protected abstract bool CheckToolTierAndType(ItemProperties.DamageProperties damageProperties); //Should depend on the item used
+        public abstract void DestroyResource();
     }
 }

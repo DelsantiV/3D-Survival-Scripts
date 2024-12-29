@@ -1,12 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
+using static GoTF.Content.ItemProperties;
 using UnityEngine;
 
 namespace GoTF.Content
 {
     public interface IDamageable
     {
-        public void TakeDamage(float damageAmount, DamageSource damageSource);
+        public void TakeDamage(DamageProperties damageProperties);
     }
 
     public enum DamageSource

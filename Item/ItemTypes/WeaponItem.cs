@@ -10,6 +10,7 @@ namespace GoTF.Content
     public class WeaponItem : GeneralItem
     {
         public MeleeWeaponProperties WeaponProperties {get; private set;}
+        private DamageProperties damageProperties;
         public AnimatorOverrideController AnimatorOverrideController {get; private set;}
         public WeaponItem()
         {
@@ -28,6 +29,9 @@ namespace GoTF.Content
                     WeaponProperties = JsonConvert.DeserializeObject<MeleeWeaponProperties>(jsonParsedFile["weapon_properties"].ToString());
                     animationID = WeaponProperties.animationID;
                 }
+                damageProperties.amount = WeaponProperties.damageAmount;
+                damageProperties.tier = WeaponProperties.damageTier;
+                damageProperties.source = DamageSource.PlayerHit;
             }
         }
 
@@ -47,7 +51,7 @@ namespace GoTF.Content
         {
             if (other.TryGetComponent(out IDamageable target))
             {
-                target.TakeDamage(WeaponProperties.damageAmount, DamageSource.PlayerHit);
+                target.TakeDamage(damageProperties);
             }
         }
     }
