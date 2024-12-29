@@ -22,7 +22,12 @@ namespace GoTF.Content
         {
             get { return ItemPile.Bulk; }
         }
-
+        /// <summary>
+        /// Spawns the item pile at the given position.
+        /// </summary>
+        /// <param name="itemPile" The ItemPile to spawn></param>
+        /// <param name="spawnPosition" The spawning position in world></param>
+        /// <param name="isRigidBody" Should the items have a RigidBody></param>
         public void SpawnItemPile(ItemPile itemPile, Vector3 spawnPosition, bool isRigidBody = true)
         {
             this.ItemPile = itemPile;
@@ -39,12 +44,42 @@ namespace GoTF.Content
             }
         }
 
+        /// <summary>
+        /// Spawns the item pile as a child of the target Transform
+        /// </summary>
+        /// <param name="itemPile" The ItemPile to spawn></param>
+        /// <param name="targetTransform" The target Transform></param>
+        /// <param name="isRigidBody" Should the items have a RigidBody></param>
         public void SpawnItemPile(ItemPile itemPile, Transform targetTransform, bool isRigidBody = true)
         {
             this.ItemPile = itemPile;
             this.isRigidBody = isRigidBody;
             transform.SetParent(targetTransform);
             transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            if (itemPile != null)
+            {
+                foreach (GeneralItem item in ItemPile.ItemsInPile)
+                {
+                    SpawnIndividualItem(item, isRigidBody, out float previousItemHeight, pileHeight);
+                    pileHeight += previousItemHeight;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Spawns the item pile as a child of the target Transform, with given LOCAL position and rotation (relative to the target transform)
+        /// </summary>
+        /// <param name="itemPile" The ItemPile to spawn></param>
+        /// <param name="targetTransform" The target Transform></param>
+        /// <param name="spawnPosition" The local position relative to the target Transform></param>
+        /// <param name="spawnRotation" The local rotation relative to the target Transform></param>
+        /// <param name="isRigidBody" Should the items have a RigidBody></param>
+        public void SpawnItemPile(ItemPile itemPile, Transform targetTransform, Vector3 spawnPosition, Quaternion spawnRotation, bool isRigidBody = true)
+        {
+            this.ItemPile = itemPile;
+            this.isRigidBody = isRigidBody;
+            transform.SetParent(targetTransform);
+            transform.SetLocalPositionAndRotation(spawnPosition, spawnRotation);
             if (itemPile != null)
             {
                 foreach (GeneralItem item in ItemPile.ItemsInPile)
@@ -105,11 +140,13 @@ namespace GoTF.Content
                 if (applyHeight) { pileHeight += previousItemHeight; }
             }
         }
-
+        /// <summary>
+        /// Remove an item prefab from the visible pile
+        /// </summary>
+        /// <param name="item"></param>
         public void RemoveItem(GeneralItem item)
         {
-            ItemInWorld itemToRemove;
-            if (!itemsPrefabs.TryGetValue(item, out itemToRemove))
+            if (!itemsPrefabs.TryGetValue(item, out ItemInWorld itemToRemove))
             {
                 Debug.Log("Removing " + item.ItemName + " from pile " + ItemPile.ToString() + " failed: no such item found");
                 return;
