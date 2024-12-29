@@ -201,12 +201,6 @@ namespace GoTF.Content
             ClosePileInfo();
         }
 
-        private void UsePile()
-        {
-            if (ItemPile.IsPileUniqueItem) { ItemPile.FirstItemInPile.UseItem(player, this); }
-            else { }
-        }
-
         public void EquipPileInNextEmptyHand()
         {
             ItemSlot previousSlot = slot;
