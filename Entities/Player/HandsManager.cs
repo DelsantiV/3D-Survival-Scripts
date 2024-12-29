@@ -100,6 +100,15 @@ namespace GoTF.Content
             else return 0;
         }
 
+        public void UseItemInHand(Hand hand)
+        {
+            EquippedItemPileInHand(hand).Use();
+        }
+        public void StopUseItemInHand(Hand hand)
+        {
+            EquippedItemPileInHand(hand).StopUse();
+        }
+
         public ItemPileInWorld EquippedPileInHand(Hand hand)
         {
             return HandTransform(hand).gameObject.GetComponentInChildren<ItemPileInWorld>();

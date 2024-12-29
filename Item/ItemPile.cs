@@ -51,7 +51,7 @@ namespace GoTF.Content
         }
 
         ///<summary>
-        ///
+        /// The number of different types of items in pile
         /// </summary>
         public int NumberOfDifferentItemsInPile
         {
@@ -75,7 +75,7 @@ namespace GoTF.Content
         /// <summary>
         /// Returns the first item of the pile
         /// </summary>
-        public GeneralItem FirstItemInPile
+        public GeneralItem GetFirstItemInPile
         {
             get
             {
@@ -83,7 +83,11 @@ namespace GoTF.Content
                 return ItemsInPile[0];
             }
         }
-
+        /// <summary>
+        /// Returns the item of the pile having this index
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public GeneralItem GetItemInPile(int index)
         {
             if (ItemsInPile == null) { return null; }
@@ -117,6 +121,9 @@ namespace GoTF.Content
             }
         }
 
+        /// <summary>
+        /// The ItemPileInWorld representing this pile in the world
+        /// </summary>
         public ItemPileInWorld ItemPileInWorld { get; private set; }
 
         public bool IsInWorld
@@ -133,11 +140,14 @@ namespace GoTF.Content
 
         public UnityEvent OnPileChanged = new UnityEvent();
 
+        /// <summary>
+        /// The animation ID when using this pile. For now, only useful when pile is only one item with different animation
+        /// </summary>
         public int AnimationID
         {
             get
             {
-                if (IsPileUniqueItem) { return FirstItemInPile.animationID; }
+                if (IsPileUniqueItem) { return GetFirstItemInPile.animationID; }
                 else return 0;
             }
         }
@@ -353,24 +363,47 @@ namespace GoTF.Content
             return itemPilePart;
         }
 
+        /// <summary>
+        /// Returns true if the pile contains this item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public bool IsItemInPile(GeneralItem item)
         {
             return ItemsInPile.Contains(item);
         }
+        /// <summary>
+        /// Returns true if the pile contains an item with this type
+        /// </summary>
+        /// <param name="itemSO"></param>
+        /// <returns></returns>
         public bool IsCorrespondingItemInPile(Item_General_SO itemSO)
         {
             return ItemsSOInPile.Contains(itemSO);
         }
-
+        /// <summary>
+        /// Returns all items contained in the pile with this type
+        /// </summary>
+        /// <param name="itemSO"></param>
+        /// <returns></returns>
         public List<GeneralItem> GetAllCorrespondingItems(Item_General_SO itemSO)
         {
             return ItemsInPile.FindAll(item => item.ItemSO == itemSO);
         }
+        /// <summary>
+        /// Returns the first item contained in the pile from this type
+        /// </summary>
+        /// <param name="itemSO"></param>
+        /// <returns></returns>
         public GeneralItem GetFirstCorrespondingItem(Item_General_SO itemSO)
         {
             return ItemsInPile.Find(item => item.ItemSO == itemSO);
         }
 
+        /// <summary>
+        /// Removes this item from the pile
+        /// </summary>
+        /// <param name="item"></param>
         public void RemoveItemFromPile(GeneralItem item)
         {
             if (IsItemInPile(item)) { ItemsInPile.Remove(item); };
@@ -387,6 +420,11 @@ namespace GoTF.Content
             foreach (GeneralItem item in GetAllCorrespondingItems(itemSO)) { RemoveItemFromPile(item); }
         }
 
+        /// <summary>
+        /// Spawns the pile at the given position in world
+        /// </summary>
+        /// <param name="spawnPosition"></param>
+        /// <returns></returns>
         public ItemPileInWorld SpawnInWorld(Vector3 spawnPosition)
         {
             Debug.Log("Spawning item pile : " + ToString());
@@ -394,6 +432,11 @@ namespace GoTF.Content
             ItemPileInWorld.SpawnItemPile(this, spawnPosition);
             return ItemPileInWorld;
         }
+        /// <summary>
+        /// Spawns the pile as a child of the given target Transform
+        /// </summary>
+        /// <param name="targetTransform"></param>
+        /// <returns></returns>
         public ItemPileInWorld SpawnInWorld(Transform targetTransform)
         {
             Debug.Log("Spawning item pile : " + ToString());
@@ -401,7 +444,25 @@ namespace GoTF.Content
             ItemPileInWorld.SpawnItemPile(this, targetTransform);
             return ItemPileInWorld;
         }
-
+        /// <summary>
+        /// Spawns the pile as a child of the given target Transform and at given LOCAL position and rotation (relative to the target Transform) 
+        /// </summary>
+        /// <param name="targetTransform"></param>
+        /// <param name="spawnPosition"></param>
+        /// <param name="spawnRotation"></param>
+        /// <returns></returns>
+        public ItemPileInWorld SpawnInWorld(Transform targetTransform, Vector3 spawnPosition, Quaternion spawnRotation)
+        {
+            Debug.Log("Spawning item pile : " + ToString());
+            ItemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
+            ItemPileInWorld.SpawnItemPile(this, targetTransform, spawnPosition, spawnRotation);
+            return ItemPileInWorld;
+        }
+        /// <summary>
+        /// Spawns the pile as a child of the given hand Transform, and without adding Rigidbodies to the items of the pile 
+        /// </summary>
+        /// <param name="hand"></param>
+        /// <returns></returns>
         public ItemPileInWorld SpawnInHands(Transform hand)
         {
             Debug.Log("Spawning item pile : " + ToString());
@@ -414,10 +475,31 @@ namespace GoTF.Content
         {
             if (IsInWorld) { ItemPileInWorld.DestroyItemPile(); }
         }
-
-        public void Action(PlayerManager player)
+        /// <summary>
+        /// If the pile is only one item, uses the item
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="item"></param>
+        public void Use(PlayerManager player, EquippedItem item)
         {
-
+            if (IsPileUniqueItem) { GetFirstItemInPile.UseItem(player, item); }
+        }
+        public void StopUse(PlayerManager player, EquippedItem item)
+        {
+            if (IsPileUniqueItem) { GetFirstItemInPile.StopUsingItem(player, item); }
+        }
+        /// <summary>
+        /// What happens when a collision is detected
+        /// </summary>
+        /// <param name="other"></param>
+        public void OnCollisionDetected(Collider other)
+        {
+            if (!IsInWorld) return;
+            if (!IsInInventory)
+            {
+                return;
+            }
+            if (IsPileUniqueItem) { GetFirstItemInPile.OnCollisionDetected(other); }
         }
 
         public override string ToString()
@@ -439,6 +521,12 @@ namespace GoTF.Content
             Both,
             None
         }
+        /// <summary>
+        /// Merges two piles in one retaining all items of the two merged piles. Given piles are not destroyed !
+        /// </summary>
+        /// <param name="itemPile1"></param>
+        /// <param name="itemPile2"></param>
+        /// <returns></returns>
         public static ItemPile MergePiles(ItemPile itemPile1, ItemPile itemPile2)
         {
             List<GeneralItem> newItemsInPile = new List<GeneralItem>(itemPile1.NumberOfItemsInPile + itemPile2.NumberOfItemsInPile);
@@ -447,7 +535,15 @@ namespace GoTF.Content
             return new ItemPile(newItemsInPile);
         }
 
-
+        /// <summary>
+        /// Tries to merge two piles given a maximum weight and a maximum bulk. Returns true if was able to merged
+        /// </summary>
+        /// <param name="itemPile1"></param>
+        /// <param name="itemPile2"></param>
+        /// <param name="resultPile" The pile resulting from the merging operation"," is null when merging failed></param>
+        /// <param name="maxWeight"></param>
+        /// <param name="maxBulk"></param>
+        /// <returns></returns>
         public static bool TryMergePiles(ItemPile itemPile1, ItemPile itemPile2, out ItemPile resultPile, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity)
         {
             resultPile = null;

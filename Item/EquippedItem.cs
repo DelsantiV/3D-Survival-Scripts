@@ -17,7 +17,7 @@ namespace GoTF.Content
         {
             get
             {
-                return ItemsInWorld.ItemPile;
+                return ItemsInWorld != null ? ItemsInWorld.ItemPile : null;
             }
         }
         public int AnimationID
@@ -28,9 +28,38 @@ namespace GoTF.Content
                 else return ItemPile.AnimationID; 
             }
         }
+        public new Collider collider;
+        private PlayerManager Player
+        {
+            get
+            {
+                return transform.root.GetComponent<PlayerManager>();
+            }
+        }
+        private Rigidbody Rigidbody;
+
+        private bool _shouldDetectCollision;
+
+        public bool ShouldDetectCollision
+        {
+            get
+            {
+                return _shouldDetectCollision;
+            }
+            set
+            {
+                _shouldDetectCollision = value;
+                Rigidbody.detectCollisions = value;
+            }
+        }
+
 
         private void Awake()
         {
+            _shouldDetectCollision = false;
+            Rigidbody = gameObject.AddComponent<Rigidbody>();
+            Rigidbody.useGravity = false;
+            Rigidbody.isKinematic = true;
         }
         public void Remove()
         {
@@ -56,7 +85,18 @@ namespace GoTF.Content
 
         public void Use()
         {
+            ItemPile.Use(Player, this);
+        }
+        public void StopUse()
+        {
+            ItemPile.StopUse(Player, this);
+        }
 
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (!_shouldDetectCollision) return;
+            ItemPile.OnCollisionDetected(other);
         }
     }
 }

@@ -28,13 +28,18 @@ namespace GoTF.Content
             }
         }
 
-        public override void UseItem(PlayerManager player, ItemPileInInventory pileUI)
+        public override void UseItem(PlayerManager player, EquippedItem item)
         {
             bool isEaten = player.TryEatFood(this);
             if (isEaten)
             {
-                pileUI.RemoveItemPileFromSlot();
+                item.ItemPile.RemoveItemFromPile(this);
             }
+        }
+
+        public override void StopUsingItem(PlayerManager player, EquippedItem item)
+        {
+
         }
     }
 }

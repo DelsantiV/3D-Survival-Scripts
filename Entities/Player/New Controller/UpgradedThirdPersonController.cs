@@ -143,6 +143,14 @@ namespace GoTF.Content
             {
                 isOtherHandAction = shouldDoAction;
             }
+            if (shouldDoAction)
+            {
+                playerManager.HandsManager.UseItemInHand(hand);
+            }
+            else
+            {
+                playerManager.HandsManager.StopUseItemInHand(hand);
+            }
 
             Debug.Log("Set Action to " + shouldDoAction + " for hand " + hand.ToString());
 

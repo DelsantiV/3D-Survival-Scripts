@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using static GoTF.Content.ItemProperties;
 
 namespace GoTF.Content
@@ -32,9 +31,24 @@ namespace GoTF.Content
             }
         }
 
-        public override void UseItem(PlayerManager player, ItemPileInInventory itemPileInInventory)
+        public override void UseItem(PlayerManager player, EquippedItem item)
         {
+            item.ShouldDetectCollision = true;
+            Debug.Log(ItemName + " is being used");
+        }
 
+        public override void StopUsingItem(PlayerManager player, EquippedItem item)
+        {
+            item.ShouldDetectCollision = false;
+            Debug.Log(ItemName + " stopped being used");
+        }
+
+        public override void OnCollisionDetected(Collider other)
+        {
+            if (other.TryGetComponent(out IDamageable target))
+            {
+                target.TakeDamage(WeaponProperties.damageAmount, DamageSource.PlayerHit);
+            }
         }
     }
 }
