@@ -37,13 +37,13 @@ namespace GoTF.Content
 
         public override void UseItem(PlayerManager player, EquippedItem item)
         {
-            item.ShouldDetectCollision = true;
+            //item.ShouldDetectCollision = true;
             Debug.Log(ItemName + " is being used");
         }
 
         public override void StopUsingItem(PlayerManager player, EquippedItem item)
         {
-            item.ShouldDetectCollision = false;
+            //item.ShouldDetectCollision = false;
             Debug.Log(ItemName + " stopped being used");
         }
 

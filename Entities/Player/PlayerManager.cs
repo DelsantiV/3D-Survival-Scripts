@@ -1,11 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
-using System;
-using Invector.vCharacterController;
-using UnityEditor.Animations;
 using UnityEngine.Events;
 using GoTF.GameLoading;
 using GoTF.Config;
@@ -36,6 +31,16 @@ namespace GoTF.Content
             {
                 if (HandsManager == null) { return HandsManager.HandMode.none; }
                 return HandsManager.CurrentHandMode;
+            }
+        }
+
+        public HandsManager.Hand ActionHand
+        {
+            get
+            {
+                if (PlayerController.isPrefHandAction) { return prefHand; }
+                if (PlayerController.isOtherHandAction) { return otherHand; }
+                return HandsManager.Hand.none;
             }
         }
         public HandsInventory HandsInventory { get; private set; }
@@ -138,9 +143,7 @@ namespace GoTF.Content
 
         private void HandleInteractions()
         {
-            RaycastHit hit;
-            //Debug.DrawRay(playerHead.position, - Camera.main.transform.position + playerHead.position, Color.red, 10);
-            if (Physics.Raycast(playerHead.position, playerHead.position - Camera.main.transform.position, out hit, 10, ~playerLayer))
+            if (Physics.Raycast(playerHead.position, playerHead.position - Camera.main.transform.position, out RaycastHit hit, 10, ~playerLayer))
             {
                 var selectionTransform = hit.transform;
 
@@ -274,6 +277,16 @@ namespace GoTF.Content
         public void LoadFromJson()
         {
 
+        }
+
+        public void StartAction()
+        {
+            HandsManager.StartAction(ActionHand);
+        }
+
+        public void EndAction()
+        {
+            HandsManager.EndAction(ActionHand);
         }
     }
 }

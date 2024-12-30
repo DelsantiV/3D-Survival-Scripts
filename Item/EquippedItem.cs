@@ -92,11 +92,23 @@ namespace GoTF.Content
             ItemPile.StopUse(Player, this);
         }
 
+        public void StartAction()
+        {
+            _shouldDetectCollision = true;
+        }
+
+        public void EndAction()
+        {
+            if (_shouldDetectCollision) _shouldDetectCollision = false;
+        }
 
         private void OnTriggerEnter(Collider other)
         {
             if (!_shouldDetectCollision) return;
             ItemPile.OnCollisionDetected(other);
+            _shouldDetectCollision = false;
         }
+
+        public void EventTest() { Debug.Log("Wouhou youpi it works"); }
     }
 }
