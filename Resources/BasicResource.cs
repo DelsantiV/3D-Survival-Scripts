@@ -9,6 +9,10 @@ namespace GoTF.Content
         [SerializeField] internal float maxLife;
         internal float currentLife;
 
+        public virtual void Awake()
+        {
+            currentLife = maxLife;
+        }
         public virtual void TakeDamage(ItemProperties.DamageProperties damageProperties)
         {
             if (CheckToolTierAndType(damageProperties))
