@@ -10,7 +10,7 @@ namespace GoTF.Content
         internal float currentLife;
         [SerializeField] internal AudioClip hitSound;
 
-        public virtual void Awake()
+        protected virtual void Awake()
         {
             currentLife = maxLife;
         }

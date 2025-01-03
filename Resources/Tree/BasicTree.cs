@@ -8,7 +8,7 @@ namespace GoTF.Content
         [SerializeField] protected int treeTier;
         public UnityEvent OnTreeDestroyed;
 
-        public override void Awake()
+        protected override void Awake()
         {
             base.Awake();
             OnTreeDestroyed = new();
