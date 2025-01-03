@@ -13,6 +13,16 @@ namespace GoTF.Content
 
         #endregion  
 
+        protected AnimatorStateInfo AnimatorStateInfo(int layerindex)
+        {
+            return animator.GetCurrentAnimatorStateInfo(layerindex);
+        }
+
+        protected virtual bool CanExitLayer(int layerindex)
+        {
+            return AnimatorStateInfo(layerindex).IsName("Empty");
+        }
+
         public virtual void UpdateAnimator()
         {
             if (animator == null || !animator.enabled) return;
@@ -33,6 +43,9 @@ namespace GoTF.Content
             }
 
             animator.SetFloat(UpgradedAnimatorParameters.InputMagnitude, stopMove ? 0f : inputMagnitude, isStrafing ? strafeSpeed.animationSmooth : freeSpeed.animationSmooth, Time.deltaTime);
+            if (inputMagnitude > 0.4f) StopBodyActions();
+
+            Debug.Log("Animator is in empty state : " + AnimatorStateInfo(upperBodyOverrideLayerIndex).IsName("Empty"));
         }
 
         public virtual void SetAnimatorMoveSpeed(vMovementSpeed speed)
@@ -57,7 +70,37 @@ namespace GoTF.Content
             animator.SetBool(UpgradedAnimatorParameters.IsActionRight, isPrefHandAction);
             animator.SetBool(UpgradedAnimatorParameters.IsHoldingBoth, isHoldingBoth);
 
-            animator.SetLayerWeight(upperBodyOverrideLayerIndex, (isAnyHandAction || isHoldingBoth) ? 1f : 0f);
+            float upperBodyLayerWeight = (isAnyHandAction || isHoldingBoth) ? 1f : 0f;
+            if (TrySetLayerWeight(upperBodyOverrideLayerIndex, upperBodyLayerWeight))
+            {
+
+            }
+        }
+
+        public virtual void StopBodyActions()
+        {
+            animator.SetLayerWeight(upperBodyOverrideLayerIndex, 0f);
+        }
+
+        protected virtual bool TrySetLayerWeight(int layerindex, float weight, bool forceInterrupt = false)
+        {
+            float currentWeight = animator.GetLayerWeight(layerindex);
+            if (currentWeight == weight) return true;
+
+            if (weight == 0 && !forceInterrupt)
+            {
+                if (!CanExitLayer(layerindex))
+                {
+                    return false;
+                }
+            } 
+
+            else
+            {
+                animator.SetLayerWeight(layerindex, weight);
+                return true;
+            }
+            return false;
         }
 
         public virtual void UpdateHandsAnimationID()
