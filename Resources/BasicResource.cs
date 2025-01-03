@@ -9,22 +9,16 @@ namespace GoTF.Content
         [SerializeField] internal float maxLife;
         internal float currentLife;
         [SerializeField] internal AudioClip hitSound;
-        protected AudioSource audioSource;
-        protected ParticleSystem hitParticles;
 
         public virtual void Awake()
         {
             currentLife = maxLife;
-            audioSource = gameObject.AddComponent<AudioSource>();
-            hitParticles = GetComponent<ParticleSystem>();
         }
         public virtual void TakeDamage(ItemProperties.DamageProperties damageProperties)
         {
             if (CheckToolTierAndType(damageProperties))
             {
                 Debug.Log(gameObject.name + " was hit !");
-                audioSource.PlayOneShot(hitSound);
-                hitParticles.Play();
                 currentLife -= damageProperties.amount;
                 if (currentLife < 0)
                 {
