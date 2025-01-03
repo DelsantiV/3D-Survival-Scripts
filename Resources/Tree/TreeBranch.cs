@@ -2,29 +2,43 @@ using UnityEngine;
 
 namespace GoTF.Content
 {
-    public class TreeBranch : MonoBehaviour
+    public class TreeBranch : BasicResource
     {
-        private float maxSpeedMagnitude = 2f;
+        private float maxSpeedMagnitude = 0.5f;
         private TreeDebris treeDebris;
+        private Collider boxCollider;
 
-        private void OnEnable()
+        protected override void Awake()
         {
-            treeDebris = transform.parent.GetComponent<TreeDebris>();
+            boxCollider = transform.Find("Collider").GetComponent<Collider>();
+            boxCollider.enabled = false;
         }
 
-        private void OnCollisionEnter(Collision collision)
-        {
-            if (collision.relativeVelocity.magnitude > maxSpeedMagnitude) 
-            {
-                BreakBranch();
-            }
-        }
-
-        private void BreakBranch()
+        public override void DestroyResource()
         {
             transform.parent = null;
             treeDebris.BreakBranch();
             Debug.Log("Branch broke !");
+        }
+
+        protected override bool CheckToolTierAndType(ItemProperties.DamageProperties damageProperties)
+        {
+            if (damageProperties.tier >= 1) { return true; }
+            return false;
+        } 
+        private void OnEnable()
+        {
+            treeDebris = transform.parent.GetComponent<TreeDebris>();
+            boxCollider.enabled = true;
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            Debug.Log("Branch Collided");
+            if (collision.relativeVelocity.magnitude > maxSpeedMagnitude) 
+            {
+                DestroyResource();
+            }
         }
     }
 }
