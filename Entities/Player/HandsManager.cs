@@ -67,6 +67,11 @@ namespace GoTF.Content
             }
         }
 
+        public bool IsHandActive(Hand hand)
+        {
+            return ActiveHands.Contains(hand);
+        }
+
         public GameObject HandGO(Hand hand)
         {
             switch (hand)
@@ -90,7 +95,9 @@ namespace GoTF.Content
 
         public EquippedItem EquippedItemPileInHand(Hand hand)
         {
-            return HandTransform(hand).gameObject.GetComponentInChildren<EquippedItem>();
+            Transform handTransform = HandTransform(hand);
+            if (handTransform != null && IsHandActive(hand)) return handTransform.gameObject.GetComponentInChildren<EquippedItem>();
+            else return null;
         }
 
         public int AnimationID(Hand hand)
