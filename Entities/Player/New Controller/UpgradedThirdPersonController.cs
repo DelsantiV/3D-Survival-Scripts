@@ -177,6 +177,7 @@ namespace GoTF.Content
 
         public virtual void SwitchHandMode()
         {
+            StopBothHandsAction();
             isHoldingBoth = !isHoldingBoth;
             UpdateAnimatorActions();
         }
