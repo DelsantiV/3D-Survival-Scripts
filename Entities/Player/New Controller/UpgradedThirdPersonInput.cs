@@ -248,7 +248,7 @@ namespace GoTF.Content
 
         protected virtual void ChangeHandModeInput()
         {
-            if (Input.GetKeyDown(GetInputKey(Controls.SwitchHandMode)))
+            if (Input.GetKeyDown(GetInputKey(Controls.SwitchHandMode)) && !cc.isAnyHandAction)
             {
                 if (player.TrySwitchHandMode()) { cc.SwitchHandMode(); }
             }
