@@ -8,6 +8,14 @@ namespace GoTF.Content
         private TreeDebris treeDebris;
         private Collider boxCollider;
 
+        private bool IsBroken
+        {
+            get
+            {
+                return transform.parent == null;
+            }
+        }
+
         protected override void Awake()
         {
             boxCollider = transform.Find("Collider").GetComponent<Collider>();
@@ -35,7 +43,7 @@ namespace GoTF.Content
         private void OnCollisionEnter(Collision collision)
         {
             Debug.Log("Branch Collided");
-            if (collision.relativeVelocity.magnitude > maxSpeedMagnitude) 
+            if (collision.relativeVelocity.magnitude > maxSpeedMagnitude && IsBroken) 
             {
                 DestroyResource();
             }

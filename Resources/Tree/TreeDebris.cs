@@ -8,6 +8,7 @@ namespace GoTF.Content
         [SerializeField] AudioClip fallingSound;
         [SerializeField] AudioClip breakBranchSound;
         [SerializeField] AudioClip hitGroundSound;
+        private bool hasHitGround = false;
         private void OnEnable()
         {
             Rigidbody rigidbody = GetComponent<Rigidbody>();
@@ -34,9 +35,10 @@ namespace GoTF.Content
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (LayerMask.LayerToName(collision.gameObject.layer) == "Ground")
+            if (LayerMask.LayerToName(collision.gameObject.layer) == "Ground" && !hasHitGround)
             {
                 audioSource.PlayOneShot(hitGroundSound);
+                hasHitGround = true;
             }
         }
     }
