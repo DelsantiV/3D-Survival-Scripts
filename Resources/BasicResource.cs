@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GoTF.Content.ItemProperties;
 
 namespace GoTF.Content
 {
@@ -10,6 +11,7 @@ namespace GoTF.Content
         internal float currentLife;
         [SerializeField] internal AudioClip hitSound;
         protected AudioSource audioSource;
+        protected ParticleSystem hitParticles;
 
         protected virtual void Awake()
         {
@@ -18,21 +20,28 @@ namespace GoTF.Content
             {
                 audioSource = gameObject.AddComponent<AudioSource>();
             }
+            TryGetComponent<ParticleSystem>(out hitParticles);            
         }
-        public virtual void TakeDamage(ItemProperties.DamageProperties damageProperties)
+        public virtual void TakeDamage(DamageProperties damageProperties)
         {
             if (CheckToolTierAndType(damageProperties))
             {
-                Debug.Log(gameObject.name + " was hit !");
-                audioSource.PlayOneShot(hitSound);
-                currentLife -= damageProperties.amount;
-                if (currentLife < 0)
-                {
-                    DestroyResource();
-                }
+                TakeHit(damageProperties);
             }
         }
-        protected abstract bool CheckToolTierAndType(ItemProperties.DamageProperties damageProperties); //Should depend on the item used
+
+        protected virtual void TakeHit(DamageProperties damageProperties)
+        {
+            Debug.Log(gameObject.name + " was hit !");
+            if (audioSource != null)  audioSource.PlayOneShot(hitSound);
+            if (hitParticles != null) hitParticles.Play();
+            currentLife -= damageProperties.amount;
+            if (currentLife < 0)
+            {
+                DestroyResource();
+            }
+        }
+        protected abstract bool CheckToolTierAndType(DamageProperties damageProperties); //Should depend on the item used
         public abstract void DestroyResource();
     }
 }
