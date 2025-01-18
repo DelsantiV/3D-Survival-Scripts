@@ -93,39 +93,39 @@ namespace GoTF.Content
             return null;
         }
 
-        public EquippedItem EquippedItemPileInHand(Hand hand)
+        public EquippedItemPile EquippedItemPileInHand(Hand hand)
         {
             Transform handTransform = HandTransform(hand);
-            if (handTransform != null && IsHandActive(hand)) return handTransform.gameObject.GetComponentInChildren<EquippedItem>();
+            if (handTransform != null && IsHandActive(hand)) return handTransform.gameObject.GetComponentInChildren<EquippedItemPile>();
             else return null;
         }
 
         public int AnimationID(Hand hand)
         {
-            EquippedItem itemInHand = EquippedItemPileInHand(hand);
+            EquippedItemPile itemInHand = EquippedItemPileInHand(hand);
             if (itemInHand != null && hand != Hand.none) return EquippedItemPileInHand(hand).AnimationID;
             else return 0;
         }
 
         public void UseItemInHand(Hand hand)
         {
-            EquippedItem itemInHand = EquippedItemPileInHand(hand);
+            EquippedItemPile itemInHand = EquippedItemPileInHand(hand);
             if (itemInHand != null && hand != Hand.none) EquippedItemPileInHand(hand).Use();
         }
         public void StopUseItemInHand(Hand hand)
         {
-            EquippedItem itemInHand = EquippedItemPileInHand(hand);
+            EquippedItemPile itemInHand = EquippedItemPileInHand(hand);
             if (itemInHand != null && hand != Hand.none) EquippedItemPileInHand(hand).StopUse();
         }
 
         public void StartAction(Hand hand)
         {
-            EquippedItem itemInHand = EquippedItemPileInHand(hand);
+            EquippedItemPile itemInHand = EquippedItemPileInHand(hand);
             if (itemInHand != null && hand != Hand.none) EquippedItemPileInHand(hand).StartAction();
         }
         public void EndAction(Hand hand)
         {
-            EquippedItem itemInHand = EquippedItemPileInHand(hand);
+            EquippedItemPile itemInHand = EquippedItemPileInHand(hand);
             if (itemInHand != null && hand != Hand.none) EquippedItemPileInHand(hand).EndAction();
         }
 
@@ -158,7 +158,7 @@ namespace GoTF.Content
         {
             if (pile.NumberOfItemsInPile == 0 || hand == Hand.none) { return; }
             ItemPileInWorld equippedPile = pile.SpawnInHands(HandTransform(hand));
-            equippedPile.AddComponent<EquippedItem>();
+            equippedPile.AddComponent<EquippedItemPile>();
         }
 
         public void ParentPileToHand(ItemPileInWorld pileInWorld, Hand hand)
@@ -178,7 +178,7 @@ namespace GoTF.Content
 
         public void RemoveItemPileFromHand(Hand hand, bool shouldDropItems = false)
         {
-            EquippedItem equippedItem = EquippedItemPileInHand(hand);
+            EquippedItemPile equippedItem = EquippedItemPileInHand(hand);
             if (equippedItem != null)
             {
                 Debug.Log("Removing physical pile from hand " + equippedItem.name);

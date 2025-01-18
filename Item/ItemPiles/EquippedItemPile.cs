@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GoTF.Content
 {
-    public class EquippedItem : MonoBehaviour
+    public class EquippedItemPile : MonoBehaviour
     {
         public ItemPileInWorld ItemsInWorld
         {
@@ -105,6 +105,7 @@ namespace GoTF.Content
         private void OnTriggerEnter(Collider other)
         {
             if (!_shouldDetectCollision) return;
+            //Vector3 velocity = Rigidbody.linearVelocity;
             ItemPile.OnCollisionDetected(other);
             _shouldDetectCollision = false;
         }

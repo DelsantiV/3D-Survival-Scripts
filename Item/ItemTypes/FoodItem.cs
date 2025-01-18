@@ -28,7 +28,7 @@ namespace GoTF.Content
             }
         }
 
-        public override void UseItem(PlayerManager player, EquippedItem item)
+        public override void UseItem(PlayerManager player, EquippedItemPile item)
         {
             bool isEaten = player.TryEatFood(this);
             if (isEaten)
@@ -37,7 +37,7 @@ namespace GoTF.Content
             }
         }
 
-        public override void StopUsingItem(PlayerManager player, EquippedItem item)
+        public override void StopUsingItem(PlayerManager player, EquippedItemPile item)
         {
 
         }
