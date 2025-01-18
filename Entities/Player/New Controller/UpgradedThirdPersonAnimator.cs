@@ -27,6 +27,27 @@ namespace GoTF.Content
         {
             if (animator == null || !animator.enabled) return;
 
+            UpdateAnimatorLocomotion(); 
+
+            Debug.Log("Animator is in empty state : " + AnimatorStateInfo(upperBodyOverrideLayerIndex).IsName("Empty"));
+        }
+
+        protected virtual void SetAnimatorMoveSpeed(vMovementSpeed speed)
+        {
+            Vector3 relativeInput = transform.InverseTransformDirection(moveDirection);
+            verticalSpeed = relativeInput.z;
+            horizontalSpeed = relativeInput.x;
+
+            var newInput = new Vector2(verticalSpeed, horizontalSpeed);
+
+            if (speed.walkByDefault)
+                inputMagnitude = Mathf.Clamp(newInput.magnitude, 0, isSprinting ? runningSpeed : walkSpeed);
+            else
+                inputMagnitude = Mathf.Clamp(isSprinting ? newInput.magnitude + 0.5f : newInput.magnitude, 0, isSprinting ? sprintSpeed : runningSpeed);
+        }
+
+        protected virtual void UpdateAnimatorLocomotion()
+        {
             animator.SetBool(UpgradedAnimatorParameters.IsStrafing, isStrafing); ;
             animator.SetBool(UpgradedAnimatorParameters.IsSprinting, isSprinting);
             animator.SetBool(UpgradedAnimatorParameters.IsGrounded, isGrounded);
@@ -44,22 +65,6 @@ namespace GoTF.Content
 
             animator.SetFloat(UpgradedAnimatorParameters.InputMagnitude, stopMove ? 0f : inputMagnitude, isStrafing ? strafeSpeed.animationSmooth : freeSpeed.animationSmooth, Time.deltaTime);
             if (inputMagnitude > 0.4f) StopBodyActions();
-
-            Debug.Log("Animator is in empty state : " + AnimatorStateInfo(upperBodyOverrideLayerIndex).IsName("Empty"));
-        }
-
-        public virtual void SetAnimatorMoveSpeed(vMovementSpeed speed)
-        {
-            Vector3 relativeInput = transform.InverseTransformDirection(moveDirection);
-            verticalSpeed = relativeInput.z;
-            horizontalSpeed = relativeInput.x;
-
-            var newInput = new Vector2(verticalSpeed, horizontalSpeed);
-
-            if (speed.walkByDefault)
-                inputMagnitude = Mathf.Clamp(newInput.magnitude, 0, isSprinting ? runningSpeed : walkSpeed);
-            else
-                inputMagnitude = Mathf.Clamp(isSprinting ? newInput.magnitude + 0.5f : newInput.magnitude, 0, isSprinting ? sprintSpeed : runningSpeed);
         }
 
         public virtual void UpdateAnimatorActions()
@@ -77,6 +82,11 @@ namespace GoTF.Content
             }
         }
 
+        protected virtual bool TryStopAction()
+        {
+            float upperBodyLayerWeight = (isAnyHandAction || isHoldingBoth) ? 1f : 0f;
+            return TrySetLayerWeight(upperBodyOverrideLayerIndex, upperBodyLayerWeight);
+        }
         public virtual void StopBodyActions()
         {
             animator.SetLayerWeight(upperBodyOverrideLayerIndex, 0f);
@@ -91,6 +101,7 @@ namespace GoTF.Content
             {
                 if (!CanExitLayer(layerindex))
                 {
+                    Debug.Log("Cannot leave current animation state, as animation is still playing");
                     return false;
                 }
             } 
