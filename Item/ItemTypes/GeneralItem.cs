@@ -53,13 +53,13 @@ namespace GoTF.Content
         /// </summary>
         /// <param name="player"The player using the item></param>
         /// <param name="item"The EquippedItem from which the item is used></param>
-        public abstract void UseItem(PlayerManager player, EquippedItem item);
+        public abstract void UseItem(PlayerManager player, EquippedItemPile item);
         /// <summary>
         /// What happens when the player stops using the item
         /// </summary>
         /// <param name="player"></param>
         /// <param name="item"></param>
-        public abstract void StopUsingItem(PlayerManager player, EquippedItem item);
+        public abstract void StopUsingItem(PlayerManager player, EquippedItemPile item);
         /// <summary>
         /// Called when the EquippedItem detects a collision
         /// </summary>
