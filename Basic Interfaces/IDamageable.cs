@@ -7,6 +7,7 @@ namespace GoTF.Content
     public interface IDamageable
     {
         public void TakeDamage(DamageProperties damageProperties);
+        public Material GetHitParticlesMaterial();
     }
 
     public enum DamageSource
