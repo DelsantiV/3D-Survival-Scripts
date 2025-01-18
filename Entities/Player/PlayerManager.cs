@@ -216,6 +216,11 @@ namespace GoTF.Content
 
         }
 
+        public Material GetHitParticlesMaterial()
+        {
+            return null;
+        }
+
         public bool TryEatFood(FoodItem foodItem)
         {
             return DigestiveSystem.TryAddFoodToDigestiveSystem(foodItem);
@@ -279,12 +284,13 @@ namespace GoTF.Content
 
         }
 
-        public void StartAction()
+        // These two functions are called by animation events
+        public void OnStartHit()
         {
             HandsManager.StartAction(ActionHand);
         }
 
-        public void EndAction()
+        public void OnEndHit()
         {
             HandsManager.EndAction(ActionHand);
         }
