@@ -10,7 +10,7 @@ namespace GoTF.Content
     {
         public GeneralItem item;
         public ItemPileInWorld itemPileInWorld;
-        public void PickUpItem(PlayerManager player)
+        public virtual void PickUpItem(PlayerManager player)
         {
             if (item != null && player.HandsInventory != null)
             {
@@ -35,11 +35,11 @@ namespace GoTF.Content
         public float Weight { get { return item.Weight; } }
         public float Bulk { get { return item.Bulk; } }
 
-        private void Start()
+        protected virtual void Start()
         {
             itemPileInWorld = transform.root.GetComponent<ItemPileInWorld>();
         }
-        private void Update()
+        protected virtual void Update()
         {
             if (transform.position.y < -50) { Destroy(gameObject); }
         }
