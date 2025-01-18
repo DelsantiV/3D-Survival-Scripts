@@ -134,27 +134,35 @@ namespace GoTF.Content
 
         public virtual void HandleHandAction(HandsManager.Hand hand, bool shouldDoAction = true)
         {
-            if (hand == playerManager.prefHand) 
-            { 
-                isPrefHandAction = shouldDoAction;
-            }
-
-            if (hand == playerManager.otherHand)
-            {
-                isOtherHandAction = shouldDoAction;
-            }
+            SetHandAction(hand, shouldDoAction);
             if (shouldDoAction)
             {
                 playerManager.HandsManager.UseItemInHand(hand);
+                UpdateAnimatorActions();
             }
-            else
+            else 
             {
-                playerManager.HandsManager.StopUseItemInHand(hand);
+                if (TryStopAction())
+                {
+
+                    playerManager.HandsManager.StopUseItemInHand(hand);
+
+                }
+            }
+        }
+
+        public virtual void SetHandAction(HandsManager.Hand hand, bool shouldDoAction = true)
+        {
+            if (hand == playerManager.prefHand)
+            {
+                isPrefHandAction = shouldDoAction;
+            }
+            else if (hand == playerManager.otherHand)
+            {
+                isOtherHandAction = shouldDoAction;
             }
 
             Debug.Log("Set Action to " + shouldDoAction + " for hand " + hand.ToString());
-
-            UpdateAnimatorActions();
         }
 
         public virtual void StopBothHandsAction()

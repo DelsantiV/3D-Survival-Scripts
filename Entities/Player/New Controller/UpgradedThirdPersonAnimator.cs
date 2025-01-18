@@ -84,8 +84,19 @@ namespace GoTF.Content
 
         protected virtual bool TryStopAction()
         {
-            float upperBodyLayerWeight = (isAnyHandAction || isHoldingBoth) ? 1f : 0f;
-            return TrySetLayerWeight(upperBodyOverrideLayerIndex, upperBodyLayerWeight);
+            float upperBodyLayerWeight = 0f; 
+            // To upgrade : very dirty for now
+            animator.SetBool(UpgradedAnimatorParameters.IsAction, false);
+            animator.SetBool(UpgradedAnimatorParameters.IsActionRight, false);
+            animator.SetBool(UpgradedAnimatorParameters.IsActionLeft, false);
+            if (TrySetLayerWeight(upperBodyOverrideLayerIndex, upperBodyLayerWeight))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         public virtual void StopBodyActions()
         {

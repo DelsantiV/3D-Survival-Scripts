@@ -108,6 +108,29 @@ namespace GoTF.Content
             ActionInputs();      // Handles inputs related to action
         }
 
+        protected virtual void LocomotionInputs()
+        {
+            MoveInput();
+            CameraInput();
+            SprintInput();
+            StrafeInput();
+            WalkModeInput();
+        }
+
+        protected virtual void ActionInputs()
+        {
+            JumpInput();
+            if (CanAction)
+            {
+                OtherHandInput();
+                PrefHandInput();
+                ForageResourcesInput();
+            }
+            CheckStopPrefHandAction();
+            CheckStopOtherHandAction();
+            ChangeHandModeInput();
+        }
+
         protected KeyCode GetInputKey(Controls control)
         {
             return playerInputConfig.GetKeyCodeForControl(control);
@@ -212,7 +235,7 @@ namespace GoTF.Content
         {
             if (cc.isOtherHandAction)
             {
-                if (!CanAction || Input.GetKeyUp(GetInputKey(Controls.OtherHandAction))) { cc.HandleHandAction(player.otherHand, false); }
+                if (!CanAction || !Input.GetKey(GetInputKey(Controls.OtherHandAction))) { cc.HandleHandAction(player.otherHand, false); }
             }
         }
 
@@ -226,10 +249,7 @@ namespace GoTF.Content
 
         protected virtual void CheckStopPrefHandAction()
         {
-            if (cc.isPrefHandAction)
-            {
-                if (!CanAction || Input.GetKeyUp(GetInputKey(Controls.PrefHandAction))) { cc.HandleHandAction(player.prefHand, false); }
-            }
+            if (!CanAction || !Input.GetKey(GetInputKey(Controls.PrefHandAction))) { cc.HandleHandAction(player.prefHand, false); }
         }
 
 
@@ -252,31 +272,6 @@ namespace GoTF.Content
             {
                 if (player.TrySwitchHandMode()) { cc.SwitchHandMode(); }
             }
-        }
-
-        protected virtual void LocomotionInputs()
-        {
-            MoveInput();
-            CameraInput();
-            SprintInput();
-            StrafeInput();
-            WalkModeInput();
-        }
-
-        protected virtual void ActionInputs()
-        {
-            JumpInput();
-            Debug.Log("CanAction :" + CanAction);
-            Debug.Log("IsAction : " + cc.isAnyHandAction);
-            if (CanAction)
-            {
-                OtherHandInput();
-                PrefHandInput();
-                ForageResourcesInput();
-            }
-            CheckStopPrefHandAction();
-            CheckStopOtherHandAction();
-            ChangeHandModeInput();
         }
 
         public virtual void TryStopAllActions()
