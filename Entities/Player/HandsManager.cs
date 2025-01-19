@@ -11,7 +11,6 @@ namespace GoTF.Content
         private readonly GameObject leftHand;
         private readonly GameObject bothHand;
         public Hand PrefHand;
-
         public Hand OtherHand
         {
             get
@@ -24,6 +23,7 @@ namespace GoTF.Content
                 };
             }
         }
+        public Hand ActionHand;
 
         public HandMode CurrentHandMode { get; private set; }
 
@@ -37,6 +37,7 @@ namespace GoTF.Content
             else this.bothHand = HandGO(prefHand);
 
             CurrentHandMode = HandMode.single;
+            ActionHand = Hand.none;
         }
 
         public enum Hand
@@ -110,12 +111,21 @@ namespace GoTF.Content
         public void UseItemInHand(Hand hand)
         {
             EquippedItemPile itemInHand = EquippedItemPileInHand(hand);
+            ActionHand = hand;
             if (itemInHand != null && hand != Hand.none) EquippedItemPileInHand(hand).Use();
         }
         public void StopUseItemInHand(Hand hand)
         {
             EquippedItemPile itemInHand = EquippedItemPileInHand(hand);
             if (itemInHand != null && hand != Hand.none) EquippedItemPileInHand(hand).StopUse();
+        }
+        public void StopUseItemInHand()
+        {
+            if (ActionHand != Hand.none)
+            {
+                StopUseItemInHand(ActionHand);
+                ActionHand = Hand.none;
+            }
         }
 
         public void StartAction(Hand hand)
@@ -128,8 +138,14 @@ namespace GoTF.Content
             EquippedItemPile itemInHand = EquippedItemPileInHand(hand);
             if (itemInHand != null && hand != Hand.none) EquippedItemPileInHand(hand).EndAction();
         }
-
-        public ItemPileInWorld EquippedPileInHand(Hand hand)
+        public void EndAction()
+        {
+            if (ActionHand != Hand.none)
+            {
+                EndAction(ActionHand);
+            }
+        }
+            public ItemPileInWorld EquippedPileInHand(Hand hand)
         {
             return HandTransform(hand).gameObject.GetComponentInChildren<ItemPileInWorld>();
         }
