@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using GoTF.Utilities;
+using UnityEngine;
 
 namespace GoTF.Content
 {
@@ -135,20 +136,21 @@ namespace GoTF.Content
         public virtual void HandleHandAction(HandsManager.Hand hand, bool shouldDoAction = true)
         {
             SetHandAction(hand, shouldDoAction);
+            UpdateAnimatorActions();
             if (shouldDoAction)
             {
                 playerManager.HandsManager.UseItemInHand(hand);
-                UpdateAnimatorActions();
             }
-            else 
+            else
             {
-                if (TryStopAction())
-                {
-
-                    playerManager.HandsManager.StopUseItemInHand(hand);
-
-                }
+                Task waitActionEnd = new(WaitForCurrentActionToEnd());
+                waitActionEnd.Finished += StopUseItem;
             }
+        }
+
+        protected virtual void StopUseItem(bool manual)
+        {
+            playerManager.HandsManager.StopUseItemInHand();
         }
 
         public virtual void SetHandAction(HandsManager.Hand hand, bool shouldDoAction = true)
