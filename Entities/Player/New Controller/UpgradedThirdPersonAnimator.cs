@@ -1,4 +1,5 @@
 ﻿
+using System.Collections;
 using UnityEngine;
 
 namespace GoTF.Content
@@ -82,22 +83,14 @@ namespace GoTF.Content
             }
         }
 
-        protected virtual bool TryStopAction()
+        protected virtual IEnumerator WaitForCurrentActionToEnd()
         {
-            float upperBodyLayerWeight = 0f; 
-            // To upgrade : very dirty for now
-            animator.SetBool(UpgradedAnimatorParameters.IsAction, false);
-            animator.SetBool(UpgradedAnimatorParameters.IsActionRight, false);
-            animator.SetBool(UpgradedAnimatorParameters.IsActionLeft, false);
-            if (TrySetLayerWeight(upperBodyOverrideLayerIndex, upperBodyLayerWeight))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            yield return new WaitUntil(() => !animator.IsInTransition(upperBodyOverrideLayerIndex));
+            Debug.Log("Waiting for animation to finish ...");
+            yield return new WaitWhile(() => !CanExitLayer(upperBodyOverrideLayerIndex));
+            Debug.Log("Animation finished !");
         }
+
         public virtual void StopBodyActions()
         {
             animator.SetLayerWeight(upperBodyOverrideLayerIndex, 0f);
