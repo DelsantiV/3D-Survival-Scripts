@@ -56,8 +56,8 @@ namespace GoTF.Content
 
         private void Awake()
         {
-            _shouldDetectCollision = false;
             Rigidbody = gameObject.AddComponent<Rigidbody>();
+            ShouldDetectCollision = false;
             Rigidbody.useGravity = false;
             Rigidbody.isKinematic = true;
         }
@@ -94,20 +94,26 @@ namespace GoTF.Content
 
         public void StartAction()
         {
-            _shouldDetectCollision = true;
+            ShouldDetectCollision = true;
         }
 
         public void EndAction()
         {
-            if (_shouldDetectCollision) _shouldDetectCollision = false;
+            Debug.Log("End of action");
+            if (_shouldDetectCollision) ShouldDetectCollision = false;
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!_shouldDetectCollision) return;
+            Debug.Log("Collision detected");
+            if (!_shouldDetectCollision)
+            {
+                Debug.Log("Collision ignored");
+                return;
+            }
             //Vector3 velocity = Rigidbody.linearVelocity;
             ItemPile.OnCollisionDetected(other);
-            _shouldDetectCollision = false;
+            ShouldDetectCollision = false;
         }
 
         public void EventTest() { Debug.Log("Wouhou youpi it works"); }
