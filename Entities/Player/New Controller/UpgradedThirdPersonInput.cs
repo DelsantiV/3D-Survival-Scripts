@@ -249,7 +249,10 @@ namespace GoTF.Content
 
         protected virtual void CheckStopPrefHandAction()
         {
-            if (!CanAction || !Input.GetKey(GetInputKey(Controls.PrefHandAction))) { cc.HandleHandAction(player.prefHand, false); }
+            if (cc.isPrefHandAction)
+            {
+                if (!CanAction || !Input.GetKey(GetInputKey(Controls.PrefHandAction))) { cc.HandleHandAction(player.prefHand, false); }
+            }
         }
 
 
