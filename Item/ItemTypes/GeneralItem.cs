@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using static GoTF.Content.ItemProperties;
 using UnityEngine;
 
 namespace GoTF.Content
@@ -34,6 +35,7 @@ namespace GoTF.Content
         public float Bulk { get { return ItemSO.bulk; } }
 
         public int animationID;
+        public SpoilageProperties spoilageProperties;
 
         public GeneralItem()
         {

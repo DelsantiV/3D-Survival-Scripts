@@ -10,14 +10,22 @@ namespace GoTF.Content
         public static event Action OnTick;
         public static event Action OnLargeTick;
         public static event Action OnGameHourTick;
+        public static event Action OnSpoilageTick;
+        public delegate void SubscriberDelegate();
+        public static List<SubscriberDelegate> Subscribers = new List<SubscriberDelegate>();
 
         private const float tickTimerMax = .2f; // So tick is 0.2s
         private const int largeTickTimerMultiplier = 5; // So large tick is 1s
         private const int numberOfSecondsInGameHour = 720;
+        private const int numberOfTicksForSpoilageUpdate = 500;
 
 
         private static GameObject tickSystemObject;
 
+        public static void SubscribeToTick(Delegate method, int numberOfTicks)
+        {
+
+        }
         public static void InitializeTickSystem()
         {
             if (tickSystemObject == null)
@@ -31,6 +39,7 @@ namespace GoTF.Content
         {
             private float timer;
             private int tickCount;
+            private int tickCountSpoilage;
             private int secondsCount;
 
             private void Awake()
@@ -48,6 +57,7 @@ namespace GoTF.Content
                     timer -= tickTimerMax;
                     OnTick?.Invoke();
                     tickCount++;
+                    tickCountSpoilage++;
                     Debug.Log("tick !");
                 }
 
@@ -57,6 +67,13 @@ namespace GoTF.Content
                     secondsCount++;
                     OnLargeTick?.Invoke();
                     Debug.Log("Large tick !");
+                }
+
+                if (tickCountSpoilage == numberOfTicksForSpoilageUpdate)
+                {
+                    tickCountSpoilage = 0;
+                    OnSpoilageTick?.Invoke();
+                    Debug.Log("Spoilage Tick !");
                 }
 
                 if (secondsCount == numberOfSecondsInGameHour)

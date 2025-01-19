@@ -20,6 +20,12 @@ namespace GoTF.Content
         }
         //public NutritionProperties defaultNutritionProperties;
 
+        public struct SpoilageProperties
+        {
+            public float timeToSpoil;
+            public GeneralItem spoilsIntoItem;
+        }
+
 
         public struct EquippableProperties
         {
