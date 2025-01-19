@@ -29,8 +29,6 @@ namespace GoTF.Content
             if (animator == null || !animator.enabled) return;
 
             UpdateAnimatorLocomotion(); 
-
-            Debug.Log("Animator is in empty state : " + AnimatorStateInfo(upperBodyOverrideLayerIndex).IsName("Empty"));
         }
 
         protected virtual void SetAnimatorMoveSpeed(vMovementSpeed speed)
