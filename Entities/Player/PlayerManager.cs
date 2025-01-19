@@ -38,9 +38,7 @@ namespace GoTF.Content
         {
             get
             {
-                if (PlayerController.isPrefHandAction) { return prefHand; }
-                if (PlayerController.isOtherHandAction) { return otherHand; }
-                return HandsManager.Hand.none;
+                return HandsManager.ActionHand;
             }
         }
         public HandsInventory HandsInventory { get; private set; }
@@ -292,7 +290,8 @@ namespace GoTF.Content
 
         public void OnEndHit()
         {
-            HandsManager.EndAction(ActionHand);
+            Debug.Log("Should stop detecting hits");
+            HandsManager.EndAction();
         }
     }
 }
