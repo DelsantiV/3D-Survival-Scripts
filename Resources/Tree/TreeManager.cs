@@ -2,28 +2,31 @@ using GoTF.Content;
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class TreeManager : MonoBehaviour
+namespace GoTF.Content
 {
-    private GameObject stumpObject;
-    private TreeDebris treeDebris;
-    private BasicTree tree;
-
-    private void Awake()
+    public class TreeManager : MonoBehaviour
     {
-        stumpObject = transform.Find("Stump").gameObject;
-        tree = transform.Find("Tree").GetComponent<BasicTree>();
-        treeDebris = transform.Find("Debris").GetComponent<TreeDebris>();
-        tree.OnTreeDestroyed.AddListener(OnTreeDestroyed);
-    }
+        private GameObject stumpObject;
+        private TreeDebris treeDebris;
+        private BasicTree tree;
 
-    private void OnTreeDestroyed()
-    {
-        CreateStumpAndDebris();
-    }
+        private void Awake()
+        {
+            stumpObject = transform.Find("Stump").gameObject;
+            tree = transform.Find("Tree").GetComponent<BasicTree>();
+            treeDebris = transform.Find("Debris").GetComponent<TreeDebris>();
+            tree.OnTreeDestroyed.AddListener(OnTreeDestroyed);
+        }
 
-    private void CreateStumpAndDebris()
-    {
-        stumpObject.SetActive(true);
-        treeDebris.SetActive(true);
+        private void OnTreeDestroyed()
+        {
+            CreateStumpAndDebris();
+        }
+
+        private void CreateStumpAndDebris()
+        {
+            stumpObject.SetActive(true);
+            treeDebris.SetActive(true);
+        }
     }
 }
