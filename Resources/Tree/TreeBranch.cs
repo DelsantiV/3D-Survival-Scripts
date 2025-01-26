@@ -6,7 +6,8 @@ namespace GoTF.Content
     {
         private float maxSpeedMagnitude = 0.5f;
         private TreeDebris treeDebris;
-        private Collider boxCollider;
+        private Rigidbody rb;
+        private FixedJoint joint;  
 
         private bool IsBroken
         {
@@ -18,12 +19,14 @@ namespace GoTF.Content
 
         protected override void Awake()
         {
-            boxCollider = transform.Find("Collider").GetComponent<Collider>();
-            boxCollider.enabled = false;
+            rb = GetComponent<Rigidbody>();
+            joint = GetComponent<FixedJoint>();
         }
 
         public override void DestroyResource()
         {
+            Destroy(joint);
+            rb.automaticCenterOfMass = true;
             transform.parent = null;
             treeDebris.BreakBranch();
             Debug.Log("Branch broke !");
@@ -37,13 +40,12 @@ namespace GoTF.Content
         private void OnEnable()
         {
             treeDebris = transform.parent.GetComponent<TreeDebris>();
-            boxCollider.enabled = true;
         }
 
         private void OnCollisionEnter(Collision collision)
         {
             Debug.Log("Branch Collided");
-            if (collision.relativeVelocity.magnitude > maxSpeedMagnitude && IsBroken) 
+            if (collision.relativeVelocity.magnitude > maxSpeedMagnitude && !IsBroken) 
             {
                 DestroyResource();
             }

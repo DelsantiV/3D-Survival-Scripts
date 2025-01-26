@@ -11,7 +11,6 @@ namespace GoTF.Content
         private bool hasHitGround = false;
         private void OnEnable()
         {
-            Rigidbody rigidbody = GetComponent<Rigidbody>();
             Vector3 treeOffset = new Vector3(Random.Range(-0.25f, 0.25f), 0, Random.Range(-0.25f, 0.25f));
             transform.position += treeOffset;
             Vector3 treeRotation = transform.rotation.eulerAngles + new Vector3(Random.Range(-3f, 3f), 0, Random.Range(-3f, 3f));
