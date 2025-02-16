@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace GoTF.Content
 {
-    public class ItemInWorld : MonoBehaviour
+    public class ItemInWorld : MonoBehaviour, IInteractable
     {
         public GeneralItem item;
         public ItemPileInWorld itemPileInWorld;
@@ -34,6 +34,13 @@ namespace GoTF.Content
         public string ObjectName { get { return ItemName + " [E to pick up]"; } }
         public float Weight { get { return item.Weight; } }
         public float Bulk { get { return item.Bulk; } }
+        public bool ShouldDisplayNameOnMouseOver
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         protected virtual void Start()
         {
@@ -43,5 +50,11 @@ namespace GoTF.Content
         {
             if (transform.position.y < -50) { Destroy(gameObject); }
         }
+
+        public virtual void OnCollectInteract(PlayerManager player)
+        {
+            PickUpItem(player);
+        }
+
     }
 }
