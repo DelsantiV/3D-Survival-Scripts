@@ -73,5 +73,20 @@ namespace GoTF.Content
         {
             handsManager.ParentPileToHand(pile, hand);
         }
+
+        public bool TryParentPileToHand(ItemPile pile, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity)
+        {
+            if (maxWeight == Mathf.Infinity) { maxWeight = MaxCarryingWeight; }
+            if (maxBulk == Mathf.Infinity) { maxBulk = MaxCarryingBulk; }
+            if (pile != null)
+            {
+                if (pile.Weight < maxWeight && pile.Bulk < maxBulk)
+                {
+                    ParentPileToHand(pile);
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
