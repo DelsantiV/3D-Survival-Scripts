@@ -97,8 +97,10 @@ namespace GoTF.Content
         {
             var item = (GeneralItem) Activator.CreateInstance(itemSO.item_class);
             item.Initialize(itemSO);
+            item.OnItemInstanceGenerated();
             return item;
         }
+
         public static GeneralItem GetItemByName(string itemName)
         {
             if (_allItemsSOByName.ContainsKey(itemName)) { return GenerateItemfromItemSO(_allItemsSOByName[itemName]); }
@@ -119,5 +121,14 @@ namespace GoTF.Content
             }
         }
 
+        public static void TurnObjectIntoItem(GameObject obj, GeneralItem item)
+        {
+            ItemInWorld itemInWorld = obj.AddComponent<ItemInWorld>();
+            itemInWorld.item = item;
+        }
+        public static void TurnObjectIntoItem(GameObject obj, string itemName)
+        {
+            TurnObjectIntoItem(obj, GetItemByName(itemName));
+        }
     }
 }
