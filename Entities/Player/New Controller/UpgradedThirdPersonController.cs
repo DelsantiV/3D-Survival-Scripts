@@ -130,7 +130,6 @@ namespace GoTF.Content
         public virtual void Forage()
         {
             terrainGrid.SetDetailLayerForCell(currentGridCell, 0, 0);
-            Debug.Log("Cleaning Grass !");
         }
 
         public virtual void HandleHandAction(HandsManager.Hand hand, bool shouldDoAction = true)
