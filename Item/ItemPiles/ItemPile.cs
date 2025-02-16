@@ -182,8 +182,17 @@ namespace GoTF.Content
             ItemsInPile = itemNamesList.ConvertAll(itemName => ItemManager.GetItemByName(itemName)); ;
         }
 
-        public void DestroyPile() { ItemsInPile.Clear(); }
+        public ItemPile(ItemInWorld worldItem)
+        {
+            Debug.Log("Creating new Pile from World Item");
+            ItemsInPile = new List<GeneralItem>() { worldItem.item };
+            worldItem.RemoveFromPile();
+            ItemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
+            ItemPileInWorld.InitializeItemPileInWorld(this, worldItem);
+            ItemPileInWorld.RemoveRigidBodyFromItems();
+        }
 
+        public void DestroyPile() { ItemsInPile.Clear(); }
 
         /// <summary>
         /// Set the pile to an inventory slot, creating an <c>ItemPileInInventory</c> if necessary
@@ -206,6 +215,17 @@ namespace GoTF.Content
             OnPileChanged?.Invoke();
         }
 
+        /// <summary>
+        /// Adds the given world item to the pile
+        /// </summary>
+        private void AddItemToPile(ItemInWorld worldItem)
+        {
+            if (!IsInWorld) { return; }
+            ItemsInPile.Add(worldItem.item);
+            ItemPileInWorld.AddItem(worldItem);
+            OnPileChanged?.Invoke();
+        }
+
 
         /// <summary>
         /// Try to add the given item to the pile
@@ -220,6 +240,19 @@ namespace GoTF.Content
             else
             {
                 AddItemToPile(item);
+                return true;
+            }
+        }
+
+        public bool TryAddItemToPile(ItemInWorld worldItem, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity)
+        {
+            if (ItemPileInWorld == null) { return false; }
+            GeneralItem item = worldItem.item;
+            if (item.Weight + this.Weight > maxWeight || item.Bulk + this.Bulk > maxBulk) { return false; } // If pile would be too heavy or too bulky, do not add item
+            else
+            {
+                if (ItemPileInWorld.isRigidBody && worldItem.TryGetComponent(out Rigidbody rb)) { Object.Destroy(rb); }
+                AddItemToPile(worldItem);
                 return true;
             }
         }
