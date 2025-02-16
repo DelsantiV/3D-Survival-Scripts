@@ -57,13 +57,21 @@ namespace GoTF.Content
         }
 
         /// <summary>
-        /// What happens when the item is used by the player
+        /// Called when item is spawned
+        /// </summary>
+        public abstract void OnItemSpawned();
+        /// <summary>
+        /// Called when an instance of the item is generated through the ItemManager
+        /// </summary>
+        public abstract void OnItemInstanceGenerated();
+        /// <summary>
+        /// Called when the item is used by the player
         /// </summary>
         /// <param name="player"The player using the item></param>
         /// <param name="item"The EquippedItem from which the item is used></param>
         public abstract void UseItem(PlayerManager player, EquippedItemPile item);
         /// <summary>
-        /// What happens when the player stops using the item
+        /// Called when the player stops using the item
         /// </summary>
         /// <param name="player"></param>
         /// <param name="item"></param>

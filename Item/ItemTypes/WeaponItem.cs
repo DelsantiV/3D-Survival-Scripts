@@ -34,20 +34,24 @@ namespace GoTF.Content
                 damageProperties.source = DamageSource.PlayerHit;
             }
         }
+        public override void OnItemSpawned()
+        {
+
+        }
+
+        public override void OnItemInstanceGenerated()
+        {
+
+        }
 
         public override void UseItem(PlayerManager player, EquippedItemPile item)
         {
-            //Collider bladeCollider = item.transform.Find("BladeCollider").GetComponent<BoxCollider>(); // Does not work because Blade collider is a child of the axe, which itself is a child of the pile
-            //bladeCollider.enabled = true;
             Debug.Log(ItemName + " started being used");
-            //item.ShouldDetectCollision = true;
         }
 
         public override void StopUsingItem(PlayerManager player, EquippedItemPile item)
         {
-            //item.ShouldDetectCollision = false;
             Debug.Log(ItemName + " stopped being used");
-            //item.ShouldDetectCollision = false;
         }
 
         public override void OnCollisionDetected(Collider other)

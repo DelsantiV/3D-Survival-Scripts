@@ -28,6 +28,16 @@ namespace GoTF.Content
             }
         }
 
+        public override void OnItemSpawned()
+        {
+
+        }
+
+        public override void OnItemInstanceGenerated()
+        {
+
+        }
+
         public override void UseItem(PlayerManager player, EquippedItemPile item)
         {
             bool isEaten = player.TryEatFood(this);
