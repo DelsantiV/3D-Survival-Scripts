@@ -1,3 +1,4 @@
+using NUnit.Framework.Internal.Execution;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace GoTF.Content
     public class ItemPileInWorld : MonoBehaviour
     {
         public ItemPile ItemPile { get; private set; }
-        private Dictionary<GeneralItem, ItemInWorld> itemsPrefabs = new();
+        private List<ItemInWorld> worldItems = new();
         public List<GeneralItem> ItemsInPile { get { return ItemPile.ItemsInPile; } }
         private float pileHeight;
         public bool isRigidBody;
@@ -22,6 +23,16 @@ namespace GoTF.Content
         {
             get { return ItemPile.Bulk; }
         }
+
+        public void InitializeItemPileInWorld(ItemPile itemPile, ItemInWorld worldItem)
+        {
+            this.ItemPile = itemPile;
+            //transform.position = worldItem.transform.position;
+            transform.position = Vector3.zero;
+            worldItem.transform.SetParent(transform, false);
+            worldItems.Add(worldItem);
+        }
+
         /// <summary>
         /// Spawns the item pile at the given position.
         /// </summary>
@@ -105,7 +116,7 @@ namespace GoTF.Content
                     itemInWorld.item = item;
                     if (isRigidBody) { itemPrefab.AddComponent<Rigidbody>(); }
                     else { prefabCollider.isTrigger = true; }
-                    itemsPrefabs.Add(item, itemInWorld);
+                    worldItems.Add(itemInWorld);
                 }
             }
         }
@@ -122,14 +133,34 @@ namespace GoTF.Content
                     itemInWorld.item = item;
                     if (isRigidBody) { itemPrefab.AddComponent<Rigidbody>(); }
                     else { prefabCollider.isTrigger = true; }
-                    itemsPrefabs.Add(item, itemInWorld);
+                    worldItems.Add(itemInWorld);
                 }
+            }
+        }
+
+        private void ParentItemToPile(ItemInWorld worldItem, bool isRigidBody, out float prefabHeight, float height = 0)
+        {
+            prefabHeight = 0;
+            if (worldItem != null)
+            {
+                worldItem.transform.SetParent(transform, false);
+                if (!worldItem.TryGetComponent<BoxCollider>(out BoxCollider prefabCollider)) { prefabCollider = worldItem.GetComponentInChildren<BoxCollider>(); }
+                if (prefabCollider != null) prefabHeight = prefabCollider.size.y * worldItem.transform.localScale.y;
+                worldItem.transform.localPosition = Vector3.up * height;
+                if (isRigidBody && (worldItem.gameObject.GetComponent<Rigidbody>() == null)) { worldItem.gameObject.AddComponent<Rigidbody>(); }
+                else { prefabCollider.isTrigger = true; }
+                worldItems.Add(worldItem);
             }
         }
 
         public void AddItem(GeneralItem item, bool applyHeight = true)
         {
             SpawnIndividualItem(item, isRigidBody, out pileHeight, applyHeight ? pileHeight : 0);
+        }
+
+        public void AddItem(ItemInWorld item, bool applyHeight = true)
+        {
+            ParentItemToPile(item, isRigidBody, out pileHeight, applyHeight ? pileHeight : 0);
         }
 
         public void MergePile(ItemPile pileToMerge, bool applyHeight = true)
@@ -144,37 +175,41 @@ namespace GoTF.Content
         /// Remove an item prefab from the visible pile
         /// </summary>
         /// <param name="item"></param>
-        public void RemoveItem(GeneralItem item)
+        public void RemoveItem(ItemInWorld worldItem, bool shouldDestroy = false)
         {
-            if (!itemsPrefabs.TryGetValue(item, out ItemInWorld itemToRemove))
+            if (!worldItems.Contains(worldItem))
             {
-                Debug.Log("Removing " + item.ItemName + " from pile " + ItemPile.ToString() + " failed: no such item found");
+                Debug.Log("Removing " + worldItem.ItemName + " from pile " + ItemPile.ToString() + " failed: no such item found");
                 return;
             }
-            itemsPrefabs.Remove(item);
+            worldItems.Remove(worldItem);
+            ItemPile.RemoveItemFromPile(worldItem.item);
             // Should recalculate pile Height
 
             // Suppose that item is already removed from itemPile
 
             // If Pile is now empty, destroy whole GameObject
 
-            if (itemsPrefabs.Count == 0)
+            worldItem.transform.parent = null;
+
+            if (worldItems.Count == 0)
             {
                 Destroy(gameObject);
                 return;
             }
-
-            Destroy(itemToRemove.gameObject);
+            if (shouldDestroy) { Destroy(worldItem.gameObject); }
         }
 
         public void RemoveItem(int index)
         {
-            if (index < 0 || index >= itemsPrefabs.Count)
+            if (index < 0 || index >= worldItems.Count)
             {
                 Debug.Log("Removing item number " + index + " from pile " + ItemPile.ToString() + " failed: index out of range");
                 return;
             }
-            RemoveItem(itemsPrefabs.Keys.ToList()[index]);
+            ItemInWorld worldItem = worldItems[index];
+            ItemPile.RemoveItemFromPile(worldItem.item);
+            RemoveItem(worldItem);
         }
         public void RemoveLastItem()
         {
@@ -190,7 +225,7 @@ namespace GoTF.Content
         {
             if (isRigidBody) { return; }
             isRigidBody = true;
-            foreach (ItemInWorld itemPrefab in itemsPrefabs.Values)
+            foreach (ItemInWorld itemPrefab in worldItems)
             {
                 GameObject itemGO = itemPrefab.gameObject;
                 itemGO.GetComponent<BoxCollider>().isTrigger = false;
@@ -198,9 +233,33 @@ namespace GoTF.Content
             }
         }
 
+        public void RemoveRigidBodyFromItems() 
+        {
+            isRigidBody = false;
+            foreach (ItemInWorld itemPrefab in worldItems)
+            {
+                GameObject itemGO = itemPrefab.gameObject;
+                BoxCollider collider;
+                if (!itemGO.TryGetComponent<BoxCollider>(out collider))
+                {
+                    collider = itemGO.GetComponentInChildren<BoxCollider>();
+                }
+                if (collider != null) collider.isTrigger = true;
+                if (itemGO.TryGetComponent<Rigidbody>(out Rigidbody rb)) { Destroy(rb); }
+            }
+        }
+
         public void ChangeParent(Transform newParent)
         {
-            transform.SetParent(newParent, false);
+            Debug.Log("Reparenting " + ItemPile.ToString() + " to " + newParent.ToString());
+            transform.SetParent(newParent, true);
+            transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            if (ItemPile.IsPileUniqueItem)
+            {
+                ItemInWorld itemInWorld = worldItems[0];
+                itemInWorld.transform.SetLocalPositionAndRotation(itemInWorld.item.InHandPosition, itemInWorld.item.InHandRotation);
+            }
+            Debug.Log(transform.position);
         }
     }
 }
