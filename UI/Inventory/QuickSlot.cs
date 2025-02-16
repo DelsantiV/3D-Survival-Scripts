@@ -31,14 +31,14 @@ namespace GoTF.Content
         {
             get
             {
-                return inventoryManager.MaxCarryingWeight(hand);
+                return inventoryManager.MaxCarryingWeightInHand(hand);
             }
         }
         public float MaxCarryingBulk
         {
             get
             {
-                return inventoryManager.MaxCarryingBulk(hand);
+                return inventoryManager.MaxCarryingBulkInHand(hand);
             }
         }
 
@@ -50,7 +50,7 @@ namespace GoTF.Content
             {
                 Debug.Log("Spawning pile in hand");
                 bool success = base.TryAddPile(pile, maxWeight, maxBulk);
-                if (success) { handsManager?.InstantiateItemPileInHand(pile, hand); }
+                if (success) { handsManager?.InstantiateItemPileInHand(pile, hand); } // Could do better : Instantiate only new items
                 return success;
             }
 
