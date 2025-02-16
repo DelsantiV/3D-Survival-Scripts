@@ -29,7 +29,9 @@ namespace GoTF.Content
             rb.automaticCenterOfMass = true;
             transform.parent = null;
             treeDebris.BreakBranch();
+            ItemManager.TurnObjectIntoItem(gameObject, "stick");
             Debug.Log("Branch broke !");
+            Destroy(this);
         }
 
         protected override bool CheckToolTierAndType(ItemProperties.DamageProperties damageProperties)
