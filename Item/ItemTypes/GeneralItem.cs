@@ -34,6 +34,12 @@ namespace GoTF.Content
         /// </summary>
         public float Bulk { get { return ItemSO.bulk; } }
 
+        // Will require to be an available information in ItemGeneralSO
+        public Vector3 InHandPosition { get { return ItemPrefab.transform.position; } }
+        public Quaternion InHandRotation { get { return ItemPrefab.transform.rotation; } }
+        public Vector3 InPilePosition { get { return Vector3.zero; } }
+        public Quaternion InPileRotation { get { return Quaternion.identity; } }
+
         public int animationID;
         public SpoilageProperties spoilageProperties;
 

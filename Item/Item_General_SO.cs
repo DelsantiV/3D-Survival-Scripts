@@ -20,6 +20,10 @@ namespace GoTF.Content
         public string item_class_name;
         public float weight;
         public float bulk;
+        public Vector3 hand_position;
+        public Vector3 hand_rotation;
+        public Vector3 pile_position;
+        public Vector3 pile_rotation;
 
         public string classProperties;
 
