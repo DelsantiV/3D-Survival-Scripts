@@ -145,15 +145,14 @@ namespace GoTF.Content
             {
                 var selectionTransform = hit.transform;
 
-                if (selectionTransform.GetComponent<ItemInWorld>())
+                if (selectionTransform.TryGetComponent<IInteractable>(out IInteractable currentInteraction))
                 {
-                    ItemInWorld currentInteraction = selectionTransform.GetComponent<ItemInWorld>();
                     canvasManager.SetInteractionTextAndActivate(currentInteraction.ObjectName);
                     isInteracting = true;
 
                     if (Input.GetKeyDown(PlayerInputConfig.GetKeyCodeForControl(Controls.Collect)))
                     {
-                        selectionTransform.GetComponent<ItemInWorld>().PickUpItem(this);
+                        currentInteraction.OnCollectInteract(this);
                     }
                 }
                 else
