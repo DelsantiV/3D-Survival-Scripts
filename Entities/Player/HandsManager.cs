@@ -150,16 +150,6 @@ namespace GoTF.Content
             return HandTransform(hand).gameObject.GetComponentInChildren<ItemPileInWorld>();
         }
 
-        public void AddItemToEquippedPileInHand(GeneralItem item, Hand hand)
-        {
-            if (hand != Hand.none && item != null) EquippedPileInHand(hand).AddItem(item);
-        }
-
-        public void RemoveItemToEquippedPileInHand(GeneralItem item, Hand hand)
-        {
-            if (hand != Hand.none && item != null) EquippedPileInHand(hand).RemoveItem(item);
-        }
-
         public void RemoveItemToEquippedPileInHand(int index, Hand hand)
         {
             EquippedPileInHand(hand).RemoveItem(index);
@@ -182,6 +172,7 @@ namespace GoTF.Content
             if (pileInWorld != null)
             {
                 pileInWorld.ChangeParent(HandTransform(hand));
+                if (!pileInWorld.TryGetComponent<EquippedItemPile>(out var equippedPile)){ pileInWorld.AddComponent<EquippedItemPile>(); }
             }
         }
         public void ParentPileToHand(ItemPile pile, Hand hand)

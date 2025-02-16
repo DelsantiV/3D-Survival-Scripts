@@ -227,10 +227,24 @@ namespace GoTF.Content
         {
 
         }
+        /// <summary>
+        /// Add a pile to the first hand it can be added (starting by prefered hand). Pile Items Prefabs are spawned. 
+        /// </summary>
+        /// <param name="pile"></param>
+        /// <returns></returns>
+        public bool TryAddPile(ItemPile pile)
+        {
+            return HandsInventory.TryAddItemPileToNextHand(pile);
+        }
 
+        /// <summary>
+        /// Adds an item to the first hand it can be added (starting by prefered hand). Item Prefab must exist in world before the call. 
+        /// </summary>
+        /// <param name="pile"></param>
+        /// <returns></returns>
         public bool TryCollectItem(ItemInWorld itemObject)
         {
-            return HandsInventory.TryAddItemToNextHand(itemObject.item);
+            return HandsInventory.TryCollectItemInNextHand(itemObject);
         }
 
         public bool TryCollectPile(ItemPileInWorld itemPileInWorld)

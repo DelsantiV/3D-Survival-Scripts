@@ -89,14 +89,21 @@ namespace GoTF.Content
             return 0f;
         }
 
-        public float MaxCarryingWeight(Hand hand)
+        private float CurrentCarryingBulkInHand(Hand hand)
+        {
+            ItemPile pileInHand = ItemPileInHand(hand);
+            if (pileInHand != null) { return pileInHand.Bulk; }
+            return 0f;
+        }
+
+        public float MaxCarryingWeightInHand(Hand hand)
         {
             if (hand == prefHand) { return playerStatus.maxCarriyngWeightPrefHand; }
             else if (hand == otherHand) { return playerStatus.maxCarriyngWeightOtherHand; }
             else if (hand == Hand.both) { return playerStatus.maxCarriyngWeightBothHands; }
             return 0f;
         }
-        public float MaxCarryingBulk(Hand hand)
+        public float MaxCarryingBulkInHand(Hand hand)
         {
             if (hand == prefHand) { return playerStatus.maxCarriyngBulkPrefHand; }
             else if (hand == otherHand) { return playerStatus.maxCarriyngBulkOtherHand; }
@@ -132,6 +139,15 @@ namespace GoTF.Content
                 Hand.both => bothHandQuickSlot,
                 _ => null,
             };
+        }
+
+        public bool CouldHoldPileInHand(ItemPile pile, Hand hand)
+        {
+            return CurrentCarryingWeightInHand(hand) + pile.Weight < MaxCarryingWeightInHand(hand) && CurrentCarryingBulkInHand(hand) + pile.Bulk < MaxCarryingBulkInHand(hand);
+        }
+        public bool CouldHoldPileInHand(GeneralItem item, Hand hand)
+        {
+            return CurrentCarryingWeightInHand(hand) + item.Weight < MaxCarryingWeightInHand(hand) && CurrentCarryingBulkInHand(hand) + item.Bulk < MaxCarryingBulkInHand(hand);
         }
         private ItemPile ItemPileInHand(Hand hand)
         {
@@ -177,10 +193,10 @@ namespace GoTF.Content
         public bool TryAddItemPileToHand(ItemPile pile, Hand hand)
         {
             Debug.Log("Trying to add pile to hand " + hand);
-            if (!IsHandEmpty(hand)) { return ItemPileInHand(hand).TryMergePile(pile, MaxCarryingWeight(hand), MaxCarryingBulk(hand)); }
+            if (!IsHandEmpty(hand)) { return ItemPileInHand(hand).TryMergePile(pile, MaxCarryingWeightInHand(hand), MaxCarryingBulkInHand(hand)); }
             else
             {
-                return HandQuickSlot(hand).TryAddPile(pile, MaxCarryingWeight(hand), MaxCarryingBulk(hand));
+                return HandQuickSlot(hand).TryAddPile(pile, MaxCarryingWeightInHand(hand), MaxCarryingBulkInHand(hand));
             }
         }
 
@@ -191,6 +207,39 @@ namespace GoTF.Content
         public bool TryAddItemToNextHand(GeneralItem item)
         {
             return TryAddItemPileToNextHand(new ItemPile(item));
+        }
+
+        private bool TryCollectItemInHand(ItemInWorld worldItem, Hand hand) // Aim : being able to directly collect an item in world
+        {
+            if (!IsHandEmpty(hand)) { return ItemPileInHand(hand).TryAddItemToPile(worldItem); }
+            else 
+            {
+                if (CouldHoldPileInHand(worldItem.item, hand))
+                {
+                    ItemPile pile = new ItemPile(worldItem);
+                    handsManager.ParentPileToHand(pile, hand);
+                    pile.SetItemPileToSlot(HandQuickSlot(hand));
+                    Debug.Log("Parenting pile to empty hand");
+                    return true;
+                }
+                else
+                {
+                    Debug.Log("Pile is too heavy/bulky for this hand !");
+                    Debug.Log(CurrentCarryingWeightInHand(hand));
+                    Debug.Log(worldItem.item.Weight);
+                    Debug.Log(MaxCarryingWeightInHand(hand));
+                }
+            }
+            return false;
+        }
+
+        public bool TryCollectItemInNextHand(ItemInWorld worldItem)
+        {
+            foreach (Hand hand in handsManager.ActiveHands)
+            {
+                if (TryCollectItemInHand(worldItem, hand)) { return true; }
+            }
+            return false;
         }
 
         public void MakeHandEmpty(Hand hand)
@@ -229,8 +278,8 @@ namespace GoTF.Content
             List<ItemPile> splittedPile = ItemPileInHand(Hand.both).SplitItemPile(
                 out ItemPile rejectedPile,
                 maxNumberOfPiles: 2,
-                maxWeight: MaxCarryingWeight(prefHand),
-                maxBulk: MaxCarryingBulk(prefHand),
+                maxWeight: MaxCarryingWeightInHand(prefHand),
+                maxBulk: MaxCarryingBulkInHand(prefHand),
                 ItemPilesUtilities.SplitMethod.Both);
 
             if (rejectedPile.NumberOfItemsInPile > 0) 
@@ -252,9 +301,9 @@ namespace GoTF.Content
         {
             if (IsHandEmpty(Hand.both)) { return; }
 
-            ItemPile prefHandPile = ItemPileInHand(Hand.both).TakePartOfPile(maxWeight: MaxCarryingWeight(prefHand), maxBulk: MaxCarryingBulk(prefHand), removeFromOriginalPile:true);
+            ItemPile prefHandPile = ItemPileInHand(Hand.both).TakePartOfPile(maxWeight: MaxCarryingWeightInHand(prefHand), maxBulk: MaxCarryingBulkInHand(prefHand), removeFromOriginalPile:true);
             if (!prefHandPile.IsEmpty) { TryAddItemPileToHand(prefHandPile, prefHand); }
-            ItemPile otherHandPile = ItemPileInHand(Hand.both).TakePartOfPile(maxWeight: MaxCarryingWeight(prefHand), maxBulk: MaxCarryingBulk(prefHand), removeFromOriginalPile: true);
+            ItemPile otherHandPile = ItemPileInHand(Hand.both).TakePartOfPile(maxWeight: MaxCarryingWeightInHand(prefHand), maxBulk: MaxCarryingBulkInHand(prefHand), removeFromOriginalPile: true);
             Debug.Log(otherHandPile.ToString());
             if (!otherHandPile.IsEmpty) { TryAddItemPileToHand(otherHandPile, otherHand); }
 
