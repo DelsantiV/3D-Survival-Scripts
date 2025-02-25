@@ -42,7 +42,7 @@ namespace GoTF.Content
         {
             ItemPile = itemPile;
             itemPile.OnPileChanged.AddListener(UpdatePileIcon);
-            CreatePileIcon();
+            if (itemPile.NumberOfItemsInPile > 0) { CreatePileIcon(); }
             Initialize(player);
         }
 
@@ -119,7 +119,7 @@ namespace GoTF.Content
 
         private void CreatePileIcon()
         {
-
+            if (ItemPile.NumberOfItemsInPile == 0) {  return; }
             GameObject imageTemplateGO = transform.Find("TemplateImage").gameObject;
             float totalImageSize = imageTemplateGO.GetComponent<RectTransform>().sizeDelta.x;
 
