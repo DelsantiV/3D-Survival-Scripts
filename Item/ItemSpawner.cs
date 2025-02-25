@@ -26,16 +26,20 @@ namespace GoTF.Content
         {
             if (itemNamesList.Count > 0)
             {
-                List<GeneralItem> itemsList = itemNamesList.ConvertAll(itemName => ItemManager.GetItemByName(itemName)); // Handle case when ItemManager.GetItemByName returns null
+                List<GeneralItem> itemsList = itemNamesList.ConvertAll(itemName => ItemManager.GetItemByName(itemName));
+                itemsList.RemoveAll(item => item == null);
                 itemPile = new ItemPile(itemsList);
             }
         }
 
         private void SpawnPile()
         {
-            if (itemPile.ItemsInPile != null)
+            if (itemPile != null)
             {
-                itemPile.SpawnInWorld(transform.position);
+                if (itemPile.NumberOfItemsInPile > 0)
+                {
+                    itemPile.SpawnInWorld(transform.position);
+                }
             }
         }
     }

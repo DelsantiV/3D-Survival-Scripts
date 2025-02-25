@@ -161,6 +161,10 @@ namespace GoTF.Content
         {
             if (itemsInPile == null) { ItemsInPile = new(); }
             else { ItemsInPile = itemsInPile; }
+            if (ItemsInPile.Contains(null)) {
+                Debug.Log("Pile "+ToString() + "contained null items. These were removed.");
+                ItemsInPile.RemoveAll(item => item == null);
+            }
         }
 
         /// <summary>
@@ -170,7 +174,8 @@ namespace GoTF.Content
         /// <returns> ItemPile </returns>
         public ItemPile(GeneralItem item)
         {
-            ItemsInPile = new List<GeneralItem>() { item };
+            if (item != null) ItemsInPile = new List<GeneralItem>() { item };
+            else ItemsInPile = new();
         }
 
         /// <summary>
@@ -179,17 +184,29 @@ namespace GoTF.Content
         /// <param name="itemNamesList"></param>
         public ItemPile(List<string> itemNamesList)
         {
-            ItemsInPile = itemNamesList.ConvertAll(itemName => ItemManager.GetItemByName(itemName)); ;
+            ItemsInPile = itemNamesList.ConvertAll(itemName => ItemManager.GetItemByName(itemName));
+            if (ItemsInPile.Contains(null))
+            {
+                Debug.Log("Pile " + ToString() + "contained null items. These were removed.");
+                ItemsInPile.RemoveAll(item => item == null);
+            }
         }
 
         public ItemPile(ItemInWorld worldItem)
         {
             Debug.Log("Creating new Pile from World Item");
-            ItemsInPile = new List<GeneralItem>() { worldItem.item };
-            worldItem.RemoveFromPile();
-            ItemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
-            ItemPileInWorld.InitializeItemPileInWorld(this, worldItem);
-            ItemPileInWorld.RemoveRigidBodyFromItems();
+            if (worldItem.item != null)
+            {
+                ItemsInPile = new List<GeneralItem>() { worldItem.item };
+                worldItem.RemoveFromPile();
+                ItemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
+                ItemPileInWorld.InitializeItemPileInWorld(this, worldItem);
+                ItemPileInWorld.RemoveRigidBodyFromItems();
+            }
+            else
+            {
+                Debug.Log("Failed cause World Item was null item");
+            }
         }
 
         public void DestroyPile() { ItemsInPile.Clear(); }
@@ -533,12 +550,18 @@ namespace GoTF.Content
         }
 
         public override string ToString()
-        { 
-            if (this == null) { return "Null Pile"; }
+        {
             if (NumberOfItemsInPile == 0) { return "Empty Pile"; }
             string pileName = "";
-            foreach (Item_General_SO itemSO in ItemsSOInPile) { pileName = pileName + ", " + itemSO.name; }
-            return pileName[2..];
+            foreach (Item_General_SO itemSO in ItemsSOInPile) 
+            {
+                if (itemSO != null)
+                {
+                    pileName = pileName + ", " + itemSO.name;
+                }
+            }
+            if (pileName != "") { pileName = pileName[2..]; }
+            return pileName;
         }
     }
 
