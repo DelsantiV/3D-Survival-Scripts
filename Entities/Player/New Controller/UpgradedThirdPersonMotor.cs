@@ -120,6 +120,7 @@ namespace GoTF.Content
 
         public void Init()
         {
+            // getting components
             playerManager = GetComponent<PlayerManager>();
             animator = GetComponent<Animator>();
             animator.updateMode = AnimatorUpdateMode.Fixed;
@@ -167,6 +168,9 @@ namespace GoTF.Content
             terrainGrid = Terrain.activeTerrain.GetComponent<TerrainGrid>();
             Debug.Log(terrainGrid);
             currentGridCell = terrainGrid.GetGridCell(transform.position);
+
+            // cursor
+            Cursor.lockState = CursorLockMode.Locked;
         }
 
         public virtual int GetHandLayer(HandsManager.Hand hand)
