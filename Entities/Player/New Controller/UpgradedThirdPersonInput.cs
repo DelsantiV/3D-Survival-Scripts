@@ -22,8 +22,9 @@ namespace GoTF.Content
         [HideInInspector] public vThirdPersonCameraUpgraded tpCamera;
         [HideInInspector] public Camera cameraMain;
         [HideInInspector] public bool cameraLocked = false;
-        [HideInInspector] public bool canMove;
-        [HideInInspector]
+        [HideInInspector] public bool canMove = true;
+        [HideInInspector] public bool isCraftingMode = false;
+        [HideInInspector] public bool allowActionInputs = true;
         public bool CanAction
         {
             get 
@@ -58,6 +59,8 @@ namespace GoTF.Content
             InitializeTpCamera();
             player = GetComponent<PlayerManager>();
             playerInputConfig = player.PlayerInputConfig;
+            allowActionInputs = true;
+            isCraftingMode = false;
         }
 
         protected virtual void FixedUpdate()
@@ -105,7 +108,7 @@ namespace GoTF.Content
         protected virtual void InputHandle()
         {
             LocomotionInputs();  // Handles inputs related to locomotion
-            ActionInputs();      // Handles inputs related to action
+            ActionInputs();      // Handles inputs related to actions
         }
 
         protected virtual void LocomotionInputs()
@@ -122,13 +125,18 @@ namespace GoTF.Content
             JumpInput();
             if (CanAction)
             {
-                OtherHandInput();
-                PrefHandInput();
-                ForageResourcesInput();
+                if (allowActionInputs)
+                {
+                    OtherHandInput();
+                    PrefHandInput();
+                    ForageResourcesInput();
+                }
+                HandleCraftingModeInput();
             }
             CheckStopPrefHandAction();
             CheckStopOtherHandAction();
             ChangeHandModeInput();
+            HandleCursorLockMode();
         }
 
         protected KeyCode GetInputKey(Controls control)
@@ -223,6 +231,28 @@ namespace GoTF.Content
             }
         }
 
+        protected void HandleCraftingModeInput()
+        {
+            if (Input.GetKeyDown(GetInputKey(Controls.CraftingMode)))
+            {
+                if (!isCraftingMode)
+                {
+                    isCraftingMode = true;
+                    canMove = false;
+                    allowActionInputs = false;
+                    Debug.Log("Crafting Mode enabled !");
+                }
+
+                else
+                {
+                    canMove = true;
+                    allowActionInputs = true;
+                    isCraftingMode = false;
+                    Debug.Log("Crafting Mode disabled !");
+                }
+            }
+        }
+
         protected virtual void OtherHandInput() 
         { 
             if (Input.GetKey(GetInputKey(Controls.OtherHandAction)) && !cc.isAnyHandAction)
@@ -274,6 +304,26 @@ namespace GoTF.Content
             if (Input.GetKeyDown(GetInputKey(Controls.SwitchHandMode)) && !cc.isAnyHandAction)
             {
                 if (player.TrySwitchHandMode()) { cc.SwitchHandMode(); }
+            }
+        }
+
+        protected virtual void HandleCursorLockMode()
+        {
+            if (Input.GetKey(GetInputKey(Controls.UnlockCursor)))
+            {
+                cc.LockCursor(false);
+                cameraLocked = true;
+                allowActionInputs = false;
+                Debug.Log("Unlock cursor");
+                return;
+            }
+
+            if (Input.GetKeyUp(GetInputKey(Controls.UnlockCursor)))
+            {
+                cc.LockCursor(true);
+                allowActionInputs = true;
+                cameraLocked = false;
+                return;
             }
         }
 

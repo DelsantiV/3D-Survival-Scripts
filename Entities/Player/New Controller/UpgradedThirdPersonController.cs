@@ -203,5 +203,21 @@ namespace GoTF.Content
             StopActionsAndMovement();
             lockMovement = true;
         }
+
+        public void LockCursor(bool locked)
+        {
+            if (locked) {Cursor.lockState = CursorLockMode.Locked; }
+            else { Cursor.lockState = CursorLockMode.None;}
+        }
+
+        public void StartCraftingMode()
+        {
+            lockMovement = true;
+        }
+
+        public void StopCraftingMode()
+        {
+            lockMovement = false;
+        }
     }
 }
