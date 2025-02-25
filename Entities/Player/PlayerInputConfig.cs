@@ -204,6 +204,8 @@ namespace GoTF.Config
         OtherHandAction,
         GetPrefHandPile,
         GetOtherHandPile,
-        SwitchHandMode
+        SwitchHandMode,
+        CraftingMode,
+        UnlockCursor
     }
 }
