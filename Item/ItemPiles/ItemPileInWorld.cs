@@ -56,28 +56,6 @@ namespace GoTF.Content
         }
 
         /// <summary>
-        /// Spawns the item pile as a child of the target Transform
-        /// </summary>
-        /// <param name="itemPile" The ItemPile to spawn></param>
-        /// <param name="targetTransform" The target Transform></param>
-        /// <param name="isRigidBody" Should the items have a RigidBody></param>
-        public void SpawnItemPile(ItemPile itemPile, Transform targetTransform, bool isRigidBody = true)
-        {
-            this.ItemPile = itemPile;
-            this.isRigidBody = isRigidBody;
-            transform.SetParent(targetTransform);
-            transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-            if (itemPile != null)
-            {
-                foreach (GeneralItem item in ItemPile.ItemsInPile)
-                {
-                    SpawnIndividualItem(item, isRigidBody, out float previousItemHeight, pileHeight);
-                    pileHeight += previousItemHeight;
-                }
-            }
-        }
-
-        /// <summary>
         /// Spawns the item pile as a child of the target Transform, with given LOCAL position and rotation (relative to the target transform)
         /// </summary>
         /// <param name="itemPile" The ItemPile to spawn></param>
@@ -85,7 +63,7 @@ namespace GoTF.Content
         /// <param name="spawnPosition" The local position relative to the target Transform></param>
         /// <param name="spawnRotation" The local rotation relative to the target Transform></param>
         /// <param name="isRigidBody" Should the items have a RigidBody></param>
-        public void SpawnItemPile(ItemPile itemPile, Transform targetTransform, Vector3 spawnPosition, Quaternion spawnRotation, bool isRigidBody = true)
+        public void SpawnItemPile(ItemPile itemPile, Transform targetTransform, Vector3 spawnPosition, Quaternion spawnRotation, bool isRigidBody = true, bool spawnInHands = false)
         {
             this.ItemPile = itemPile;
             this.isRigidBody = isRigidBody;
@@ -93,12 +71,27 @@ namespace GoTF.Content
             transform.SetLocalPositionAndRotation(spawnPosition, spawnRotation);
             if (itemPile != null)
             {
-                foreach (GeneralItem item in ItemPile.ItemsInPile)
+                if (spawnInHands && itemPile.IsPileUniqueItem) { SpawnIndividualItemInHand(itemPile.GetFirstItemInPile); }
+                else
                 {
-                    SpawnIndividualItem(item, isRigidBody, out float previousItemHeight, pileHeight);
-                    pileHeight += previousItemHeight;
+                    foreach (GeneralItem item in ItemPile.ItemsInPile)
+                    {
+                        SpawnIndividualItem(item, isRigidBody, out float previousItemHeight, pileHeight);
+                        pileHeight += previousItemHeight;
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// Spawns the item pile as a child of the target Transform
+        /// </summary>
+        /// <param name="itemPile" The ItemPile to spawn></param>
+        /// <param name="targetTransform" The target Transform></param>
+        /// <param name="isRigidBody" Should the items have a RigidBody></param>
+        public void SpawnItemPile(ItemPile itemPile, Transform targetTransform, bool isRigidBody = true, bool spawnInHands = false)
+        {
+            SpawnItemPile(itemPile, targetTransform, Vector3.zero, Quaternion.identity, isRigidBody, spawnInHands);
         }
 
         private void SpawnIndividualItem(GeneralItem item, bool isRigidBody, out float prefabHeight, float height = 0)
@@ -111,7 +104,7 @@ namespace GoTF.Content
                     GameObject itemPrefab = Instantiate(item.ItemPrefab, transform, false);
                     BoxCollider prefabCollider = itemPrefab.GetComponent<BoxCollider>();
                     prefabHeight = prefabCollider.size.y * itemPrefab.transform.localScale.y;
-                    itemPrefab.transform.localPosition = Vector3.up * height;
+                    itemPrefab.transform.SetLocalPositionAndRotation(item.InPilePosition + Vector3.up * height, item.InPileRotation);
                     ItemInWorld itemInWorld = itemPrefab.AddComponent<ItemInWorld>();
                     itemInWorld.item = item;
                     if (isRigidBody) { itemPrefab.AddComponent<Rigidbody>(); }
@@ -128,11 +121,28 @@ namespace GoTF.Content
                 {
                     GameObject itemPrefab = Instantiate(item.ItemPrefab, transform);
                     BoxCollider prefabCollider = itemPrefab.GetComponent<BoxCollider>();
-                    itemPrefab.transform.localPosition = Vector3.up * height;
+                    itemPrefab.transform.SetLocalPositionAndRotation(item.InPilePosition + Vector3.up * height, item.InPileRotation);
                     ItemInWorld itemInWorld = itemPrefab.AddComponent<ItemInWorld>();
                     itemInWorld.item = item;
                     if (isRigidBody) { itemPrefab.AddComponent<Rigidbody>(); }
                     else { prefabCollider.isTrigger = true; }
+                    worldItems.Add(itemInWorld);
+                }
+            }
+        }
+
+        private void SpawnIndividualItemInHand(GeneralItem item)
+        {
+            if (item != null)
+            {
+                if (item.ItemPrefab != null)
+                {
+                    GameObject itemPrefab = Instantiate(item.ItemPrefab, transform);
+                    BoxCollider prefabCollider = itemPrefab.GetComponent<BoxCollider>();
+                    itemPrefab.transform.SetLocalPositionAndRotation(item.InHandPosition, item.InHandRotation);
+                    ItemInWorld itemInWorld = itemPrefab.AddComponent<ItemInWorld>();
+                    itemInWorld.item = item;
+                    prefabCollider.isTrigger = true; 
                     worldItems.Add(itemInWorld);
                 }
             }
