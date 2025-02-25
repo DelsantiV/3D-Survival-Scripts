@@ -92,7 +92,7 @@ public class Bunny_better_behavior : MonoBehaviour
 
 
 
-                if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstructionMask))
+                if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y+1, transform.position.z), directionToTarget, distanceToTarget, obstructionMask))
                 {
                     canSeePlayer = true;
                     targetPosition = target.position;
