@@ -9,7 +9,7 @@ namespace GoTF.Content
         public virtual RectTransform RectTransform { get { return gameObject.GetComponent<RectTransform>(); } }
         public virtual void OpenUI() { gameObject.SetActive(true); }
         public virtual void CloseUI() { gameObject.SetActive(false); }
-        public virtual void SetActive(bool active) { gameObject.SetActive(active); }
+        public virtual void SetActive(bool active) { if (active) OpenUI(); else CloseUI(); }
         public bool IsOpen() { return gameObject.activeInHierarchy; }
 
         public virtual void SetPosition(Vector2 position) { RectTransform.anchoredPosition = position; }
