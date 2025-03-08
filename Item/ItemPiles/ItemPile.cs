@@ -517,7 +517,7 @@ namespace GoTF.Content
         {
             Debug.Log("Spawning item pile : " + ToString());
             ItemPileInWorld = new GameObject("Pile " + ToString()).AddComponent<ItemPileInWorld>();
-            ItemPileInWorld.SpawnItemPile(this, hand, false);
+            ItemPileInWorld.SpawnItemPile(this, hand, false, true);
             return ItemPileInWorld;
         }
 
