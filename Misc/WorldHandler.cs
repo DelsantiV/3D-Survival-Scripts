@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using GoTF.GameLoading;
+using GoTF.Utilities;
 
-namespace GoTF.Content
+namespace GoTF.World
 {
     public class WorldHandler : MonoBehaviour
     {
