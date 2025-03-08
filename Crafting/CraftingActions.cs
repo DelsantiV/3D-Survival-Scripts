@@ -1,25 +1,84 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GoTF.Content
 {
-    public enum CraftingActions
+    public class Crafting
     {
-        Strech,
-        Crush
+        public enum CraftingAction
+        {
+            Strech,
+            Crush,
+            Assemble,
+            Mix,
+            Hit
+        }
+
+        public enum CraftingProcess
+        {
+            Cook,
+            Burn,
+            Dry,
+            Moisten,
+            Grind
+        }
+
     }
-    public enum CraftingActionsTwoItems
+    public enum CraftingTable
     {
-        Assemble,
-        Mix,
-        Knap
+        FirePit
     }
 
-    public enum CraftingProcesses
+    public class CraftingRecipe
     {
-        Cook,
-        Burn,
-        Dry,
-        Moisten,
-        Grind
+        public Crafting.CraftingAction craftingAction;
+        public ItemPile firstItemPile;
+        public ItemPile secondItemPile;
+        public bool isSecondPileTool;
+        public ItemPile resultItemPile;
+        public bool requiresTwoHands;
+        public bool isSecondPileNeeded
+        {
+            get { return secondItemPile != null; }
+        }
+
+        public CraftingRecipe(JObject jsonFile) 
+        {
+            craftingAction = (Crafting.CraftingAction) Enum.Parse(typeof(Crafting.CraftingAction), jsonFile["craftingAction"].ToString());
+            firstItemPile = new ItemPile(JsonConvert.DeserializeObject<List<string>>(jsonFile["firstItemPile"].ToString()));
+            if (jsonFile["secondItemPile"] != null)
+            { if (jsonFile["secondItemPile"].ToString() == "")
+                {
+                    secondItemPile = null;
+                }
+                else
+                {
+                    secondItemPile = new ItemPile(JsonConvert.DeserializeObject<List<string>>(jsonFile["secondItemPile"].ToString()));
+                }
+            }
+            else secondItemPile = null;
+            if (jsonFile["isSecondItemPileTool"] != null) isSecondPileTool = JsonConvert.DeserializeObject<bool>(jsonFile["isSecondPileTool"].ToString());
+            resultItemPile = new ItemPile(JsonConvert.DeserializeObject<List<string>>(jsonFile["resultItemPile"].ToString()));
+            if (jsonFile["requiresTwoHands"] != null) isSecondPileTool = JsonConvert.DeserializeObject<bool>(jsonFile["requiresTwoHands"].ToString());
+            else requiresTwoHands = false;
+
+            Debug.Log("Loaded recipe : " + firstItemPile + secondItemPile + resultItemPile);
+        }
+    }
+
+    public class CraftingProcess
+    {
+        public Crafting.CraftingProcess craftingProcess;
+        public ItemPile itemPile;
+        public World.World.EnvConditions EnvConditions;
+
+        public CraftingProcess(JObject jsonFile)
+        {
+
+        }
     }
 }
