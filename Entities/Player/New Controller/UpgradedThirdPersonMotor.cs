@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using GoTF.World;
 
 namespace GoTF.Content
 {
