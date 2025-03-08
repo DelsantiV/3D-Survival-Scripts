@@ -43,7 +43,7 @@ namespace GoTF.Content
         }
         public HandsInventory HandsInventory { get; private set; }
         public PlayerInputConfig PlayerInputConfig { get; private set; }
-
+        public CraftingManager CraftingManager { get; private set; }
         private CanvasManager canvasManager;
 
         public QuickSlot LeftHandQuickSlot
@@ -90,6 +90,7 @@ namespace GoTF.Content
             itemDropper = transform.Find("Item Dropper");
             PlayerStatus = new PlayerStatus(this, maxHealth, maxFatigue, maxCalories);
             DigestiveSystem = new DigestiveSystem(PlayerStatus);
+            CraftingManager = new(this);
             PlayerInputConfig = new();
             HandsManager = new HandsManager(leftHand, rightHand, prefHand:prefHand, bothHand:bothHand);
             otherHand = HandsManager.OtherHand;
@@ -305,6 +306,11 @@ namespace GoTF.Content
         {
             Debug.Log("Should stop detecting hits");
             HandsManager.EndAction();
+        }
+
+        public void ToggleCraftingMode(bool toggle = true)
+        {
+            canvasManager.ToggleCraftingMenu(toggle);
         }
     }
 }

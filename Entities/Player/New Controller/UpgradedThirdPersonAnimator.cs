@@ -126,6 +126,17 @@ namespace GoTF.Content
         {
             animator.SetTrigger(UpgradedAnimatorParameters.DeathTrigger);
         }
+
+        public virtual void StartCraftingMode()
+        {
+            animator.SetBool(UpgradedAnimatorParameters.IsCrafting, true);
+            animator.CrossFadeInFixedTime("CraftingBasePosition", 0.5f);
+        }
+
+        public virtual void StopCraftingMode()
+        {
+            animator.SetBool(UpgradedAnimatorParameters.IsCrafting, false);
+        }
     }
 
     public static partial class UpgradedAnimatorParameters
@@ -143,5 +154,7 @@ namespace GoTF.Content
         public static int IsAction = Animator.StringToHash("isAction");
         public static int ItemActionID = Animator.StringToHash("ItemActionID");
         public static int DeathTrigger = Animator.StringToHash("Death");
+        public static int IsCrafting = Animator.StringToHash("IsCrafting");
+        public static int CraftingAnimationID = Animator.StringToHash("CraftingAnimationID");
     }
 }

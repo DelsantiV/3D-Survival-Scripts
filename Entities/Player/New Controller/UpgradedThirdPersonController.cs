@@ -129,7 +129,7 @@ namespace GoTF.Content
 
         public virtual void Forage()
         {
-            terrainGrid.SetDetailLayerForCell(currentGridCell, 0, 0);
+            //terrainGrid.SetDetailLayerForCell(currentGridCell, 0, 0);
         }
 
         public virtual void HandleHandAction(HandsManager.Hand hand, bool shouldDoAction = true)
@@ -210,14 +210,18 @@ namespace GoTF.Content
             else { Cursor.lockState = CursorLockMode.None;}
         }
 
-        public void StartCraftingMode()
+        public override void StartCraftingMode()
         {
+            base.StartCraftingMode();
             lockMovement = true;
+            playerManager.ToggleCraftingMode();
         }
 
-        public void StopCraftingMode()
+        public override void StopCraftingMode()
         {
+            base.StopCraftingMode();
             lockMovement = false;
+            playerManager.ToggleCraftingMode(false);
         }
     }
 }
