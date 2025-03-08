@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GoTF.Content
+namespace GoTF.World
 {
     public class GridCell
     {
@@ -17,8 +17,7 @@ namespace GoTF.Content
         public cellBounds bounds;
         public float steepness;
         public bool isWalkable;
-        public float temperature;
-        public float humidity;
+        public World.EnvConditions conditions;
         public float walkSpeedMultiplier;
         public int detailLayer;
 

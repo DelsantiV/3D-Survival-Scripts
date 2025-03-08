@@ -4,7 +4,7 @@ using UnityEditor.TerrainTools;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace GoTF.Content
+namespace GoTF.World
 {
     public class TerrainGrid : MonoBehaviour
     {
