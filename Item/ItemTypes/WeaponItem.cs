@@ -24,7 +24,7 @@ namespace GoTF.Content
             JObject jsonParsedFile = JObject.Parse(ItemSO.classProperties);
             if (jsonParsedFile != null)
             {
-                if (jsonParsedFile["weapon_properties"] != null)
+                if (Utilities.JSONUtilities.DoesJSONContainField(jsonParsedFile, "weapon_properties"))
                 {
                     WeaponProperties = JsonConvert.DeserializeObject<MeleeWeaponProperties>(jsonParsedFile["weapon_properties"].ToString());
                     animationID = WeaponProperties.animationID;

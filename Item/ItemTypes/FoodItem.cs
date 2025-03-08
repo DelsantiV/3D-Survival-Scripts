@@ -21,7 +21,7 @@ namespace GoTF.Content
             base.Initialize(itemSO);
             JObject jsonParsedFile = JObject.Parse(ItemSO.classProperties);
             if (jsonParsedFile != null) {
-                if (jsonParsedFile["nutrition_properties"] != null)
+                if (Utilities.JSONUtilities.DoesJSONContainField(jsonParsedFile,"nutrition_properties"))
                 {
                     NutritionProperties = JsonConvert.DeserializeObject<NutritionProperties>(jsonParsedFile["nutrition_properties"].ToString());
                 }
