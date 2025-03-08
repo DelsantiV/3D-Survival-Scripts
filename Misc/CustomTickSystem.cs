@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-namespace GoTF.Content
+namespace GoTF.Utilities
 {
     public static class CustomTickSystem
     {

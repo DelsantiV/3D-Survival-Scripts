@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GoTF.Utilities;
 
 namespace GoTF.Content
 {

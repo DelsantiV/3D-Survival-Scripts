@@ -54,7 +54,7 @@ namespace GoTF.Content
             this.maxFatigue = maxFatigue;
             this.maxCalories = maxCalories;
 
-            CustomTickSystem.OnLargeTick += UpdatePlayerStatus;
+            Utilities.CustomTickSystem.OnLargeTick += UpdatePlayerStatus;
 
             // Initialize to some low values for testing
             currentHealth = 1;
