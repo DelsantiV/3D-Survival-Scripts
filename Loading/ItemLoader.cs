@@ -19,7 +19,7 @@ namespace GoTF.GameLoading
     {
         private Dictionary<string, Item_General_SO> allItemsSOByName;
         private Dictionary<string, GeneralItem> allItemsByName;
-        public static UnityEvent Ready;
+        public UnityEvent Ready;
         public static List<string> allPrefabsLocations;
         public static List<string> allIconsLocations;
         public static string[] allItemNames;
@@ -60,6 +60,7 @@ namespace GoTF.GameLoading
                 itemJSON => { CreateItem(itemJSON); },
                 Addressables.MergeMode.Intersection);
             yield return itemsLoading;
+            Debug.Log("Loaded all items !");
             Task itemManagerInitialization = new Task(ItemManager.InitializeItemManager(allItemsSOByName));
             itemManagerInitialization.Finished += FireAssetsReady;
             yield return itemManagerInitialization;

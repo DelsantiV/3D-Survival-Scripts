@@ -19,9 +19,8 @@ namespace GoTF.GameLoading
         private void Awake()
         {
             m_LoadingSlider = FindAnyObjectByType<Slider>();
-            StartCoroutine(LoadItemsFromMemory());
+            StartCoroutine(LoadAssets());
             gameManager = GameManager.Instance;
-
         }
 
 
@@ -32,13 +31,14 @@ namespace GoTF.GameLoading
         }
 
 
-        public IEnumerator LoadItemsFromMemory()
+        public IEnumerator LoadAssets()
         {
-            Debug.Log("Loading items !");
+            Debug.Log("Loading assets !");
             ItemLoader itemLoader = new ItemLoader();
-            ItemLoader.Ready.AddListener(OnAssetsReady);
-            Task itemLoading = new Task(itemLoader.LoadItems());
-            yield return itemLoading;
+            CraftingRecipesLoader recipesLoader = new CraftingRecipesLoader();
+            yield return itemLoader.LoadItems();
+            yield return recipesLoader.LoadRecipes();
+            OnAssetsReady();
         }
     }
 }
