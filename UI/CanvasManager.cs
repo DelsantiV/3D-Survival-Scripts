@@ -25,6 +25,8 @@ namespace GoTF.Content
         private BasicUI bothHandQuickSlotHolder;
         private QuickSlot[] allQuickSlots;
 
+        private CraftingMenuUI craftingMenuUI;
+
         private PileMenu pileMenuTemplate;
 
         public PlayerManager player { get; private set; }
@@ -59,6 +61,8 @@ namespace GoTF.Content
             rightHandQuickSlot = transform.Find("Handslots/RightHandSlotHolder/RightHandSlot").GetComponent<QuickSlot>();
             bothHandQuickSlot = transform.Find("Handslots/BothHandSlotHolder/BothHandSlot").GetComponent<QuickSlot>();
             allQuickSlots = new QuickSlot[] { leftHandQuickSlot, rightHandQuickSlot, bothHandQuickSlot };
+
+            craftingMenuUI = transform.GetComponentInChildren<CraftingMenuUI>(true);
 
             pileMenuTemplate = transform.Find("PileMenuTemplate").GetComponent<PileMenu>();
         }
@@ -139,6 +143,11 @@ namespace GoTF.Content
             pileMenu.SetPosition(positionInUI);
             pileMenu.SetPile(pileInInventory);
             return pileMenu;
+        }
+
+        public void ToggleCraftingMenu(bool open = true)
+        {
+            craftingMenuUI.SetActive(open);
         }
     }
 }
