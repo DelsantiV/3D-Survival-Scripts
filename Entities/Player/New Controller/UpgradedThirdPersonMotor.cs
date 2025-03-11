@@ -167,7 +167,6 @@ namespace GoTF.Content
 
             // terrain grid data
             terrainGrid = Terrain.activeTerrain.GetComponent<TerrainGrid>();
-            Debug.Log(terrainGrid);
             currentGridCell = terrainGrid.GetGridCell(transform.position);
 
             // cursor
