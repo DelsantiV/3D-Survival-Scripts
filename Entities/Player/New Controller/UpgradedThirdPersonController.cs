@@ -214,6 +214,7 @@ namespace GoTF.Content
         {
             base.StartCraftingMode();
             lockMovement = true;
+            LockCursor(false);
             playerManager.ToggleCraftingMode();
         }
 
@@ -221,6 +222,7 @@ namespace GoTF.Content
         {
             base.StopCraftingMode();
             lockMovement = false;
+            LockCursor(true);
             playerManager.ToggleCraftingMode(false);
         }
     }
