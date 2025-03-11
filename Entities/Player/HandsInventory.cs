@@ -14,27 +14,9 @@ namespace GoTF.Content
         private readonly QuickSlot bothHandQuickSlot;
         private readonly HandsManager handsManager;
         private readonly PlayerStatus playerStatus;
-        private ItemPile RightHandPile
-        {
-            get
-            {
-                return rightHandQuickSlot.CurrentPile;
-            }
-        }
-        private ItemPile LeftHandPile
-        {
-            get
-            {
-                return leftHandQuickSlot.CurrentPile;
-            }
-        }
-        private ItemPile BothHandPile
-        {
-            get
-            {
-                return bothHandQuickSlot.CurrentPile;
-            }
-        }
+        private ItemPile RightHandPile;
+        private ItemPile LeftHandPile;
+        private ItemPile BothHandPile;
         private ItemPileInInventory RightHandPileUI
         {
             get
@@ -127,6 +109,9 @@ namespace GoTF.Content
             bothHandQuickSlot = player.BothHandQuickSlot;
             handsManager = player.HandsManager;
             playerStatus = player.PlayerStatus;
+            LeftHandPile = new();
+            RightHandPile = new();
+            BothHandPile = new();
         }
 
 
@@ -149,10 +134,19 @@ namespace GoTF.Content
         {
             return CurrentCarryingWeightInHand(hand) + item.Weight < MaxCarryingWeightInHand(hand) && CurrentCarryingBulkInHand(hand) + item.Bulk < MaxCarryingBulkInHand(hand);
         }
-        private ItemPile ItemPileInHand(Hand hand)
+        public ItemPile ItemPileInHand(Hand hand)
         {
-            return HandQuickSlot(hand).CurrentPile;
+            switch (hand)
+            {
+                case Hand.right: return RightHandPile;
+                case Hand.left: return LeftHandPile;
+                case Hand.both: return BothHandPile;
+            }
+            return null;
         }
+        public ItemPile PrefHandPile { get { return ItemPileInHand(prefHand); } }
+        public ItemPile OtherHandPile { get { return ItemPileInHand(otherHand); } }
+
         private ItemPileInInventory ItemPileUIInHand(Hand hand)
         {
             return HandQuickSlot(hand).CurrentPileUI;
@@ -160,7 +154,12 @@ namespace GoTF.Content
 
         public bool IsHandEmpty(Hand hand)
         {
-            return HandQuickSlot(hand).IsEmpty;
+            return ItemPileInHand(hand).IsEmpty;
+        }
+
+        public void ClearHand(Hand hand)
+        {
+            ItemPileInHand(hand).DestroyPile();
         }
 
         public Hand GetNextEmptyHand()
@@ -168,6 +167,52 @@ namespace GoTF.Content
             foreach (Hand hand in handsManager.ActiveHands)
             {
                 if (IsHandEmpty(hand)) { return hand; }
+            }
+            return Hand.none;
+        }
+
+        public bool DoesHandContains(Hand hand, GeneralItem item)
+        {
+            return ItemPileInHand(hand).Contains(item);
+        }
+
+        public bool DoesHandContains(Hand hand, ItemPile itemPile)
+        {
+            return ItemPileInHand(hand).Contains(itemPile);
+        }
+
+        public bool Contains(GeneralItem item)
+        {
+            foreach (Hand hand in handsManager.ActiveHands)
+            {
+                if (ItemPileInHand(hand).Contains(item)) return true;
+            }
+            return false;
+        }
+
+        public bool Contains(ItemPile itemPile)
+        {
+            foreach (Hand hand in handsManager.ActiveHands)
+            {
+                if (ItemPileInHand(hand).Contains(itemPile)) return true;
+            }
+            return false;
+        }
+
+        public Hand GetFirstHandThatContains(GeneralItem item)
+        {
+            foreach (Hand hand in handsManager.ActiveHands)
+            {
+                if (ItemPileInHand(hand).Contains(item)) return hand;
+            }
+            return Hand.none;
+        }
+
+        public Hand GetFirstHandThatContains(ItemPile itemPile)
+        {
+            foreach (Hand hand in handsManager.ActiveHands)
+            {
+                if (ItemPileInHand(hand).Contains(itemPile)) return hand;
             }
             return Hand.none;
         }
@@ -186,18 +231,52 @@ namespace GoTF.Content
         {
             foreach (Hand hand in handsManager.ActiveHands)
             {
-                if (TryAddItemPileToHand(pile, hand)) { return true; }
+                if (TryAddItemPileToHand(pile, hand)) 
+                {
+                    Debug.Log("Pile " + pile + "added to hand " + hand);
+                    return true; 
+                }
             }
             return false;
         }
         public bool TryAddItemPileToHand(ItemPile pile, Hand hand)
         {
-            Debug.Log("Trying to add pile to hand " + hand);
-            if (!IsHandEmpty(hand)) { return ItemPileInHand(hand).TryMergePile(pile, MaxCarryingWeightInHand(hand), MaxCarryingBulkInHand(hand)); }
+            Debug.Log("Trying to add pile " + pile + " to hand " + hand);
+            if (!IsHandEmpty(hand)) 
+            {
+                return ItemPileInHand(hand).TryMergePile(pile, MaxCarryingWeightInHand(hand), MaxCarryingBulkInHand(hand)); 
+            }
             else
             {
-                return HandQuickSlot(hand).TryAddPile(pile, MaxCarryingWeightInHand(hand), MaxCarryingBulkInHand(hand));
+                Debug.Log("OK "+hand);
+                return TryAddItemPileToEmptyHand(pile, hand);
             }
+        }
+
+        public bool TryAddItemPileToEmptyHand(ItemPile pile, Hand hand)
+        {
+            if (pile == null)
+            {
+                Debug.Log("Trying to add null pile");
+                return false;
+            }
+            if (!IsHandEmpty(hand))
+            {
+                Debug.Log("Hand is not empty !");
+                return false;
+            }
+            if (pile.IsEmpty)
+            {
+                Debug.Log("Adding empty pile");
+                return true;
+            }
+            if (pile.Weight < MaxCarryingWeightInHand(hand) && pile.Bulk < MaxCarryingBulkInHand(hand))
+            {
+                pile.SetItemPileToSlot(HandQuickSlot(hand));
+                handsManager.InstantiateItemPileInHand(pile, hand);
+                return true;
+            }
+            return false;
         }
 
         public bool TryAddItemToHand(GeneralItem item, Hand hand)
@@ -241,7 +320,31 @@ namespace GoTF.Content
             }
             return false;
         }
+        public bool TryRemoveItem(GeneralItem item, bool shouldDestroy)
+        {
+            foreach (Hand hand in handsManager.ActiveHands)
+            {
+                if (ItemPileInHand(hand).TryRemoveItemFromPile(item, shouldDestroy)) { return true; }
+            }
+            return false;
+        }
+        public bool TryRemoveItemPile(ItemPile itemPile, bool shouldDestroy = false)
+        {
+            foreach(Hand hand in handsManager.ActiveHands)
+            {
+                if (ItemPileInHand(hand).TryRemovePile(itemPile, shouldDestroy)) return true;
+            }
+            return false;
+        }
 
+        public void RemoveItemFromPileInHand(Hand hand, GeneralItem item, bool shouldDestroy)
+        {
+            ItemPileInHand(hand).TryRemoveItemFromPile(item, shouldDestroy);
+        }
+        public void RemovePileFromPileInHand(Hand hand, ItemPile itemPile, bool shouldDestroy)
+        {
+            ItemPileInHand(hand).TryRemovePile(itemPile, shouldDestroy);
+        }
         public void MakeHandEmpty(Hand hand)
         {
             HandQuickSlot(hand).RemovePile();
