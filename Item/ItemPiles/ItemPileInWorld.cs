@@ -221,6 +221,15 @@ namespace GoTF.Content
             ItemPile.RemoveItemFromPile(worldItem.item);
             RemoveItem(worldItem);
         }
+
+        public void RemoveItem(GeneralItem item, bool shouldDestroy = false)
+        {
+            ItemInWorld worldItem = worldItems.Find(worldItem => worldItem.item == item);
+            if (worldItem != null)
+            {
+                RemoveItem(worldItem, shouldDestroy);
+            }
+        }
         public void RemoveLastItem()
         {
 
