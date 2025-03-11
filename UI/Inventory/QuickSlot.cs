@@ -11,7 +11,15 @@ namespace GoTF.Content
         [HideInInspector] public static QuickSlot activeQuickSlot;
         public HandsManager.Hand hand;
 
-        private HandsInventory inventoryManager
+        public override ItemPile CurrentPile
+        {
+            get
+            {
+                return InventoryManager.ItemPileInHand(hand);
+            }
+        }
+
+        private HandsInventory InventoryManager
         {
             get
             {
@@ -19,7 +27,7 @@ namespace GoTF.Content
             }
         }
 
-        private HandsManager handsManager
+        private HandsManager HandsManager
         {
             get
             {
@@ -31,47 +39,36 @@ namespace GoTF.Content
         {
             get
             {
-                return inventoryManager.MaxCarryingWeightInHand(hand);
+                return InventoryManager.MaxCarryingWeightInHand(hand);
             }
         }
         public float MaxCarryingBulk
         {
             get
             {
-                return inventoryManager.MaxCarryingBulkInHand(hand);
+                return InventoryManager.MaxCarryingBulkInHand(hand);
             }
         }
-
-        public override bool TryAddPile(ItemPile pile, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity)
-        {
-            if (maxWeight == Mathf.Infinity) { maxWeight = MaxCarryingWeight; }
-            if (maxBulk == Mathf.Infinity) { maxBulk = MaxCarryingBulk; }
-            if (CurrentPileUI == null && pile != null)
-            {
-                Debug.Log("Spawning pile in hand");
-                bool success = base.TryAddPile(pile, maxWeight, maxBulk);
-                if (success) { handsManager?.InstantiateItemPileInHand(pile, hand); } // Could do better : Instantiate only new items
-                return success;
-            }
-
-            return base.TryAddPile(pile, maxWeight, maxBulk);
-        }
-
 
         public override void RemovePile(bool shouldDestroy = true, bool shouldDropItems = false)
         {
             base.RemovePile(shouldDestroy);
-            RemovePileFromHand(shouldDropItems);
+            InventoryManager.ClearHand(hand);
+        }
+
+        public override bool TryAddPile(ItemPile pile)
+        {
+            return InventoryManager.TryAddItemPileToHand(pile, hand);
         }
 
         public void RemovePileFromHand(bool shouldDropItems)
         {
-            handsManager?.RemoveItemPileFromHand(hand, shouldDropItems: shouldDropItems);
+            HandsManager?.RemoveItemPileFromHand(hand, shouldDropItems: shouldDropItems);
         }
 
         public void ParentPileToHand(ItemPile pile)
         {
-            handsManager.ParentPileToHand(pile, hand);
+            HandsManager.ParentPileToHand(pile, hand);
         }
 
         public bool TryParentPileToHand(ItemPile pile, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity)
