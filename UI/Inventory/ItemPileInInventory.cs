@@ -163,6 +163,7 @@ namespace GoTF.Content
         /// </summary>
         public void UpdatePileIcon()
         {
+            if (ItemPile.IsEmpty) Destroy(gameObject);
             ClearIcon();
             CreatePileIcon();
         }
