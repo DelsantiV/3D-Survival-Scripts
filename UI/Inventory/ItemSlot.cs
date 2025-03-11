@@ -25,11 +25,11 @@ namespace GoTF.Content
                 return null;
             }
         }
-        public ItemPile CurrentPile
+        public virtual ItemPile CurrentPile
         {
             get
             {
-                if (CurrentPileUI == null) { return null; }
+                if (CurrentPileUI == null) { return new(); }
                 else { return CurrentPileUI.ItemPile; }
             }
         }
@@ -39,10 +39,8 @@ namespace GoTF.Content
         {
             get
             {
-                if (CurrentPileUI == null)
-                {
-                    return true;
-                }
+
+                if (CurrentPile.IsEmpty) return true;
                 return false;
             }
         }
@@ -78,7 +76,7 @@ namespace GoTF.Content
                             else
                             {
                                 Destroy(itemBeingDragGO);
-                                previousSlot.RemovePile(); // vérifier que ça marche
+                                previousSlot.RemovePile(); 
                             }
                         }
                     }
@@ -86,30 +84,9 @@ namespace GoTF.Content
             }
         }
 
-        public virtual bool TryAddPile(ItemPile pile, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity)
+        public virtual bool TryAddPile(ItemPile pile)
         {
-            if (pile != null)
-            {
-                //if there is no pile already in the slot then set our pile.
-                if (IsEmpty)
-                {
-                    Debug.Log("Trying to add pile " + pile + " to slot " + name + ", which is empty");
-                    pile.SetItemPileToSlot(this);
-                    return true;
-                }
-
-                //if there is a pile already, try to merge pile
-                else
-                {
-                    Debug.Log("Trying to add item " + pile + " to slot " + name + ", containing " + CurrentPile.ToString());
-                    return CurrentPile.TryMergePile(pile, maxWeight, maxBulk); // Handle the case where piles cannot be merged
-                }
-            }
-            else
-            {
-                Debug.Log("Trying to add null item");
-                return false;
-            }
+            return true;
         }
 
         public virtual void DestroyItem()
