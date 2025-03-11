@@ -240,6 +240,7 @@ namespace GoTF.Content
                     isCraftingMode = true;
                     canMove = false;
                     allowActionInputs = false;
+                    cameraLocked = true;
                     cc.StartCraftingMode();
                     Debug.Log("Crafting Mode enabled !");
                 }
@@ -249,6 +250,7 @@ namespace GoTF.Content
                     canMove = true;
                     allowActionInputs = true;
                     isCraftingMode = false;
+                    cameraLocked = false;
                     cc.StopCraftingMode();
                     Debug.Log("Crafting Mode disabled !");
                 }
