@@ -189,7 +189,7 @@ namespace GoTF.Content
             if (equippedItem != null)
             {
                 Debug.Log("Removing physical pile from hand " + equippedItem.name);
-                if (shouldDropItems) { equippedItem .Drop(); }
+                if (shouldDropItems) { equippedItem.Drop(); }
                 else { equippedItem.Remove(); }
             }
             else
