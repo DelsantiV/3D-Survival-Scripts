@@ -31,6 +31,22 @@ namespace GoTF.Content
             }
         }
 
+        public Dictionary<Item_General_SO, int> CompactItemsInPile
+        {
+            get
+            {
+                Dictionary<Item_General_SO, int> compactItemsInPile = new();
+                if (ItemsInPile == null) { return compactItemsInPile; }
+                foreach (Item_General_SO itemSO in ItemsSOInPile)
+                {
+                    if (compactItemsInPile.ContainsKey(itemSO)) { compactItemsInPile[itemSO] += 1; }
+                    else compactItemsInPile.Add(itemSO, 1);
+                }
+                return compactItemsInPile;
+            }
+        }
+
+
         /// <summary>
         /// The number of items in the pile 
         /// </summary>
@@ -47,7 +63,7 @@ namespace GoTF.Content
         /// </summary>
         public bool IsEmpty
         {
-            get { return  ItemsInPile.Count == 0;}
+            get { return ItemsInPile.Count == 0; }
         }
 
         ///<summary>
@@ -161,8 +177,9 @@ namespace GoTF.Content
         {
             if (itemsInPile == null) { ItemsInPile = new(); }
             else { ItemsInPile = itemsInPile; }
-            if (ItemsInPile.Contains(null)) {
-                Debug.Log("Pile "+ToString() + "contained null items. These were removed.");
+            if (ItemsInPile.Contains(null))
+            {
+                Debug.Log("Pile " + ToString() + "contained null items. These were removed.");
                 ItemsInPile.RemoveAll(item => item == null);
             }
         }
@@ -192,6 +209,12 @@ namespace GoTF.Content
             }
         }
 
+        public ItemPile(string itemName)
+        {
+            GeneralItem item = ItemManager.GetItemByName(itemName);
+            if (item != null) ItemsInPile = new() { item };
+        }
+
         public ItemPile(ItemInWorld worldItem)
         {
             Debug.Log("Creating new Pile from World Item");
@@ -210,6 +233,29 @@ namespace GoTF.Content
         }
 
         public void DestroyPile() { ItemsInPile.Clear(); }
+        public bool IsContainedIn(ItemPile otherPile)
+        {
+            if (IsEmpty) return true;
+            Dictionary<Item_General_SO, int> otherPileCompact = otherPile.CompactItemsInPile;
+            foreach(Item_General_SO itemSO in CompactItemsInPile.Keys)
+            {
+                if (!otherPileCompact.ContainsKey(itemSO)) return false;
+                if (CompactItemsInPile[itemSO] > otherPileCompact[itemSO]) return false;
+            }
+            return true;
+        }
+
+        public bool Contains(ItemPile otherPile)
+        {
+            if (otherPile.IsEmpty) return true;
+            Dictionary<Item_General_SO, int> otherPileCompact = otherPile.CompactItemsInPile;
+            foreach (Item_General_SO itemSO in otherPileCompact.Keys)
+            {
+                if (!CompactItemsInPile.ContainsKey(itemSO)) return false;
+                if (otherPileCompact[itemSO] > CompactItemsInPile[itemSO]) return false;
+            }
+            return true;
+        }
 
         /// <summary>
         /// Set the pile to an inventory slot, creating an <c>ItemPileInInventory</c> if necessary
@@ -388,7 +434,7 @@ namespace GoTF.Content
         {
             ItemPile itemPilePart = new ItemPile();
 
-            if (IsEmpty) { return itemPilePart; } 
+            if (IsEmpty) { return itemPilePart; }
 
             //If Pile is small enough considering the parameters, return whole pile
             if (Weight < maxWeight && Bulk < maxBulk && NumberOfItemsInPile < maxNumberOfItems && NumberOfDifferentItemsInPile < maxNumberOfDifferentItems)
@@ -409,7 +455,7 @@ namespace GoTF.Content
                 // Return part of pile if max number of items or max number of different items is reached
                 if (itemPilePart.NumberOfItemsInPile == maxNumberOfItems || numberOfDifferentItems == maxNumberOfDifferentItems) { return itemPilePart; }
             }
-            if (removeFromOriginalPile && itemPilePart.NumberOfItemsInPile > 0) { foreach(GeneralItem item in itemPilePart.ItemsInPile) { RemoveItemFromPile(item); } }
+            if (removeFromOriginalPile && itemPilePart.NumberOfItemsInPile > 0) { foreach (GeneralItem item in itemPilePart.ItemsInPile) { RemoveItemFromPile(item); } }
             return itemPilePart;
         }
 
@@ -418,7 +464,7 @@ namespace GoTF.Content
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool IsItemInPile(GeneralItem item)
+        public bool Contains(GeneralItem item)
         {
             return ItemsInPile.Contains(item);
         }
@@ -454,20 +500,57 @@ namespace GoTF.Content
         /// Removes this item from the pile
         /// </summary>
         /// <param name="item"></param>
-        public void RemoveItemFromPile(GeneralItem item)
+        public void RemoveItemFromPile(GeneralItem item, bool shouldDestroy = false)
         {
-            if (IsItemInPile(item)) { ItemsInPile.Remove(item); };
+            if (Contains(item)) { ItemsInPile.Remove(item); };
+            if (IsInWorld) { ItemPileInWorld.RemoveItem(item, shouldDestroy); }
+            OnPileChanged?.Invoke();
+        }
+        public void RemoveItemFromPile(ItemInWorld worldItem, bool shouldDestroy = false)
+        {
+            if (Contains(worldItem.item)) { ItemsInPile.Remove(worldItem.item); };
+            if (IsInWorld) { ItemPileInWorld.RemoveItem(worldItem, shouldDestroy); }
             OnPileChanged?.Invoke();
         }
 
-        public void RemoveFirstCorrespondingItem(Item_General_SO itemSO)
+        public bool TryRemoveItemFromPile(GeneralItem item, bool shouldDestroy = false)
         {
-            RemoveItemFromPile(GetFirstCorrespondingItem(itemSO));
+            if (!Contains(item)) return false;
+            else
+            {
+                RemoveItemFromPile(item, shouldDestroy);
+                return true;
+            }
         }
 
-        public void RemoveAllCorrespondingItems(Item_General_SO itemSO)
+        public bool TryRemoveItemFromPile(ItemInWorld worldItem, bool shouldDestroy = false)
         {
-            foreach (GeneralItem item in GetAllCorrespondingItems(itemSO)) { RemoveItemFromPile(item); }
+            if (!Contains(worldItem.item)) return false;
+            else
+            {
+                RemoveItemFromPile(worldItem, shouldDestroy);
+                return true;
+            }
+        }
+
+        public void RemoveFirstCorrespondingItem(Item_General_SO itemSO, bool shouldDestroy = false)
+        {
+            RemoveItemFromPile(GetFirstCorrespondingItem(itemSO), shouldDestroy);
+        }
+
+        public void RemoveAllCorrespondingItems(Item_General_SO itemSO, bool shouldDestroy = false)
+        {
+            foreach (GeneralItem item in GetAllCorrespondingItems(itemSO)) { RemoveItemFromPile(item, shouldDestroy); }
+        }
+
+        public bool TryRemovePile(ItemPile pile, bool shouldDestroy = false)
+        {
+            if (!Contains(pile)) return false;
+            else
+            {
+                foreach (Item_General_SO itemSO in pile.ItemsSOInPile) RemoveFirstCorrespondingItem(itemSO, shouldDestroy);
+                return true;
+            }
         }
 
         /// <summary>
@@ -553,7 +636,7 @@ namespace GoTF.Content
         {
             if (NumberOfItemsInPile == 0) { return "Empty Pile"; }
             string pileName = "";
-            foreach (Item_General_SO itemSO in ItemsSOInPile) 
+            foreach (Item_General_SO itemSO in ItemsSOInPile)
             {
                 if (itemSO != null)
                 {
@@ -646,6 +729,19 @@ namespace GoTF.Content
             if (orderedItems.Count > 0) { suppItems = new(orderedItems); }
             else { suppItems = new(); }
             return splittedItemPiles;
+        }
+
+        public static bool ArePileCorresponding(ItemPile pile1, ItemPile pile2)
+        {
+            Dictionary<Item_General_SO, int> pile1Compact = pile1.CompactItemsInPile;
+            Dictionary<Item_General_SO, int> pile2Compact = pile2.CompactItemsInPile;
+            if (pile1Compact.Count != pile2Compact.Count) return false;
+            foreach (Item_General_SO itemSO in pile1Compact.Keys)
+            {
+                if (!pile2Compact.ContainsKey(itemSO)) return false;
+                if (pile1Compact[itemSO] != pile2Compact[itemSO]) return false;
+            }
+            return true;
         }
     }
 }
