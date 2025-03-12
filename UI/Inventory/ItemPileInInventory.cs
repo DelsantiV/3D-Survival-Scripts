@@ -191,7 +191,7 @@ namespace GoTF.Content
         {
             if (slot is QuickSlot) // For now, all available slots are quickslots
             {
-                player.HandsManager.RemoveItemPileFromHand((slot as QuickSlot).hand, shouldDropItems:true);
+                player.HandsInventory.RemovePileFromHand((slot as QuickSlot).hand, true);
             }
             else
             {
@@ -200,29 +200,6 @@ namespace GoTF.Content
             Destroy(gameObject);
             Debug.Log("Dropped item");
             ClosePileInfo();
-        }
-
-        public void EquipPileInNextEmptyHand()
-        {
-            ItemSlot previousSlot = slot;
-            if (player.HandsInventory.TryAddItemPileToNextEmptyHand(ItemPile))
-            {
-                Debug.Log("Equiped " + ItemPile.ToString());
-                previousSlot.RemovePile();
-                RefreshSlot();
-            }
-            else
-            {
-                Debug.Log("Could not equip item, no empty hand found !");
-            }
-        }
-
-        public void ChangeSlot(ItemSlot newSlot)
-        {
-            Debug.Log("Moving pile " + ItemPile.ToString() + " from " + slot.ToString() + " to " + newSlot);
-            //slot.RemovePile(shouldDestroy: false);
-            newSlot.SetItemPileToSlot(this);
-            if (newSlot is QuickSlot) { (newSlot as QuickSlot).ParentPileToHand(ItemPile); }
         }
     }
 }
