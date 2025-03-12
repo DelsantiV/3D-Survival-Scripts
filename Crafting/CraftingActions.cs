@@ -43,19 +43,16 @@ namespace GoTF.Content
         public bool requiresTwoHands;
         public bool isSecondPileNeeded
         {
-            get { return secondItemPile != null; }
+            get { return !secondItemPile.IsEmpty; }
         }
 
         public CraftingRecipe(JObject jsonFile) 
         {
             craftingAction = (Crafting.CraftingAction) Enum.Parse(typeof(Crafting.CraftingAction), jsonFile["craftingAction"].ToString());
             firstItemPile = new ItemPile(JsonConvert.DeserializeObject<List<string>>(jsonFile["firstItemPile"].ToString()));
+            secondItemPile = new();
             if (jsonFile["secondItemPile"] != null)
-            { if (jsonFile["secondItemPile"].ToString() == "")
-                {
-                    secondItemPile = null;
-                }
-                else
+            { if (jsonFile["secondItemPile"].ToString() != "")
                 {
                     secondItemPile = new ItemPile(JsonConvert.DeserializeObject<List<string>>(jsonFile["secondItemPile"].ToString()));
                 }
@@ -66,17 +63,27 @@ namespace GoTF.Content
             if (jsonFile["requiresTwoHands"] != null) isSecondPileTool = JsonConvert.DeserializeObject<bool>(jsonFile["requiresTwoHands"].ToString());
             else requiresTwoHands = false;
 
-            Debug.Log("Loaded recipe : " + firstItemPile + secondItemPile + resultItemPile);
+            Debug.Log("Loaded recipe : " + ToString());
+        }
+
+        public override string ToString()
+        {
+            string ingredient = firstItemPile.ToString() + " ";
+            if (isSecondPileNeeded)
+            {
+                ingredient += "and " + secondItemPile.ToString() + " ";
+            }
+            return ingredient + "with action " + craftingAction + " gives " + resultItemPile;
         }
     }
 
-    public class CraftingProcess
+    public class CraftingProcessRecipe
     {
         public Crafting.CraftingProcess craftingProcess;
         public ItemPile itemPile;
         public World.World.EnvConditions EnvConditions;
 
-        public CraftingProcess(JObject jsonFile)
+        public CraftingProcessRecipe(JObject jsonFile)
         {
 
         }
