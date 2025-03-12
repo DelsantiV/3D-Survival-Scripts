@@ -151,7 +151,7 @@ namespace GoTF.Content
                 cc.input.x = Input.GetAxis(horizontalInput);
                 cc.input.z = Input.GetAxis(verticallInput);
                 cc.GetGridCellAfterMovement();
-                Debug.Log("Current cell : " + cc.currentGridCell.index.ToString() + ", at position " + cc.currentGridCell.worldPostion.ToString());
+                //Debug.Log("Current cell : " + cc.currentGridCell.index.ToString() + ", at position " + cc.currentGridCell.worldPostion.ToString());
             }
             else
             {
