@@ -263,9 +263,12 @@ namespace GoTF.Content
         /// <param name="slot" The slot the pile should be set to></param>
         public virtual void SetItemPileToSlot(ItemSlot slot)
         {
-            itemPileUI = Object.Instantiate(ItemManager.PileIconTemplate, slot.transform);
+            if (!IsInInventory)
+            {
+                itemPileUI = Object.Instantiate(ItemManager.PileIconTemplate, slot.transform);
+                itemPileUI.SetItemPile(this, slot.Player);
+            }
             slot.SetItemPileToSlot(itemPileUI);
-            itemPileUI.SetItemPile(this, slot.Player);
         }
 
         /// <summary>
@@ -361,6 +364,11 @@ namespace GoTF.Content
             {
                 ItemPileInWorld.MergePile(pileToMerge);
             }
+            if (IsInInventory && pileToMerge.IsInInventory) // If both piles have UI, the other pile UI should be Destroyed, as this pile UI will be updated;
+            {
+                Object.Destroy(pileToMerge.itemPileUI);
+            }
+            pileToMerge.OnPileChanged?.Invoke();
             OnPileChanged?.Invoke();
         }
 
@@ -503,7 +511,10 @@ namespace GoTF.Content
         public void RemoveItemFromPile(GeneralItem item, bool shouldDestroy = false)
         {
             if (Contains(item)) { ItemsInPile.Remove(item); };
-            if (IsInWorld) { ItemPileInWorld.RemoveItem(item, shouldDestroy); }
+            if (IsInWorld) 
+            { 
+                ItemPileInWorld.RemoveItem(item, shouldDestroy); 
+            }
             OnPileChanged?.Invoke();
         }
         public void RemoveItemFromPile(ItemInWorld worldItem, bool shouldDestroy = false)
