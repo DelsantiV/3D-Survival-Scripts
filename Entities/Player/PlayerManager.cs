@@ -245,7 +245,7 @@ namespace GoTF.Content
         /// <returns></returns>
         public bool TryCollectItem(ItemInWorld itemObject)
         {
-            return HandsInventory.TryCollectItemInNextHand(itemObject);
+            return HandsInventory.TryAddItemPileToNextHand(new ItemPile(itemObject));
         }
 
         public bool TryCollectPile(ItemPileInWorld itemPileInWorld)
