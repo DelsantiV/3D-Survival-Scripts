@@ -155,19 +155,14 @@ namespace GoTF.Content
             EquippedPileInHand(hand).RemoveItem(index);
         }
 
-        public void ChangePileOfHand(Hand fromHand, Hand toHand)
-        {
-            if (fromHand != Hand.none && toHand != Hand.none) EquippedItemPileInHand(fromHand).ChangeParent(HandTransform(toHand));
-        }
-
-        public void InstantiateItemPileInHand(ItemPile pile, Hand hand)
+        private void InstantiateItemPileInHand(ItemPile pile, Hand hand)
         {
             if (pile.NumberOfItemsInPile == 0 || hand == Hand.none) { return; }
             ItemPileInWorld equippedPile = pile.SpawnInHands(HandTransform(hand));
             equippedPile.AddComponent<EquippedItemPile>();
         }
 
-        public void ParentPileToHand(ItemPileInWorld pileInWorld, Hand hand)
+        private void ParentPileToHand(ItemPileInWorld pileInWorld, Hand hand)
         {
             if (pileInWorld != null)
             {
@@ -175,12 +170,20 @@ namespace GoTF.Content
                 if (!pileInWorld.TryGetComponent<EquippedItemPile>(out var equippedPile)){ pileInWorld.AddComponent<EquippedItemPile>(); }
             }
         }
-        public void ParentPileToHand(ItemPile pile, Hand hand)
+        private void ParentPileToHand(ItemPile pile, Hand hand)
         {
             if (pile.IsInWorld)
             {
                 ParentPileToHand(pile.ItemPileInWorld, hand);
             }
+        }
+
+        public void AddPileToHand(ItemPile pile, Hand hand)
+        {
+            if (hand == Hand.none) return;
+            if (pile == null) return;
+            if (pile.IsInWorld) ParentPileToHand(pile, hand);
+            else InstantiateItemPileInHand(pile, hand);
         }
 
         public void RemoveItemPileFromHand(Hand hand, bool shouldDropItems = false)
