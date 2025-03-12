@@ -144,6 +144,25 @@ namespace GoTF.Content
             }
             return null;
         }
+
+        private void SetItemPileToHand(ItemPile pile, Hand hand)
+        {
+            switch (hand)
+            {
+                case Hand.right: RightHandPile = pile; return;
+                case Hand.left: LeftHandPile = pile; return;
+                case Hand.both: BothHandPile = pile; return;
+            }
+            Debug.Log("Cannot set pile " + pile + "to hand none");
+        }
+
+        private void AddPileToEmptyHand(ItemPile pile, Hand hand)
+        {
+            SetItemPileToHand(pile, hand); 
+            pile.SetItemPileToSlot(HandQuickSlot(hand));
+            handsManager.AddPileToHand(pile, hand);
+        }
+
         public ItemPile PrefHandPile { get { return ItemPileInHand(prefHand); } }
         public ItemPile OtherHandPile { get { return ItemPileInHand(otherHand); } }
 
@@ -159,9 +178,14 @@ namespace GoTF.Content
 
         public void ClearHand(Hand hand)
         {
-            ItemPileInHand(hand).DestroyPile();
+            SetItemPileToHand(new ItemPile(), hand);
         }
 
+        public void RemovePileFromHand(Hand hand, bool shouldDrop)
+        {
+            ClearHand(hand);
+            handsManager.RemoveItemPileFromHand(hand, shouldDrop);
+        }
         public Hand GetNextEmptyHand()
         {
             foreach (Hand hand in handsManager.ActiveHands)
@@ -233,7 +257,7 @@ namespace GoTF.Content
             {
                 if (TryAddItemPileToHand(pile, hand)) 
                 {
-                    Debug.Log("Pile " + pile + "added to hand " + hand);
+                    Debug.Log("Pile " + pile + " added to hand " + hand);
                     return true; 
                 }
             }
@@ -248,7 +272,6 @@ namespace GoTF.Content
             }
             else
             {
-                Debug.Log("OK "+hand);
                 return TryAddItemPileToEmptyHand(pile, hand);
             }
         }
@@ -272,8 +295,7 @@ namespace GoTF.Content
             }
             if (pile.Weight < MaxCarryingWeightInHand(hand) && pile.Bulk < MaxCarryingBulkInHand(hand))
             {
-                pile.SetItemPileToSlot(HandQuickSlot(hand));
-                handsManager.InstantiateItemPileInHand(pile, hand);
+                AddPileToEmptyHand(pile, hand);
                 return true;
             }
             return false;
@@ -288,38 +310,6 @@ namespace GoTF.Content
             return TryAddItemPileToNextHand(new ItemPile(item));
         }
 
-        private bool TryCollectItemInHand(ItemInWorld worldItem, Hand hand) // Aim : being able to directly collect an item in world
-        {
-            if (!IsHandEmpty(hand)) { return ItemPileInHand(hand).TryAddItemToPile(worldItem); }
-            else 
-            {
-                if (CouldHoldPileInHand(worldItem.item, hand))
-                {
-                    ItemPile pile = new ItemPile(worldItem);
-                    handsManager.ParentPileToHand(pile, hand);
-                    pile.SetItemPileToSlot(HandQuickSlot(hand));
-                    Debug.Log("Parenting pile to empty hand");
-                    return true;
-                }
-                else
-                {
-                    Debug.Log("Pile is too heavy/bulky for this hand !");
-                    Debug.Log(CurrentCarryingWeightInHand(hand));
-                    Debug.Log(worldItem.item.Weight);
-                    Debug.Log(MaxCarryingWeightInHand(hand));
-                }
-            }
-            return false;
-        }
-
-        public bool TryCollectItemInNextHand(ItemInWorld worldItem)
-        {
-            foreach (Hand hand in handsManager.ActiveHands)
-            {
-                if (TryCollectItemInHand(worldItem, hand)) { return true; }
-            }
-            return false;
-        }
         public bool TryRemoveItem(GeneralItem item, bool shouldDestroy)
         {
             foreach (Hand hand in handsManager.ActiveHands)
@@ -353,13 +343,6 @@ namespace GoTF.Content
         public void MakeBothHandsEmpty()
         {
             foreach (Hand hand in handsManager.ActiveHands) { MakeHandEmpty(hand); }
-        }
-
-        public void ChangePileOfHand(Hand fromHand, Hand toHand)
-        {
-            if (IsHandEmpty(fromHand)) { return; }
-
-            if (IsHandEmpty(toHand)) { }
         }
 
         private void MergeBothHands()
