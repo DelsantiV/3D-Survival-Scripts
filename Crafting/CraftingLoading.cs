@@ -6,32 +6,40 @@ using System.Collections;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using Newtonsoft.Json.Linq;
+using static GoTF.Content.Crafting;
+using System;
 
 namespace GoTF.GameLoading
 {
     public class CraftingRecipesLoader
     {
-        public List<CraftingRecipe> AllCraftingRecipes;
-        public List<CraftingProcess> AllCraftingProcesses;
+        public Dictionary<CraftingAction, List<CraftingRecipe>> AllCraftingRecipesByAction;
+        public Dictionary<CraftingProcess, List<CraftingProcessRecipe>> AllCraftingProcessesByProcess;
         private readonly List<string> recipesJsonKeys = new() { "JSON", "Recipes" };
 
         public IEnumerator LoadRecipes()
         {
-            AllCraftingRecipes = new();
-            AllCraftingProcesses = new();
+            AllCraftingRecipesByAction = new();
+            AllCraftingProcessesByProcess = new();
             Debug.Log("Start retrieving crafting recipes...");
             AsyncOperationHandle<IList<TextAsset>> recipesLoading = Addressables.LoadAssetsAsync<TextAsset>(recipesJsonKeys,
                 recipeJSON => { RegisterRecipe(recipeJSON); },
                 Addressables.MergeMode.Intersection);
             yield return recipesLoading;
-            CraftingRecipes.allCraftingRecipes = AllCraftingRecipes;
-            CraftingRecipes.allCraftingProcesses = AllCraftingProcesses;
+            CraftingRecipesUtilities.allCraftingRecipesByAction = AllCraftingRecipesByAction;
+            CraftingRecipesUtilities.allCraftingProcessesByProcess = AllCraftingProcessesByProcess;
             Addressables.Release(recipesLoading);
         }
 
         private void RegisterRecipe(TextAsset recipeJSON)
         {
-            if (IsValidRecipe(recipeJSON)) AllCraftingRecipes.Add(new CraftingRecipe(JObject.Parse(recipeJSON.text)));
+            if (IsValidRecipe(recipeJSON))
+            {
+                JObject jsonFile = JObject.Parse(recipeJSON.text);
+                CraftingAction craftingAction = (CraftingAction)Enum.Parse(typeof(CraftingAction), jsonFile["craftingAction"].ToString());
+                if (AllCraftingRecipesByAction.ContainsKey(craftingAction)) { AllCraftingRecipesByAction[craftingAction].Add(new CraftingRecipe(jsonFile)); }
+                else AllCraftingRecipesByAction.Add(craftingAction, new List<CraftingRecipe>() { new CraftingRecipe(jsonFile) });
+            }
         }
 
         private bool IsValidRecipe(TextAsset recipeJSON)
