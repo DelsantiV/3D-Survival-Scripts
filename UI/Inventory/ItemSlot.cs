@@ -65,20 +65,17 @@ namespace GoTF.Content
                 {
                     if (itemBeingDrag.slot != this)
                     {
-                        if (IsEmpty) { itemBeingDrag.ChangeSlot(this); }
+                        ItemSlot previousSlot = itemBeingDrag.slot;
+                        if (TryAddPile(itemBeingDrag.ItemPile))
+                        {
+                            previousSlot.RemovePile(false, false);
+                            Debug.Log("Was able to add pile to existing one");
+                        }
                         else
                         {
-                            ItemSlot previousSlot = itemBeingDrag.slot;
-                            if (!TryAddPile(itemBeingDrag.ItemPile))
-                            {
-                                Debug.Log("Was not able to add pile to existing one");
-                            }
-                            else
-                            {
-                                Destroy(itemBeingDragGO);
-                                previousSlot.RemovePile(); 
-                            }
+                            
                         }
+                        
                     }
                 }
             }
