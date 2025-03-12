@@ -65,25 +65,5 @@ namespace GoTF.Content
         {
             HandsManager?.RemoveItemPileFromHand(hand, shouldDropItems: shouldDropItems);
         }
-
-        public void ParentPileToHand(ItemPile pile)
-        {
-            HandsManager.ParentPileToHand(pile, hand);
-        }
-
-        public bool TryParentPileToHand(ItemPile pile, float maxWeight = Mathf.Infinity, float maxBulk = Mathf.Infinity)
-        {
-            if (maxWeight == Mathf.Infinity) { maxWeight = MaxCarryingWeight; }
-            if (maxBulk == Mathf.Infinity) { maxBulk = MaxCarryingBulk; }
-            if (pile != null)
-            {
-                if (pile.Weight < maxWeight && pile.Bulk < maxBulk)
-                {
-                    ParentPileToHand(pile);
-                    return true;
-                }
-            }
-            return false;
-        }
     }
 }
