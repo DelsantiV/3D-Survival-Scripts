@@ -63,6 +63,7 @@ namespace GoTF.Content
 
         public void RemovePileFromHand(bool shouldDropItems)
         {
+            InventoryManager.ClearHand(hand);
             HandsManager?.RemoveItemPileFromHand(hand, shouldDropItems: shouldDropItems);
         }
     }
