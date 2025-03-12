@@ -63,6 +63,7 @@ namespace GoTF.Content
             allQuickSlots = new QuickSlot[] { leftHandQuickSlot, rightHandQuickSlot, bothHandQuickSlot };
 
             craftingMenuUI = transform.GetComponentInChildren<CraftingMenuUI>(true);
+            craftingMenuUI.CloseUI();
 
             pileMenuTemplate = transform.Find("PileMenuTemplate").GetComponent<PileMenu>();
         }
@@ -72,11 +73,12 @@ namespace GoTF.Content
         {
             foreach (StatusBar statusBar in allStatusBar) { statusBar.InitializeStatusBar(player); }
             foreach (QuickSlot quickSlot in allQuickSlots) { quickSlot.SetPlayer(player); }
+            craftingMenuUI.Initialize(player);
         }
 
-        public void OpenBasicUi(BasicUI uiPanel)
+        public void ToggleBasicUi(BasicUI uiPanel, bool open = true)
         {
-
+            uiPanel.SetActive(open);
         }
 
         public StatusBar GetStatusBar(Type statusBar)
