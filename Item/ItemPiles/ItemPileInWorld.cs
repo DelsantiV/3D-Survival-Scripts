@@ -1,8 +1,6 @@
-using NUnit.Framework.Internal.Execution;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace GoTF.Content
@@ -10,7 +8,7 @@ namespace GoTF.Content
     public class ItemPileInWorld : MonoBehaviour
     {
         public ItemPile ItemPile { get; private set; }
-        private List<ItemInWorld> worldItems = new();
+        private List<ItemInWorld> worldItems;
         public List<GeneralItem> ItemsInPile { get { return ItemPile.ItemsInPile; } }
         private float pileHeight;
         public bool isRigidBody;
@@ -27,6 +25,7 @@ namespace GoTF.Content
         public void InitializeItemPileInWorld(ItemPile itemPile, ItemInWorld worldItem)
         {
             this.ItemPile = itemPile;
+            worldItems = new();
             //transform.position = worldItem.transform.position;
             transform.position = Vector3.zero;
             worldItem.transform.SetParent(transform, false);
@@ -42,6 +41,7 @@ namespace GoTF.Content
         public void SpawnItemPile(ItemPile itemPile, Vector3 spawnPosition, bool isRigidBody = true)
         {
             this.ItemPile = itemPile;
+            worldItems = new();
             this.isRigidBody = isRigidBody;
             transform.position = spawnPosition;
             if (itemPile != null)
@@ -66,6 +66,7 @@ namespace GoTF.Content
         public void SpawnItemPile(ItemPile itemPile, Transform targetTransform, Vector3 spawnPosition, Quaternion spawnRotation, bool isRigidBody = true, bool spawnInHands = false)
         {
             this.ItemPile = itemPile;
+            worldItems = new();
             this.isRigidBody = isRigidBody;
             transform.SetParent(targetTransform);
             transform.SetLocalPositionAndRotation(spawnPosition, spawnRotation);
@@ -193,7 +194,7 @@ namespace GoTF.Content
                 return;
             }
             worldItems.Remove(worldItem);
-            ItemPile.RemoveItemFromPile(worldItem.item);
+            if (ItemPile.Contains(worldItem.item)) ItemPile.RemoveItemFromPile(worldItem.item);
             // Should recalculate pile Height
 
             // Suppose that item is already removed from itemPile
@@ -201,13 +202,17 @@ namespace GoTF.Content
             // If Pile is now empty, destroy whole GameObject
 
             worldItem.transform.parent = null;
+            Debug.Log("Item " + worldItem.ItemName + " removed");
+            if (shouldDestroy) 
+            {
+                Debug.Log("Destroying");
+                Destroy(worldItem.gameObject);
+            }
 
             if (worldItems.Count == 0)
             {
                 Destroy(gameObject);
-                return;
             }
-            if (shouldDestroy) { Destroy(worldItem.gameObject); }
         }
 
         public void RemoveItem(int index)
@@ -228,6 +233,10 @@ namespace GoTF.Content
             if (worldItem != null)
             {
                 RemoveItem(worldItem, shouldDestroy);
+            }
+            else 
+            {
+                Debug.Log("Item not found");
             }
         }
         public void RemoveLastItem()
@@ -278,7 +287,6 @@ namespace GoTF.Content
                 ItemInWorld itemInWorld = worldItems[0];
                 itemInWorld.transform.SetLocalPositionAndRotation(itemInWorld.item.InHandPosition, itemInWorld.item.InHandRotation);
             }
-            Debug.Log(transform.position);
         }
     }
 }
