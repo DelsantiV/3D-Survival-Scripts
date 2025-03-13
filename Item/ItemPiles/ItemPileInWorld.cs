@@ -256,6 +256,10 @@ namespace GoTF.Content
             foreach (ItemInWorld itemPrefab in worldItems)
             {
                 GameObject itemGO = itemPrefab.gameObject;
+                if (!itemGO.TryGetComponent(out BoxCollider collider))
+                {
+                    itemGO.AddComponent<BoxCollider>();
+                }
                 itemGO.GetComponent<BoxCollider>().isTrigger = false;
                 itemGO.AddComponent<Rigidbody>();
             }
@@ -267,8 +271,7 @@ namespace GoTF.Content
             foreach (ItemInWorld itemPrefab in worldItems)
             {
                 GameObject itemGO = itemPrefab.gameObject;
-                BoxCollider collider;
-                if (!itemGO.TryGetComponent<BoxCollider>(out collider))
+                if (!itemGO.TryGetComponent<BoxCollider>(out BoxCollider collider))
                 {
                     collider = itemGO.GetComponentInChildren<BoxCollider>();
                 }
