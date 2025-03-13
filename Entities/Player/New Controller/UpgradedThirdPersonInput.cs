@@ -162,29 +162,29 @@ namespace GoTF.Content
 
         protected virtual void CameraInput()
         {
+            
+            if (!cameraMain)
+            {
+                if (!Camera.main) Debug.Log("Missing a Camera with the tag MainCamera, please add one.");
+                else
+                {
+                    cameraMain = Camera.main;
+                    cc.rotateTarget = cameraMain.transform;
+                }
+            }
+
+            if (cameraMain)
+            {
+                cc.UpdateMoveDirection(cameraMain.transform);
+            }
+
+            if (tpCamera == null)
+                return;
+
             if (!cameraLocked)
             {
-                if (!cameraMain)
-                {
-                    if (!Camera.main) Debug.Log("Missing a Camera with the tag MainCamera, please add one.");
-                    else
-                    {
-                        cameraMain = Camera.main;
-                        cc.rotateTarget = cameraMain.transform;
-                    }
-                }
-
-                if (cameraMain)
-                {
-                    cc.UpdateMoveDirection(cameraMain.transform);
-                }
-
-                if (tpCamera == null)
-                    return;
-
                 var Y = Input.GetAxis(rotateCameraYInput);
                 var X = Input.GetAxis(rotateCameraXInput);
-
                 tpCamera.RotateCamera(X, Y);
             }
         }
@@ -313,7 +313,7 @@ namespace GoTF.Content
 
         protected virtual void HandleCursorLockMode()
         {
-            if (Input.GetKey(GetInputKey(Controls.UnlockCursor)))
+            if (Input.GetKeyDown(GetInputKey(Controls.UnlockCursor)))
             {
                 cc.LockCursor(false);
                 cameraLocked = true;
